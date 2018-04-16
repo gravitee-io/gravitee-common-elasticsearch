@@ -1,6 +1,7 @@
 <#ftl output_format="JSON">
 {
   "size" : 0,
+  <#if query.root()??>
   "query" : {
     "bool" : {
       "filter" : [
@@ -11,7 +12,7 @@
         }
       ]
     }
-  },
+  },</#if>
   "aggregations" : {
     "terms" : {
       "terms" : {
