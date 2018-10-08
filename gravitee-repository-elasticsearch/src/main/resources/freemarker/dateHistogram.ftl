@@ -35,11 +35,7 @@
       "date_histogram": {
         "field": "@timestamp",
         "interval": "${query.timeRange().interval().toMillis()}ms",
-        "min_doc_count": 0,
-        "extended_bounds": {
-          "min": ${query.timeRange().range().from()},
-          "max": ${query.timeRange().range().to()}
-        }
+        "min_doc_count": 0
       }
 <#if query.aggregations()?has_content>
       ,
