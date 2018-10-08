@@ -27,11 +27,7 @@
          "date_histogram":{
             "field":"@timestamp",
             "interval":"${interval}",
-            "min_doc_count":0,
-            "extended_bounds":{
-               "min":${from},
-               "max":${to}
-            }
+            "min_doc_count":0
          },
          "aggregations":{
             "by_application":{
