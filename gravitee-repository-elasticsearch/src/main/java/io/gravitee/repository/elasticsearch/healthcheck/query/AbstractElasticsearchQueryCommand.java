@@ -77,4 +77,16 @@ public abstract class AbstractElasticsearchQueryCommand<T extends Response> impl
 		
 		return request;
 	}
+
+	String createQuery(final String templateName, final Query<T> query, Long newFrom, Long newTo ) {
+		final Map<String, Object> data = new HashMap<>();
+		data.put("query", query);
+		data.put("newFrom", newFrom);
+		data.put("newTo", newTo);
+		final String request = this.freeMarkerComponent.generateFromTemplate(templateName, data);
+
+		logger.debug("ES request {}", request);
+
+		return request;
+	}
 }

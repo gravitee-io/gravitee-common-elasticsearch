@@ -47,7 +47,14 @@ public class DateHistogramQueryCommand extends AbstractElasticsearchQueryCommand
 	@Override
 	public DateHistogramResponse executeQuery(Query<DateHistogramResponse> query) throws AnalyticsException {
 		final DateHistogramQuery dateHistogramQuery = (DateHistogramQuery) query;
-		final String sQuery = this.createQuery(TEMPLATE, query);
+s
+		final Long from = dateHistogramQuery.timeRange().range().from();
+		final Long to = dateHistogramQuery.timeRange().range().to();
+
+		final long newFrom = (from.longValue() / dateHistogramQuery.timeRange().interval().toMillis()) * dateHistogramQuery.timeRange().interval().toMillis();
+		final long newTo = (to.longValue() / dateHistogramQuery.timeRange().interval().toMillis()) * dateHistogramQuery.timeRange().interval().toMillis();
+
+		final String sQuery = this.createQuery(TEMPLATE, query, newFrom, newTo);
 
 		try {
 			SearchResponse searchResponse = execute(dateHistogramQuery, Type.REQUEST, sQuery).blockingGet();
