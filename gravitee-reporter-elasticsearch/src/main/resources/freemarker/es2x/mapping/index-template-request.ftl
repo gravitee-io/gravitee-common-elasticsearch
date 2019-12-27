@@ -135,6 +135,18 @@
                 "subscription": {
                     "index": "not_analyzed",
                     "type": "string"
+                },
+                "ssl-local-principal": {
+                    "type": "keyword",
+                    "index": true
+                },
+                "ssl-peer-principal": {
+                    "type": "keyword",
+                    "index": true
+                },
+                "ssl-protocol": {
+                    "type": "keyword",
+                    "index": true
                 }
                 <#if extendedRequestMappingTemplate??>,<#include "/${extendedRequestMappingTemplate}"></#if>
             }

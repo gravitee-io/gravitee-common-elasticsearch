@@ -33,6 +33,38 @@
       </#list>
     }
     </#if>
+    <#if log.getClientRequest().getSslInfo()??>
+      ,"ssl-info": {
+      "local-principal":"${log.getClientRequest().getSslInfo().getLocalPrincipal()}",
+      "peer-principal":"${log.getClientRequest().getSslInfo().getPeerPrincipal()}",
+      "cipher-suite":"${log.getClientRequest().getSslInfo().getCipherSuite()}",
+      "protocol":"${log.getClientRequest().getSslInfo().getProtocol()}"
+      <#if log.getClientRequest().getSslInfo().getLocalCertificates()??>
+        ,"local-certificates":[
+        <#list log.getClientRequest().getSslInfo().getLocalCertificates() as cert>
+          {"version": "${cert.getVersion()}",
+          "serial-number": "${cert.getSerialNumber()}",
+          "algorithm": "${cert.getAlgorithm()}",
+          "issuer": "${cert.getIssuer()}",
+          "subject": "${cert.getSubject()}"}
+          <#sep>,</#sep>
+        </#list>
+        ]
+      </#if>
+      <#if log.getClientRequest().getSslInfo().getPeerCertificates()??>
+        ,"peer-certificates":[
+        <#list log.getClientRequest().getSslInfo().getPeerCertificates() as cert>
+          {"version": "${cert.getVersion()}",
+          "serial-number": "${cert.getSerialNumber()}",
+          "algorithm": "${cert.getAlgorithm()}",
+          "issuer": "${cert.getIssuer()}",
+          "subject": "${cert.getSubject()}"}
+          <#sep>,</#sep>
+        </#list>
+        ]
+      </#if>
+      }
+    </#if>
   }
   ,"client-response": {
   "status":${log.getClientResponse().getStatus()}
@@ -53,6 +85,38 @@
         <#sep>,</#sep>
       </#list>
     }
+    </#if>
+    <#if log.getClientResponse().getSslInfo()??>
+      ,"ssl-info": {
+      "local-principal":"${log.getClientResponse().getSslInfo().getLocalPrincipal()}",
+      "peer-principal":"${log.getClientResponse().getSslInfo().getPeerPrincipal()}",
+      "cipher-suite":"${log.getClientResponse().getSslInfo().getCipherSuite()}",
+      "protocol":"${log.getClientResponse().getSslInfo().getProtocol()}"
+      <#if log.getClientResponse().getSslInfo().getLocalCertificates()??>
+        ,"local-certificates":[
+        <#list log.getClientResponse().getSslInfo().getLocalCertificates() as cert>
+          {"version": "${cert.getVersion()}",
+          "serial-number": "${cert.getSerialNumber()}",
+          "algorithm": "${cert.getAlgorithm()}",
+          "issuer": "${cert.getIssuer()}",
+          "subject": "${cert.getSubject()}"}
+          <#sep>,</#sep>
+        </#list>
+        ]
+      </#if>
+      <#if log.getClientResponse().getSslInfo().getPeerCertificates()??>
+        ,"peer-certificates":[
+        <#list log.getClientResponse().getSslInfo().getPeerCertificates() as cert>
+          {"version": "${cert.getVersion()}",
+          "serial-number": "${cert.getSerialNumber()}",
+          "algorithm": "${cert.getAlgorithm()}",
+          "issuer": "${cert.getIssuer()}",
+          "subject": "${cert.getSubject()}"}
+          <#sep>,</#sep>
+        </#list>
+        ]
+      </#if>
+      }
     </#if>
   }
   </#if>
@@ -79,6 +143,38 @@
       </#list>
     }
     </#if>
+    <#if log.getProxyRequest().getSslInfo()??>
+      ,"ssl-info": {
+      "local-principal":"${log.getProxyRequest().getSslInfo().getLocalPrincipal()}",
+      "peer-principal":"${log.getProxyRequest().getSslInfo().getPeerPrincipal()}",
+      "cipher-suite":"${log.getProxyRequest().getSslInfo().getCipherSuite()}",
+      "protocol":"${log.getProxyRequest().getSslInfo().getProtocol()}"
+      <#if log.getProxyRequest().getSslInfo().getLocalCertificates()??>
+        ,"local-certificates":[
+        <#list log.getProxyRequest().getSslInfo().getLocalCertificates() as cert>
+          {"version": "${cert.getVersion()}",
+          "serial-number": "${cert.getSerialNumber()}",
+          "algorithm": "${cert.getAlgorithm()}",
+          "issuer": "${cert.getIssuer()}",
+          "subject": "${cert.getSubject()}"}
+          <#sep>,</#sep>
+        </#list>
+        ]
+      </#if>
+      <#if log.getProxyRequest().getSslInfo().getPeerCertificates()??>
+        ,"peer-certificates":[
+        <#list log.getProxyRequest().getSslInfo().getPeerCertificates() as cert>
+          {"version": "${cert.getVersion()}",
+          "serial-number": "${cert.getSerialNumber()}",
+          "algorithm": "${cert.getAlgorithm()}",
+          "issuer": "${cert.getIssuer()}",
+          "subject": "${cert.getSubject()}"}
+          <#sep>,</#sep>
+        </#list>
+        ]
+      </#if>
+      }
+    </#if>
   }
   </#if>
   <#if log.getProxyResponse()??>
@@ -101,6 +197,38 @@
         <#sep>,</#sep>
       </#list>
     }
+    </#if>
+    <#if log.getProxyResponse().getSslInfo()??>
+      ,"ssl-info": {
+      "local-principal":"${log.getProxyResponse().getSslInfo().getLocalPrincipal()}",
+      "peer-principal":"${log.getProxyResponse().getSslInfo().getPeerPrincipal()}",
+      "cipher-suite":"${log.getProxyResponse().getSslInfo().getCipherSuite()}",
+      "protocol":"${log.getProxyResponse().getSslInfo().getProtocol()}"
+      <#if log.getProxyResponse().getSslInfo().getLocalCertificates()??>
+        ,"local-certificates":[
+        <#list log.getProxyResponse().getSslInfo().getLocalCertificates() as cert>
+          {"version": "${cert.getVersion()}",
+          "serial-number": "${cert.getSerialNumber()}",
+          "algorithm": "${cert.getAlgorithm()}",
+          "issuer": "${cert.getIssuer()}",
+          "subject": "${cert.getSubject()}"}
+          <#sep>,</#sep>
+        </#list>
+        ]
+      </#if>
+      <#if log.getProxyResponse().getSslInfo().getPeerCertificates()??>
+        ,"peer-certificates":[
+        <#list log.getProxyResponse().getSslInfo().getPeerCertificates() as cert>
+          {"version": "${cert.getVersion()}",
+          "serial-number": "${cert.getSerialNumber()}",
+          "algorithm": "${cert.getAlgorithm()}",
+          "issuer": "${cert.getIssuer()}",
+          "subject": "${cert.getSubject()}"}
+          <#sep>,</#sep>
+        </#list>
+        ]
+      </#if>
+      }
     </#if>
   }
   </#if>

@@ -131,6 +131,18 @@
                     "type": "keyword",
                     "index": true
                 },
+                "ssl-local-principal": {
+                    "type": "keyword",
+                    "index": true
+                },
+                "ssl-peer-principal": {
+                    "type": "keyword",
+                    "index": true
+                },
+                "ssl-protocol": {
+                    "type": "keyword",
+                    "index": true
+                },
                 "subscription": {
                     "type": "keyword"
                 }

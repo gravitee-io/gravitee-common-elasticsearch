@@ -72,6 +72,15 @@
   <#if metrics.getErrorKey()??>
   ,"error-key":"${metrics.getErrorKey()}"
   </#if>
+  <#if metrics.getSslLocalPrincipal()??>
+    ,"ssl-local-principal":"${metrics.getSslLocalPrincipal()}"
+  </#if>
+  <#if metrics.getSslPeerPrincipal()??>
+    ,"ssl-peer-principal":"${metrics.getSslPeerPrincipal()}"
+  </#if>
+  <#if metrics.getSslProtocol()??>
+    ,"ssl-protocol":"${metrics.getSslProtocol()}"
+  </#if>
   <#if metrics.getSubscription()??>
   ,"subscription":"${metrics.getSubscription()}"
   </#if>

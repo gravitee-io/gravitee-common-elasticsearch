@@ -113,9 +113,21 @@
                 },
                 "security-token": {
                     "type": "keyword",
-                "index": true
+                    "index": true
                 },
                 "error-key": {
+                    "type": "keyword",
+                    "index": true
+                },
+                "ssl-local-principal": {
+                    "type": "keyword",
+                    "index": true
+                },
+                "ssl-peer-principal": {
+                    "type": "keyword",
+                    "index": true
+                },
+                "ssl-protocol": {
                     "type": "keyword",
                     "index": true
                 },

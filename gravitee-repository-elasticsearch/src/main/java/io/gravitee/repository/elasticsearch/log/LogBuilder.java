@@ -19,6 +19,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import io.gravitee.common.http.HttpHeaders;
 import io.gravitee.common.http.HttpMethod;
+import io.gravitee.common.ssl.CertificateInfo;
+import io.gravitee.common.ssl.SSLInfo;
 import io.gravitee.elasticsearch.model.SearchHit;
 import io.gravitee.repository.log.model.ExtendedLog;
 import io.gravitee.repository.log.model.Log;
@@ -27,11 +29,14 @@ import io.gravitee.repository.log.model.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigInteger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.stream.StreamSupport;
 
 /**
  * Builder for log request.
@@ -69,6 +74,23 @@ final class LogBuilder {
     private final static String FIELD_RESPONSE_TIME = "response-time";
     private final static String FIELD_API_RESPONSE_TIME = "api-response-time";
 
+    private final static String FIELD_REQUEST_SSL_LOCAL_PRINCIPAL = "ssl-local-principal";
+    private final static String FIELD_REQUEST_SSL_PEER_PRINCIPAL = "ssl-peer-principal";
+    private final static String FIELD_REQUEST_SSL_PROTOCOL = "ssl-protocol";
+
+    private final static String FIELD_SSL_INFO = "ssl-info";
+    private final static String FIELD_SSL_LOCAL_PRINCIPAL = "local-principal";
+    private final static String FIELD_SSL_PEER_PRINCIPAL = "peer-principal";
+    private final static String FIELD_SSL_CIPHER_SUITE = "cipher-suite";
+    private final static String FIELD_SSL_LOCAL_CERTS = "local-certificates";
+    private final static String FIELD_SSL_PEER_CERTS = "peer-certificates";
+
+    private final static String FIELD_SSL_CERT_VERSION = "version";
+    private final static String FIELD_SSL_CERT_SERIAL_NUMBER = "serial-number";
+    private final static String FIELD_SSL_CERT_ALGORITHM = "algorithm";
+    private final static String FIELD_SSL_CERT_ISSUER = "issuer";
+    private final static String FIELD_SSL_CERT_SUBJECT = "subject";
+
     private final static String FIELD_LOCAL_ADDRESS = "local-address";
     private final static String FIELD_REMOTE_ADDRESS = "remote-address";
 
@@ -104,6 +126,13 @@ final class LogBuilder {
         return extentedLog;
     }
 
+    private static void handleTextChild(JsonNode node, String fieldName, Consumer<String> ifDefinedHandler) {
+        final JsonNode fieldNode = node.get(fieldName);
+        if (fieldNode != null && ! fieldNode.isNull()) {
+            ifDefinedHandler.accept(fieldNode.asText());
+        }
+    }
+
     private static <T extends Log> T  createLog(final SearchHit hit, final T log) {
         final JsonNode source = hit.getSource();
         log.setId(hit.getId());
@@ -135,62 +164,64 @@ final class LogBuilder {
         log.setLocalAddress(source.get(FIELD_LOCAL_ADDRESS).asText());
         log.setRemoteAddress(source.get(FIELD_REMOTE_ADDRESS).asText());
 
-        final JsonNode tenantNode = source.get(FIELD_TENANT);
-        if (tenantNode != null && ! tenantNode.isNull()) {
-            log.setTenant(tenantNode.asText());
-        }
-
-        final JsonNode applicationNode = source.get(FIELD_APPLICATION);
-        if (applicationNode != null && ! applicationNode.isNull()) {
-            log.setApplication(applicationNode.asText());
-        }
-
-        final JsonNode apiNode = source.get(FIELD_API);
-        if (apiNode != null && ! apiNode.isNull()) {
-            log.setApi(apiNode.asText());
-        }
-
-        final JsonNode planNode = source.get(FIELD_PLAN);
-        if (planNode != null && ! planNode.isNull()) {
-            log.setPlan(planNode.asText());
-        }
-
-        final JsonNode endpointNode = source.get(FIELD_ENDPOINT);
-        if (endpointNode != null && ! endpointNode.isNull()) {
-            log.setEndpoint(endpointNode.asText());
-        }
-
-        final JsonNode messageNode = source.get(FIELD_MESSAGE);
-        if (messageNode != null && ! messageNode.isNull()) {
-            log.setMessage(messageNode.asText());
-        }
-
-        final JsonNode hostNode = source.get(FIELD_HOST);
-        if (hostNode != null && ! hostNode.isNull()) {
-            log.setHost(hostNode.asText());
-        }
-
-        final JsonNode userNode = source.get(FIELD_USER);
-        if (userNode != null && ! userNode.isNull()) {
-            log.setUser(userNode.asText());
-        }
-
-        final JsonNode secTypeNode = source.get(FIELD_SECURITY_TYPE);
-        if (secTypeNode != null && ! secTypeNode.isNull()) {
-            log.setSecurityType(secTypeNode.asText());
-        }
-
-        final JsonNode secTokenNode = source.get(FIELD_SECURITY_TOKEN);
-        if (secTokenNode != null && ! secTokenNode.isNull()) {
-            log.setSecurityToken(secTokenNode.asText());
-        }
-
-        final JsonNode errorKeyNode = source.get(FIELD_ERROR_KEY);
-        if (errorKeyNode != null && ! errorKeyNode.isNull()) {
-            log.setErrorKey(errorKeyNode.asText());
-        }
+        handleTextChild(source, FIELD_TENANT, log::setTenant);
+        handleTextChild(source, FIELD_APPLICATION, log::setApplication);
+        handleTextChild(source, FIELD_API, log::setApi);
+        handleTextChild(source, FIELD_PLAN, log::setPlan);
+        handleTextChild(source, FIELD_ENDPOINT, log::setEndpoint);
+        handleTextChild(source, FIELD_MESSAGE, log::setMessage);
+        handleTextChild(source, FIELD_HOST, log::setHost);
+        handleTextChild(source, FIELD_USER, log::setUser);
+        handleTextChild(source, FIELD_SECURITY_TYPE, log::setSecurityType);
+        handleTextChild(source, FIELD_SECURITY_TOKEN, log::setSecurityToken);
+        handleTextChild(source, FIELD_ERROR_KEY, log::setErrorKey);
+        handleTextChild(source, FIELD_REQUEST_SSL_PEER_PRINCIPAL, log::setSslPeerPrincipal);
+        handleTextChild(source, FIELD_REQUEST_SSL_LOCAL_PRINCIPAL, log::setSslLocalPrincipal);
+        handleTextChild(source, FIELD_REQUEST_SSL_PROTOCOL, log::setSslProtocol);
 
         return log;
+    }
+
+    private static CertificateInfo createCertificateInfo(final JsonNode node) {
+        if (node == null) {
+            return null;
+        }
+
+        CertificateInfo cert = new CertificateInfo();
+        if (node.get(FIELD_SSL_CERT_VERSION) != null) {
+            cert.setVersion(node.get(FIELD_SSL_CERT_VERSION).asInt());
+        }
+        if (node.get(FIELD_SSL_CERT_SERIAL_NUMBER) != null) {
+            cert.setSerialNumber(BigInteger.valueOf(node.get(FIELD_SSL_CERT_SERIAL_NUMBER).asLong()));
+        }
+        handleTextChild(node, FIELD_SSL_CERT_ALGORITHM, cert::setAlgorithm);
+        handleTextChild(node, FIELD_SSL_CERT_ISSUER, cert::setIssuer);
+        handleTextChild(node, FIELD_SSL_CERT_SUBJECT, cert::setSubject);
+        return cert;
+    }
+
+    private static SSLInfo createSslInfo(final JsonNode node) {
+        if (node == null) {
+            return null;
+        }
+
+        SSLInfo sslInfo = new SSLInfo();
+
+        handleTextChild(node, FIELD_SSL_LOCAL_PRINCIPAL, sslInfo::setLocalPrincipal);
+        handleTextChild(node, FIELD_SSL_PEER_PRINCIPAL, sslInfo::setPeerPrincipal);
+        handleTextChild(node, FIELD_SSL_CIPHER_SUITE, sslInfo::setCipherSuite);
+
+        if (node.get(FIELD_SSL_LOCAL_CERTS) != null) {
+            sslInfo.setLocalCertificates(StreamSupport.stream(node.get(FIELD_SSL_LOCAL_CERTS).spliterator(), false)
+                    .map(LogBuilder::createCertificateInfo)
+                    .toArray(CertificateInfo[]::new));
+        }
+        if (node.get(FIELD_SSL_PEER_CERTS) != null) {
+            sslInfo.setPeerCertificates(StreamSupport.stream(node.get(FIELD_SSL_PEER_CERTS).spliterator(), false)
+                    .map(LogBuilder::createCertificateInfo)
+                    .toArray(CertificateInfo[]::new));
+        }
+        return sslInfo;
     }
 
     private static Request createRequest(final JsonNode node) {
@@ -198,15 +229,14 @@ final class LogBuilder {
             return null;
         }
 
-        Request request = new Request();
+        final Request request = new Request();
         request.setUri(node.path(FIELD_URI).asText());
 
-        if (node.get(FIELD_METHOD) != null) {
-            request.setMethod(HttpMethod.valueOf(node.get(FIELD_METHOD).asText()));
-        }
+        handleTextChild(node, FIELD_METHOD, methodName -> request.setMethod(HttpMethod.valueOf(node.get(FIELD_METHOD).asText())));
+        handleTextChild(node, FIELD_BODY, request::setBody);
 
-        if (node.get(FIELD_BODY) != null) {
-            request.setBody(node.get(FIELD_BODY).asText());
+        if (node.get(FIELD_SSL_INFO) != null) {
+            request.setSslInfo(createSslInfo(node.get(FIELD_SSL_INFO)));
         }
 
         request.setHeaders(createHttpHeaders(node.get(FIELD_HEADERS)));
@@ -220,8 +250,10 @@ final class LogBuilder {
 
         Response response = new Response();
         response.setStatus(node.path(FIELD_STATUS).asInt());
-        if (node.get(FIELD_BODY) != null) {
-            response.setBody(node.get(FIELD_BODY).asText());
+        handleTextChild(node, FIELD_BODY, response::setBody);
+
+        if (node.get(FIELD_SSL_INFO) != null) {
+            response.setSslInfo(createSslInfo(node.get(FIELD_SSL_INFO)));
         }
         response.setHeaders(createHttpHeaders(node.get(FIELD_HEADERS)));
         return response;
