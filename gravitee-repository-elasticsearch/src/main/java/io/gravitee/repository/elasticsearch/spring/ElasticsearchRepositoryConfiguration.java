@@ -16,6 +16,7 @@
 package io.gravitee.repository.elasticsearch.spring;
 
 import io.gravitee.elasticsearch.client.Client;
+import io.gravitee.elasticsearch.client.MockClient;
 import io.gravitee.elasticsearch.client.http.*;
 import io.gravitee.elasticsearch.exception.ElasticsearchException;
 import io.gravitee.elasticsearch.index.ILMIndexNameGenerator;
@@ -35,6 +36,7 @@ import io.reactivex.Single;
 import io.vertx.reactivex.core.Vertx;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -58,7 +60,8 @@ import static java.lang.String.format;
 })
 public class ElasticsearchRepositoryConfiguration {
 
-    private final Logger logger = LoggerFactory.getLogger(ElasticsearchRepositoryConfiguration.class);
+    @Value("${analytics.elasticsearch.enabled:true}")
+    private boolean enabled;
 
     @Bean
     public Vertx vertxRx(io.vertx.core.Vertx vertx) {
@@ -77,6 +80,9 @@ public class ElasticsearchRepositoryConfiguration {
 
     @Bean
     public Client client(RepositoryConfiguration repositoryConfiguration) {
+        if(!enabled)
+            return new MockClient();
+
         HttpClientConfiguration clientConfiguration = new HttpClientConfiguration();
         clientConfiguration.setEndpoints(repositoryConfiguration.getEndpoints());
         clientConfiguration.setUsername(repositoryConfiguration.getUsername());

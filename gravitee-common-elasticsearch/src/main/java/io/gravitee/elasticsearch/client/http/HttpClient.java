@@ -84,9 +84,6 @@ public class HttpClient implements Client {
     @Autowired
     private Vertx vertx;
 
-    @Value("${reporters.elasticsearch.enabled:true}")
-    private boolean enabled;
-
     /**
      * Configuration of Elasticsearch (cluster name, addresses, ...)
      */
@@ -118,78 +115,76 @@ public class HttpClient implements Client {
 
     @PostConstruct
     public void initialize() {
-        if (enabled) {
-            final List<Endpoint> endpoints = configuration.getEndpoints();
-            if (!endpoints.isEmpty()) {
-                httpClients = new ArrayList<>(endpoints.size());
-                initializePaths(URI.create(endpoints.get(0).getUrl()));
-                endpoints.forEach(endpoint -> {
-                    final URI elasticEdpt = URI.create(endpoint.getUrl());
+        final List<Endpoint> endpoints = configuration.getEndpoints();
+        if (!endpoints.isEmpty()) {
+            httpClients = new ArrayList<>(endpoints.size());
+            initializePaths(URI.create(endpoints.get(0).getUrl()));
+            endpoints.forEach(endpoint -> {
+                final URI elasticEdpt = URI.create(endpoint.getUrl());
 
-                    WebClientOptions options = new WebClientOptions()
-                            .setDefaultHost(elasticEdpt.getHost())
-                            .setDefaultPort(elasticEdpt.getPort() != -1 ? elasticEdpt.getPort() :
-                                    (HTTPS_SCHEME.equalsIgnoreCase(elasticEdpt.getScheme()) ? 443 : 80));
+                WebClientOptions options = new WebClientOptions()
+                        .setDefaultHost(elasticEdpt.getHost())
+                        .setDefaultPort(elasticEdpt.getPort() != -1 ? elasticEdpt.getPort() :
+                                (HTTPS_SCHEME.equalsIgnoreCase(elasticEdpt.getScheme()) ? 443 : 80));
 
+                if (HTTPS_SCHEME.equalsIgnoreCase(elasticEdpt.getScheme())) {
+                    options
+                            .setSsl(true)
+                            .setTrustAll(true);
+
+                    if (this.configuration.getSslConfig() != null) {
+                        options.setKeyCertOptions(this.configuration.getSslConfig().getVertxWebClientSslKeystoreOptions());
+                    }
+                }
+
+                if (configuration.isProxyConfigured()) {
+                    ProxyOptions proxyOptions = new ProxyOptions();
+                    proxyOptions.setType(ProxyType.valueOf(configuration.getProxyType()));
                     if (HTTPS_SCHEME.equalsIgnoreCase(elasticEdpt.getScheme())) {
-                        options
-                                .setSsl(true)
-                                .setTrustAll(true);
+                        proxyOptions.setHost(configuration.getProxyHttpsHost());
+                        proxyOptions.setPort(configuration.getProxyHttpsPort());
+                        proxyOptions.setUsername(configuration.getProxyHttpsUsername());
+                        proxyOptions.setPassword(configuration.getProxyHttpsPassword());
+                    } else {
+                        proxyOptions.setHost(configuration.getProxyHttpHost());
+                        proxyOptions.setPort(configuration.getProxyHttpPort());
+                        proxyOptions.setUsername(configuration.getProxyHttpUsername());
+                        proxyOptions.setPassword(configuration.getProxyHttpPassword());
+                    }
+                    options.setProxyOptions(proxyOptions);
+                }
 
-                        if (this.configuration.getSslConfig() != null) {
-                            options.setKeyCertOptions(this.configuration.getSslConfig().getVertxWebClientSslKeystoreOptions());
-                        }
+                final WebClient httpClient = WebClient.create(vertx, options);
+
+                // Read configuration to authenticate calls to Elasticsearch (basic authentication only)
+                if (this.configuration.getUsername() != null) {
+                    this.authorizationHeader = this.initEncodedAuthorization(this.configuration.getUsername(),
+                            this.configuration.getPassword());
+                }
+
+                ((WebClientInternal) httpClient.getDelegate()).addInterceptor(context -> {
+                    context.request()
+                            .timeout(configuration.getRequestTimeout())
+                            .putHeader(HttpHeaders.ACCEPT, CONTENT_TYPE)
+                            .putHeader(HttpHeaders.ACCEPT_CHARSET, StandardCharsets.UTF_8.name());
+
+                    // Basic authentication
+                    if (authorizationHeader != null) {
+                        context.request().putHeader(HttpHeaders.AUTHORIZATION, authorizationHeader);
                     }
 
-                    if (configuration.isProxyConfigured()) {
-                        ProxyOptions proxyOptions = new ProxyOptions();
-                        proxyOptions.setType(ProxyType.valueOf(configuration.getProxyType()));
-                        if (HTTPS_SCHEME.equalsIgnoreCase(elasticEdpt.getScheme())) {
-                            proxyOptions.setHost(configuration.getProxyHttpsHost());
-                            proxyOptions.setPort(configuration.getProxyHttpsPort());
-                            proxyOptions.setUsername(configuration.getProxyHttpsUsername());
-                            proxyOptions.setPassword(configuration.getProxyHttpsPassword());
-                        } else {
-                            proxyOptions.setHost(configuration.getProxyHttpHost());
-                            proxyOptions.setPort(configuration.getProxyHttpPort());
-                            proxyOptions.setUsername(configuration.getProxyHttpUsername());
-                            proxyOptions.setPassword(configuration.getProxyHttpPassword());
-                        }
-                        options.setProxyOptions(proxyOptions);
-                    }
-
-                    final WebClient httpClient = WebClient.create(vertx, options);
-
-                    // Read configuration to authenticate calls to Elasticsearch (basic authentication only)
-                    if (this.configuration.getUsername() != null) {
-                        this.authorizationHeader = this.initEncodedAuthorization(this.configuration.getUsername(),
-                                this.configuration.getPassword());
-                    }
-
-                    ((WebClientInternal) httpClient.getDelegate()).addInterceptor(context -> {
-                        context.request()
-                                .timeout(configuration.getRequestTimeout())
-                                .putHeader(HttpHeaders.ACCEPT, CONTENT_TYPE)
-                                .putHeader(HttpHeaders.ACCEPT_CHARSET, StandardCharsets.UTF_8.name());
-
-                        // Basic authentication
-                        if (authorizationHeader != null) {
-                            context.request().putHeader(HttpHeaders.AUTHORIZATION, authorizationHeader);
-                        }
-
-                        context.next();
-                    });
-
-                    final ElasticsearchClient client = new ElasticsearchClient(httpClient);
-                    httpClients.add(client);
-
-                    // Health check
-                    Observable
-                            .interval(5, TimeUnit.SECONDS)
-                            .flatMapSingle((Function<Long, SingleSource<ElasticsearchInfo>>) aLong -> getInfo(client).onErrorReturnItem(DUMMY_INFO))
-                            .subscribe(info -> client.setAvailable(!info.equals(DUMMY_INFO)));
+                    context.next();
                 });
-            }
+
+                final ElasticsearchClient client = new ElasticsearchClient(httpClient);
+                httpClients.add(client);
+
+                // Health check
+                Observable
+                        .interval(5, TimeUnit.SECONDS)
+                        .flatMapSingle((Function<Long, SingleSource<ElasticsearchInfo>>) aLong -> getInfo(client).onErrorReturnItem(DUMMY_INFO))
+                        .subscribe(info -> client.setAvailable(!info.equals(DUMMY_INFO)));
+            });
         }
     }
 

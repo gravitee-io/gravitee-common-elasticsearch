@@ -16,16 +16,21 @@
 package io.gravitee.reporter.elasticsearch.spring;
 
 import io.gravitee.elasticsearch.client.Client;
+import io.gravitee.elasticsearch.client.MockClient;
 import io.gravitee.elasticsearch.client.http.*;
 import io.gravitee.elasticsearch.templating.freemarker.FreeMarkerComponent;
 import io.gravitee.reporter.elasticsearch.config.PipelineConfiguration;
 import io.gravitee.reporter.elasticsearch.config.ReporterConfiguration;
 import io.vertx.reactivex.core.Vertx;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class ElasticsearchReporterConfiguration {
+
+    @Value("${reporters.elasticsearch.enabled:true}")
+    private boolean enabled;
 
     @Bean
     public Vertx vertxRx(io.vertx.core.Vertx vertx) {
@@ -34,6 +39,9 @@ public class ElasticsearchReporterConfiguration {
 
     @Bean
     public Client httpClient(ReporterConfiguration reporterConfiguration) {
+        if(!enabled)
+            return new MockClient();
+
         HttpClientConfiguration clientConfiguration = new HttpClientConfiguration();
         clientConfiguration.setEndpoints(reporterConfiguration.getEndpoints());
         clientConfiguration.setUsername(reporterConfiguration.getUsername());

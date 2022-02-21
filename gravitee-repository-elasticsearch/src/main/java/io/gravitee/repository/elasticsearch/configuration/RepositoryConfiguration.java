@@ -133,6 +133,9 @@ public class RepositoryConfiguration {
 	@Value("${analytics.elasticsearch.http.proxy.https.password:#{null}}")
 	private String proxyHttpsPassword;
 
+	@Value("${analytics.elasticsearch.enabled:true}")
+	private boolean enabled;
+
 	/**
 	 * Elasticsearch endpoints
 	 */
