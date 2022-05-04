@@ -25,17 +25,17 @@ import java.util.List;
 
 /**
  * Utility class used to compute date format for Elasticsearch indexes.
- * 
+ *
  * @author David BRASSELY (david.brassely at graviteesource.com)
  * @author GraviteeSource Team
  */
 public final class DateUtils {
-	
-	/**
-	 * Date format for Elasticsearch indexes.
-	 */
+
+    /**
+     * Date format for Elasticsearch indexes.
+     */
     private static final DateTimeFormatter ES_DAILY_INDICE = DateTimeFormatter.ofPattern("yyyy.MM.dd");
-    
+
     private DateUtils() {}
 
     /**
@@ -51,7 +51,7 @@ public final class DateUtils {
         LocalDate start = new Date(from).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
         final LocalDate stop = new Date(to).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
-        while(start.isBefore(stop) || start.isEqual(stop)) {
+        while (start.isBefore(stop) || start.isEqual(stop)) {
             indices.add(ES_DAILY_INDICE.format(start));
             start = start.plus(1, ChronoUnit.DAYS);
         }

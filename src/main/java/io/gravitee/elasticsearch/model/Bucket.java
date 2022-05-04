@@ -19,62 +19,60 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
-
 import java.io.Serializable;
-
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Bucket implements Serializable {
 
-	/** UID */
-	private static final long serialVersionUID = 1L;
+    /** UID */
+    private static final long serialVersionUID = 1L;
 
-	/** Key of the bucket */
-	private String key;
+    /** Key of the bucket */
+    private String key;
 
-	@JsonProperty("key_as_string")
-	private String keyAsString;
+    @JsonProperty("key_as_string")
+    private String keyAsString;
 
-	/** Number of documents in the bucket */
-	@JsonProperty("doc_count")
-	private long docCount;
-	
-	/**
-	 * The aggregations of the query.
-	 */
-	@JsonProperty("by_result")
-	private JsonNode terms;
+    /** Number of documents in the bucket */
+    @JsonProperty("doc_count")
+    private long docCount;
 
-	public String getKey() {
-		return key;
-	}
+    /**
+     * The aggregations of the query.
+     */
+    @JsonProperty("by_result")
+    private JsonNode terms;
 
-	public void setKey(String key) {
-		this.key = key;
-	}
+    public String getKey() {
+        return key;
+    }
 
-	public long getDocCount() {
-		return docCount;
-	}
+    public void setKey(String key) {
+        this.key = key;
+    }
 
-	public void setDocCount(long docCount) {
-		this.docCount = docCount;
-	}
+    public long getDocCount() {
+        return docCount;
+    }
 
-	public String getKeyAsString() {
-		return keyAsString;
-	}
+    public void setDocCount(long docCount) {
+        this.docCount = docCount;
+    }
 
-	public void setKeyAsString(String keyAsString) {
-		this.keyAsString = keyAsString;
-	}
+    public String getKeyAsString() {
+        return keyAsString;
+    }
 
-	public JsonNode getTerms() {
-		return terms;
-	}
+    public void setKeyAsString(String keyAsString) {
+        this.keyAsString = keyAsString;
+    }
 
-	public void setTerms(JsonNode terms) {
-		this.terms = terms;
-	}
+    public JsonNode getTerms() {
+        return terms;
+    }
+
+    public void setTerms(JsonNode terms) {
+        this.terms = terms;
+    }
 }

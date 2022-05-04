@@ -18,7 +18,6 @@ package io.gravitee.elasticsearch.version;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.List;
 import java.util.Map;
 
@@ -32,6 +31,7 @@ public class Error {
 
     @JsonProperty("root_cause")
     private List<Error> rootCause;
+
     private String type;
     private String reason;
     private Map<String, String> header;

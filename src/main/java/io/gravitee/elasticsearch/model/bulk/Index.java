@@ -18,7 +18,6 @@ package io.gravitee.elasticsearch.model.bulk;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.io.Serializable;
 
 /**
@@ -28,90 +27,90 @@ import java.io.Serializable;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Index implements Serializable {
 
-	/**
-	 * UID
-	 */
-	private static final long serialVersionUID = 1L;
+    /**
+     * UID
+     */
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * The index the document was indexed into.
-	 */
-	@JsonProperty("_index")
-	private String indexName;
+    /**
+     * The index the document was indexed into.
+     */
+    @JsonProperty("_index")
+    private String indexName;
 
-	/**
-	 * The type of the document indexed.
-	 */
-	@JsonProperty("_type")
-	private String type;
+    /**
+     * The type of the document indexed.
+     */
+    @JsonProperty("_type")
+    private String type;
 
-	/**
-	 * The id of the document indexed.
-	 */
-	@JsonProperty("_id")
-	private String identifier;
+    /**
+     * The id of the document indexed.
+     */
+    @JsonProperty("_id")
+    private String identifier;
 
-	/**
-	 * Returns the current version of the doc indexed.
-	 */
-	@JsonProperty("_version")
-	private String version;
+    /**
+     * Returns the current version of the doc indexed.
+     */
+    @JsonProperty("_version")
+    private String version;
 
-	/**
-	 * Response status.
-	 */
-	private Integer status;
+    /**
+     * Response status.
+     */
+    private Integer status;
 
-	/**
-	 * Optional error information.
-	 */
-	private Failure error;
+    /**
+     * Optional error information.
+     */
+    private Failure error;
 
-	public String getIndexName() {
-		return indexName;
-	}
+    public String getIndexName() {
+        return indexName;
+    }
 
-	public void setIndexName(String indexName) {
-		this.indexName = indexName;
-	}
+    public void setIndexName(String indexName) {
+        this.indexName = indexName;
+    }
 
-	public String getType() {
-		return type;
-	}
+    public String getType() {
+        return type;
+    }
 
-	public void setType(String type) {
-		this.type = type;
-	}
+    public void setType(String type) {
+        this.type = type;
+    }
 
-	public String getIdentifier() {
-		return identifier;
-	}
+    public String getIdentifier() {
+        return identifier;
+    }
 
-	public void setIdentifier(String identifier) {
-		this.identifier = identifier;
-	}
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
+    }
 
-	public String getVersion() {
-		return version;
-	}
+    public String getVersion() {
+        return version;
+    }
 
-	public void setVersion(String version) {
-		this.version = version;
-	}
+    public void setVersion(String version) {
+        this.version = version;
+    }
 
-	public Integer getStatus() {
-		return status;
-	}
+    public Integer getStatus() {
+        return status;
+    }
 
-	public void setStatus(Integer status) {
-		this.status = status;
-	}
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
 
-	public Failure getError() {
-		return error;
-	}
+    public Failure getError() {
+        return error;
+    }
 
-	public void setError(Failure error) {
-		this.error = error;
-	}
+    public void setError(Failure error) {
+        this.error = error;
+    }
 }

@@ -35,7 +35,7 @@ public class ILMIndexNameGeneratorTest {
 
     @Test
     public void shouldGenerateIndexName_withClusters() {
-        String indexName = generator.getIndexName(Type.REQUEST, 0, 0, new String [] {"europe", "asia"});
+        String indexName = generator.getIndexName(Type.REQUEST, 0, 0, new String[] { "europe", "asia" });
         Assert.assertEquals("europe:gravitee-request,asia:gravitee-request", indexName);
     }
 }

@@ -18,5 +18,4 @@ package io.gravitee.elasticsearch.model;
 /**
  * A response of a request.
  */
-public interface Response {
-}
+public interface Response {}

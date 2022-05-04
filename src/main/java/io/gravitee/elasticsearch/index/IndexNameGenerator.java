@@ -16,7 +16,6 @@
 package io.gravitee.elasticsearch.index;
 
 import io.gravitee.elasticsearch.utils.Type;
-
 import java.time.Instant;
 
 /**
@@ -25,7 +24,6 @@ import java.time.Instant;
  * @author GraviteeSource Team
  */
 public interface IndexNameGenerator {
-
     /**
      * Create the ES index name given the timestamp inside the metric.
      *

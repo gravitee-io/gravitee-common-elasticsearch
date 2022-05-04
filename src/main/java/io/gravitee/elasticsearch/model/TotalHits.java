@@ -24,6 +24,7 @@ import io.gravitee.elasticsearch.model.jackson.TotalHitsDeserializer;
  */
 @JsonDeserialize(using = TotalHitsDeserializer.class)
 public class TotalHits {
+
     private long value;
 
     public TotalHits(final long value) {
