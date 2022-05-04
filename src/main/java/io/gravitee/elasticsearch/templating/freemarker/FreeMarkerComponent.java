@@ -15,19 +15,14 @@
  */
 package io.gravitee.elasticsearch.templating.freemarker;
 
-import freemarker.core.TemplateClassResolver;
 import freemarker.cache.ClassTemplateLoader;
 import freemarker.cache.FileTemplateLoader;
 import freemarker.cache.MultiTemplateLoader;
 import freemarker.cache.TemplateLoader;
+import freemarker.core.TemplateClassResolver;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Value;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -37,10 +32,14 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Value;
 
 /**
  * Utility Spring bean that encapsulates FreeMarker tools.
- * 
+ *
  * @author Guillaume Waignier
  * @author Sebastien Devaux
  */
@@ -56,6 +55,7 @@ public class FreeMarkerComponent implements InitializingBean {
 
     /** Freemarker configuration */
     private Configuration configuration;
+
     @Value("${reporters.elasticsearch.template_mapping.path:#{null}}")
     private String templatesPath;
 
@@ -74,8 +74,10 @@ public class FreeMarkerComponent implements InitializingBean {
         if (templatesPath == null) {
             configuration.setTemplateLoader(ctl);
         } else {
-            final FileTemplateLoader ftl = new FileTemplateLoader(new File(URLDecoder.decode(templatesPath, StandardCharsets.UTF_8.name())));
-            configuration.setTemplateLoader(new MultiTemplateLoader(new TemplateLoader[]{ftl, ctl}));
+            final FileTemplateLoader ftl = new FileTemplateLoader(
+                new File(URLDecoder.decode(templatesPath, StandardCharsets.UTF_8.name()))
+            );
+            configuration.setTemplateLoader(new MultiTemplateLoader(new TemplateLoader[] { ftl, ctl }));
         }
     }
 

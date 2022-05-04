@@ -170,6 +170,23 @@
 	<build>
 		<plugins>
 			<plugin>
+				<groupId>com.hubspot.maven.plugins</groupId>
+				<artifactId>prettier-maven-plugin</artifactId>
+				<version>0.17</version>
+				<configuration>
+					<nodeVersion>12.13.0</nodeVersion>
+					<prettierJavaVersion>1.6.1</prettierJavaVersion>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>validate</phase>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
