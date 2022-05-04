@@ -28,10 +28,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class ElasticsearchInfo {
 
     private String name;
+
     @JsonProperty("cluster_name")
     private String clusterName;
+
     @JsonProperty("cluster_uuid")
     private String clusterUuid;
+
     private Version version;
     private Error error;
     private Integer status;

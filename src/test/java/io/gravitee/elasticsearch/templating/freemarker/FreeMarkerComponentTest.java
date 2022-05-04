@@ -15,19 +15,18 @@
  */
 package io.gravitee.elasticsearch.templating.freemarker;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Test the template.
- * 
+ *
  * @author Guillaume Waignier
  * @author Sebastien Devaux
  *

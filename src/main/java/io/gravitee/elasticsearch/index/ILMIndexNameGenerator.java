@@ -16,7 +16,6 @@
 package io.gravitee.elasticsearch.index;
 
 import io.gravitee.elasticsearch.utils.Type;
-
 import java.time.Instant;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -63,9 +62,10 @@ public class ILMIndexNameGenerator extends AbstractIndexNameGenerator {
         if (clusters == null || clusters.length == 0) {
             return getIndexPrefix(type);
         } else {
-            return Stream.of(clusters)
-                    .map(cluster -> cluster + CLUSTER_SEPARATOR + getIndexPrefix(type))
-                    .collect(Collectors.joining(INDEX_SEPARATOR));
+            return Stream
+                .of(clusters)
+                .map(cluster -> cluster + CLUSTER_SEPARATOR + getIndexPrefix(type))
+                .collect(Collectors.joining(INDEX_SEPARATOR));
         }
     }
 

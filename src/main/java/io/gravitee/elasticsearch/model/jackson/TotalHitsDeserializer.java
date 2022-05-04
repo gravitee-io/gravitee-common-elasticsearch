@@ -20,7 +20,6 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import io.gravitee.elasticsearch.model.TotalHits;
-
 import java.io.IOException;
 
 /**
@@ -38,8 +37,7 @@ public class TotalHitsDeserializer extends StdDeserializer<TotalHits> {
     }
 
     @Override
-    public TotalHits deserialize(JsonParser jp, DeserializationContext ctxt)
-            throws IOException {
+    public TotalHits deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
         JsonNode node = jp.getCodec().readTree(jp);
 
         if (node.isNumber()) {
@@ -51,4 +49,3 @@ public class TotalHitsDeserializer extends StdDeserializer<TotalHits> {
         throw new IllegalStateException();
     }
 }
-

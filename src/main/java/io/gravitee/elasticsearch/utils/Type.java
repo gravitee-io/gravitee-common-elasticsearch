@@ -20,7 +20,6 @@ package io.gravitee.elasticsearch.utils;
  * @author GraviteeSource Team
  */
 public enum Type {
-
     REQUEST("request"),
     HEALTH_CHECK("health"),
     LOG("log"),
@@ -31,7 +30,7 @@ public enum Type {
 
     private String type;
 
-    public final static Type[] TYPES = new Type[] {REQUEST, MONITOR, HEALTH_CHECK, LOG};
+    public static final Type[] TYPES = new Type[] { REQUEST, MONITOR, HEALTH_CHECK, LOG };
 
     Type(final String type) {
         this.type = type;
