@@ -21,16 +21,16 @@ package io.gravitee.elasticsearch.exception;
  */
 public class ElasticsearchException extends RuntimeException {
 
-	private static final long serialVersionUID = -6926167778154953100L;
+    private static final long serialVersionUID = -6926167778154953100L;
 
-	public ElasticsearchException() {
-		super();
-	}
+    public ElasticsearchException() {
+        super();
+    }
 
-	public ElasticsearchException(String message) {
-		super(message);
-	}
-	
+    public ElasticsearchException(String message) {
+        super(message);
+    }
+
     public ElasticsearchException(String message, Throwable cause) {
         super(message, cause);
     }

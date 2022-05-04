@@ -21,7 +21,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Elasticsearch response model for the health REST API.
- * 
+ *
  * @author Guillaume Waignier
  * @author Sebastien Devaux
  *
@@ -30,48 +30,48 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Health {
 
-	@JsonProperty("cluster_name")
-	private String clusterName;
-	
-	private String status;
-	
-	@JsonProperty("timed_out")
-	private Boolean timedOut;
-	
-	@JsonProperty("number_of_node")
-	private Integer nodeNumber;
+    @JsonProperty("cluster_name")
+    private String clusterName;
 
-	// Generated
-	
-	public String getClusterName() {
-		return clusterName;
-	}
+    private String status;
 
-	public void setClusterName(String clusterName) {
-		this.clusterName = clusterName;
-	}
+    @JsonProperty("timed_out")
+    private Boolean timedOut;
 
-	public String getStatus() {
-		return status;
-	}
+    @JsonProperty("number_of_node")
+    private Integer nodeNumber;
 
-	public void setStatus(String status) {
-		this.status = status;
-	}
+    // Generated
 
-	public Boolean getTimedOut() {
-		return timedOut;
-	}
+    public String getClusterName() {
+        return clusterName;
+    }
 
-	public void setTimedOut(Boolean timedOut) {
-		this.timedOut = timedOut;
-	}
+    public void setClusterName(String clusterName) {
+        this.clusterName = clusterName;
+    }
 
-	public Integer getNodeNumber() {
-		return nodeNumber;
-	}
+    public String getStatus() {
+        return status;
+    }
 
-	public void setNodeNumber(Integer nodeNumber) {
-		this.nodeNumber = nodeNumber;
-	}
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public Boolean getTimedOut() {
+        return timedOut;
+    }
+
+    public void setTimedOut(Boolean timedOut) {
+        this.timedOut = timedOut;
+    }
+
+    public Integer getNodeNumber() {
+        return nodeNumber;
+    }
+
+    public void setNodeNumber(Integer nodeNumber) {
+        this.nodeNumber = nodeNumber;
+    }
 }

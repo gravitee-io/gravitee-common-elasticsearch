@@ -24,7 +24,6 @@ import io.gravitee.elasticsearch.version.ElasticsearchInfo;
 import io.reactivex.Completable;
 import io.reactivex.Single;
 import io.vertx.core.buffer.Buffer;
-
 import java.util.List;
 
 /**
@@ -32,7 +31,6 @@ import java.util.List;
  * @author GraviteeSource Team
  */
 public interface Client {
-
     Single<ElasticsearchInfo> getInfo() throws ElasticsearchException;
     Single<Health> getClusterHealth();
     Single<BulkResponse> bulk(List<Buffer> data);

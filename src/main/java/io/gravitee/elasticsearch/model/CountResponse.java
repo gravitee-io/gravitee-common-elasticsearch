@@ -23,13 +23,13 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CountResponse implements Response {
 
-	private Long count;
+    private Long count;
 
-	public Long getCount() {
-		return count;
-	}
+    public Long getCount() {
+        return count;
+    }
 
-	public void setCount(Long count) {
-		this.count = count;
-	}
+    public void setCount(Long count) {
+        this.count = count;
+    }
 }

@@ -18,63 +18,61 @@ package io.gravitee.elasticsearch.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.io.Serializable;
 import java.util.List;
 
-
 /**
  * The hits of a search request.
- * 
+ *
  * @see https://github.com/elastic/elasticsearch/blob/master/core/src/main/java/org/elasticsearch/search/SearchHits.java
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SearchHits implements Serializable {
 
-	/**
-	 * UID
-	 */
-	private static final long serialVersionUID = 1L;
+    /**
+     * UID
+     */
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * The total number of hits that matches the search request.
-	 */
-	@JsonProperty("total")
-	private TotalHits total;
+    /**
+     * The total number of hits that matches the search request.
+     */
+    @JsonProperty("total")
+    private TotalHits total;
 
-	/**
-	 * The maximum score of this query.
-	 */
-	@JsonProperty("max_score")
-	private String maxScore;
+    /**
+     * The maximum score of this query.
+     */
+    @JsonProperty("max_score")
+    private String maxScore;
 
-	/**
-	 * The hits of the search request (based on the search type, and from / size provided).
-	 */
-	private List<SearchHit> hits;
+    /**
+     * The hits of the search request (based on the search type, and from / size provided).
+     */
+    private List<SearchHit> hits;
 
-	public TotalHits getTotal() {
-		return total;
-	}
+    public TotalHits getTotal() {
+        return total;
+    }
 
-	public void setTotal(TotalHits total) {
-		this.total = total;
-	}
+    public void setTotal(TotalHits total) {
+        this.total = total;
+    }
 
-	public String getMaxScore() {
-		return maxScore;
-	}
+    public String getMaxScore() {
+        return maxScore;
+    }
 
-	public void setMaxScore(String maxScore) {
-		this.maxScore = maxScore;
-	}
+    public void setMaxScore(String maxScore) {
+        this.maxScore = maxScore;
+    }
 
-	public List<SearchHit> getHits() {
-		return hits;
-	}
+    public List<SearchHit> getHits() {
+        return hits;
+    }
 
-	public void setHits(List<SearchHit> hits) {
-		this.hits = hits;
-	}
+    public void setHits(List<SearchHit> hits) {
+        this.hits = hits;
+    }
 }

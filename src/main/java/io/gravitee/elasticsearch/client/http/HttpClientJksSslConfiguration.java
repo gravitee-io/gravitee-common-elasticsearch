@@ -18,13 +18,12 @@ package io.gravitee.elasticsearch.client.http;
 import io.vertx.core.net.JksOptions;
 import io.vertx.core.net.KeyCertOptions;
 
-public class HttpClientJksSslConfiguration
-        implements ClientSslConfiguration {
+public class HttpClientJksSslConfiguration implements ClientSslConfiguration {
+
     private String keystorePath;
     private String keystorePassword;
 
-    public HttpClientJksSslConfiguration() {
-    }
+    public HttpClientJksSslConfiguration() {}
 
     public HttpClientJksSslConfiguration(String keystorePath, String keystorePassword) {
         this.keystorePath = keystorePath;

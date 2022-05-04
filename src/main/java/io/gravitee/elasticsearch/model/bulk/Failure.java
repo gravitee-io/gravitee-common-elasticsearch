@@ -18,62 +18,59 @@ package io.gravitee.elasticsearch.model.bulk;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.io.Serializable;
 
 /**
  * Represents a failure in Elasticsearch 2.x.
- * 
+ *
  * @see "https://github.com/elastic/elasticsearch/blob/master/core/src/main/java/org/elasticsearch/action/bulk/BulkItemResponse.java"
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Failure implements Serializable {
-	
-	/**
-	 * UID
-	 */
-	private static final long serialVersionUID = 1L;
 
-	/**
-	 * The type of the action.
-	 */
-	private String type;
+    /**
+     * UID
+     */
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * The failure message.
-	 */
-	private String reason;
+    /**
+     * The type of the action.
+     */
+    private String type;
 
-	/**
-	 * The failure cause.
-	 */
-	@JsonProperty("caused_by")
-	private CausedBy causedBy;
+    /**
+     * The failure message.
+     */
+    private String reason;
 
-	public String getType() {
-		return type;
-	}
+    /**
+     * The failure cause.
+     */
+    @JsonProperty("caused_by")
+    private CausedBy causedBy;
 
-	public void setType(String type) {
-		this.type = type;
-	}
+    public String getType() {
+        return type;
+    }
 
-	public String getReason() {
-		return reason;
-	}
+    public void setType(String type) {
+        this.type = type;
+    }
 
-	public void setReason(String reason) {
-		this.reason = reason;
-	}
+    public String getReason() {
+        return reason;
+    }
 
-	public CausedBy getCausedBy() {
-		return causedBy;
-	}
+    public void setReason(String reason) {
+        this.reason = reason;
+    }
 
-	public void setCausedBy(CausedBy causedBy) {
-		this.causedBy = causedBy;
-	}
+    public CausedBy getCausedBy() {
+        return causedBy;
+    }
+
+    public void setCausedBy(CausedBy causedBy) {
+        this.causedBy = causedBy;
+    }
 }
-
-

@@ -17,87 +17,86 @@ package io.gravitee.elasticsearch.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-
 import java.io.Serializable;
 
 /**
  * Information about the sort value when the elasticsearch query contains
- * a order clause. 
- * 
+ * a order clause.
+ *
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Sort implements Serializable {
-	
-	/**
-	 * UID
-	 */
-	private static final long serialVersionUID = 1L;
 
-	/**
-	 * Double value.
-	 */
-	private Double d;
-	
-	/**
-	 * String value.
-	 */
-	private String s;
-	
-	/**
-	 * Integer value.
-	 */
-	private Integer i;
-	
-	/**
-	 * Long value.
-	 */
-	private Long l;
-	
-	/**
-	 * Float value.
-	 */
-	private Float f;
+    /**
+     * UID
+     */
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * Constructor with the double value
-	 * @param d double value
-	 */
-	public Sort(Double d) {
-		this.d = d;
-	}
+    /**
+     * Double value.
+     */
+    private Double d;
 
-	/**
-	 * Constructor with the string value.
-	 * @param s string value.
-	 */
-	public Sort(String s) {
-		this.s = s;
-	}
+    /**
+     * String value.
+     */
+    private String s;
 
-	/**
-	 * Constructor with the integer value.
-	 * @param i integer value.
-	 */
-	public Sort(Integer i) {
-		this.i = i;
-	}
+    /**
+     * Integer value.
+     */
+    private Integer i;
 
-	/**
-	 * Constructor with the long value
-	 * @param l long value.
-	 */
-	public Sort(Long l) {
-		this.l = l;
-	}
+    /**
+     * Long value.
+     */
+    private Long l;
 
-	/**
-	 * Constructor with the float value.
-	 * @param f float value.
-	 */
-	public Sort(Float f) {
-		this.f = f;
-	}
+    /**
+     * Float value.
+     */
+    private Float f;
+
+    /**
+     * Constructor with the double value
+     * @param d double value
+     */
+    public Sort(Double d) {
+        this.d = d;
+    }
+
+    /**
+     * Constructor with the string value.
+     * @param s string value.
+     */
+    public Sort(String s) {
+        this.s = s;
+    }
+
+    /**
+     * Constructor with the integer value.
+     * @param i integer value.
+     */
+    public Sort(Integer i) {
+        this.i = i;
+    }
+
+    /**
+     * Constructor with the long value
+     * @param l long value.
+     */
+    public Sort(Long l) {
+        this.l = l;
+    }
+
+    /**
+     * Constructor with the float value.
+     * @param f float value.
+     */
+    public Sort(Float f) {
+        this.f = f;
+    }
 
     public Double getD() {
         return d;

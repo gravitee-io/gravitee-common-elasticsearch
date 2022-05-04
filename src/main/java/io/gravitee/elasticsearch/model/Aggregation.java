@@ -18,92 +18,90 @@ package io.gravitee.elasticsearch.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.JsonNode;
-
 import java.io.Serializable;
 import java.util.List;
-
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Aggregation implements Serializable {
 
-	/** UID */
-	private static final long serialVersionUID = 1L;
+    /** UID */
+    private static final long serialVersionUID = 1L;
 
-	/** If the aggregation is a bucketing one */
-	private List<JsonNode> buckets;
+    /** If the aggregation is a bucketing one */
+    private List<JsonNode> buckets;
 
-	/** If the aggregation is a metric one */
-	private Float value;
+    /** If the aggregation is a metric one */
+    private Float value;
 
-	/** If the aggregation is a stats one */
-	private Float count;
+    /** If the aggregation is a stats one */
+    private Float count;
 
-	/** If the aggregation is a stats one */
-	private Float min;
+    /** If the aggregation is a stats one */
+    private Float min;
 
-	/** If the aggregation is a stats one */
-	private Float max;
+    /** If the aggregation is a stats one */
+    private Float max;
 
-	/** If the aggregation is a stats one */
-	private Float avg;
+    /** If the aggregation is a stats one */
+    private Float avg;
 
-	/** If the aggregation is a stats one */
-	private Float sum;
+    /** If the aggregation is a stats one */
+    private Float sum;
 
-	public List<JsonNode> getBuckets() {
-		return buckets;
-	}
+    public List<JsonNode> getBuckets() {
+        return buckets;
+    }
 
-	public void setBuckets(List<JsonNode> buckets) {
-		this.buckets = buckets;
-	}
+    public void setBuckets(List<JsonNode> buckets) {
+        this.buckets = buckets;
+    }
 
-	public Float getValue() {
-		return value;
-	}
+    public Float getValue() {
+        return value;
+    }
 
-	public void setValue(Float value) {
-		this.value = value;
-	}
+    public void setValue(Float value) {
+        this.value = value;
+    }
 
-	public Float getCount() {
-		return count;
-	}
+    public Float getCount() {
+        return count;
+    }
 
-	public void setCount(Float count) {
-		this.count = count;
-	}
+    public void setCount(Float count) {
+        this.count = count;
+    }
 
-	public Float getMin() {
-		return min;
-	}
+    public Float getMin() {
+        return min;
+    }
 
-	public void setMin(Float min) {
-		this.min = min;
-	}
+    public void setMin(Float min) {
+        this.min = min;
+    }
 
-	public Float getMax() {
-		return max;
-	}
+    public Float getMax() {
+        return max;
+    }
 
-	public void setMax(Float max) {
-		this.max = max;
-	}
+    public void setMax(Float max) {
+        this.max = max;
+    }
 
-	public Float getAvg() {
-		return avg;
-	}
+    public Float getAvg() {
+        return avg;
+    }
 
-	public void setAvg(Float avg) {
-		this.avg = avg;
-	}
+    public void setAvg(Float avg) {
+        this.avg = avg;
+    }
 
-	public Float getSum() {
-		return sum;
-	}
+    public Float getSum() {
+        return sum;
+    }
 
-	public void setSum(Float sum) {
-		this.sum = sum;
-	}
+    public void setSum(Float sum) {
+        this.sum = sum;
+    }
 }

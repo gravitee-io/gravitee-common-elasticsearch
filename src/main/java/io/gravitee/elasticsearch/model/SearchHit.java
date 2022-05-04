@@ -19,7 +19,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
-
 import java.io.Serializable;
 import java.util.List;
 
@@ -33,51 +32,51 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SearchHit implements Serializable {
 
-	/**
-	 * UID
-	 */
-	private static final long serialVersionUID = 1L;
+    /**
+     * UID
+     */
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * The index of the hit.
-	 */
-	@JsonProperty("_index")
-	private String index;
+    /**
+     * The index of the hit.
+     */
+    @JsonProperty("_index")
+    private String index;
 
-	/**
-	 * The type of the document.
-	 */
-	@JsonProperty("_type")
-	private String type;
+    /**
+     * The type of the document.
+     */
+    @JsonProperty("_type")
+    private String type;
 
-	/**
-	 * The id of the document.
-	 */
-	@JsonProperty("_id")
-	private String id;
+    /**
+     * The id of the document.
+     */
+    @JsonProperty("_id")
+    private String id;
 
-	/**
-	 * The version of the hit.
-	 */
-	@JsonProperty("_version")
-	private Long version;
+    /**
+     * The version of the hit.
+     */
+    @JsonProperty("_version")
+    private Long version;
 
-	/**
-	 * The score.
-	 */
-	@JsonProperty("_score")
-	private Float score;
+    /**
+     * The score.
+     */
+    @JsonProperty("_score")
+    private Float score;
 
-	/**
-	 * The source of the document (can be <tt>null</tt>).
-	 */
-	@JsonProperty("_source")
-	private JsonNode source;
+    /**
+     * The source of the document (can be <tt>null</tt>).
+     */
+    @JsonProperty("_source")
+    private JsonNode source;
 
-	/**
-	 * A list of the sort values used.
-	 */
-	private List<Sort> sort;
+    /**
+     * A list of the sort values used.
+     */
+    private List<Sort> sort;
 
     public String getIndex() {
         return index;
