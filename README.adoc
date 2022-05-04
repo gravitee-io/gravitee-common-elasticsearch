@@ -1,0 +1,12 @@
+
+= APIM Common Elasticsearch
+
+image:https://img.shields.io/badge/License-Apache%202.0-blue.svg["License", link="https://github.com/gravitee-io/gravitee-common-elasticsearch/blob/master/LICENSE.txt"]
+image:https://img.shields.io/badge/semantic--release-conventional%20commits-e10079?logo=semantic-release["Releases", link="https://github.com/gravitee-io/gravitee-common-elasticsearch/releases"]
+image:https://circleci.com/gh/gravitee-io/gravitee-common-elasticsearch.svg?style=svg["CircleCI", link="https://circleci.com/gh/gravitee-io/gravitee-common-elasticsearch"]
+image:https://f.hubspotusercontent40.net/hubfs/7600448/gravitee-github-button.jpg["Join the community forum", link="https://community.gravitee.io?utm_source=readme", height=20]
+
+
+== Description
+The APIM common Elasticsearch library contains interfaces and classes used by Gravitee.io APIM Elasticsearch plugins (Reporter and Repository). +
+An example can be found https://github.com/gravitee-io/gravitee-repoter-elasticsearch[here]
