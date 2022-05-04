@@ -5,13 +5,13 @@ Here are few guidelines that should help you get started.
 
 == Using GitHub issues
 
-We use GitHub issues to track bugs and enhancements. Find a bug in the source code ? Want to propose new features or enhancements ? You can help us by submitting an issue in our https://github.com/gravitee-io/gravitee-elasticsearch[repository]. Before you submit your issue, search the https://github.com/gravitee-io/issues/issues[issues repository]; maybe your question was already answered.
+We use GitHub issues to track bugs and enhancements. Found a bug in the source code? Want to propose new features or enhancements?
+You can help us by submitting an issue in our https://github.com/gravitee-io/issues/issues[repository].
+Before submitting your issue, please search the https://github.com/gravitee-io/issues/issues[issues archive] to see if your question has already been answered.
 
-> Issues are only to report bugs, request enhancements, or request new features. For general questions and discussions, use the https://groups.google.com/forum/#!forum/graviteeio[Gravitee.io Forum].
+Providing the following information will help us deal quickly with your issue:
 
-Providing the following information will help us deal quickly with your issue :
-
-* **Overview of the issue** : describe the issue and why this is a bug for you. 
+* **Overview of the issue** : describe the issue and why this is a bug for you.
 * **Gravitee.io version(s)** : possible regression ?
 * **Browsers and Operating System** : Linux/Windows/Docker ? Browser version for the UI, etc ...
 * **You have stack trace, screenshots, logs ?** add these to the issue's description.
