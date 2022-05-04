@@ -24,6 +24,9 @@ import io.gravitee.elasticsearch.version.ElasticsearchInfo;
 import io.reactivex.Single;
 import io.reactivex.observers.TestObserver;
 import io.vertx.reactivex.core.Vertx;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.concurrent.ExecutionException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,10 +34,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import java.io.IOException;
-import java.util.Collections;
-import java.util.concurrent.ExecutionException;
 
 /**
  * @author David BRASSELY (david.brassely at graviteesource.com)
@@ -134,8 +133,10 @@ public class HttpClientTest {
         @Bean
         public HttpClientConfiguration configuration(ElasticsearchNode elasticsearchNode) {
             HttpClientConfiguration elasticConfiguration = new HttpClientConfiguration();
-            elasticConfiguration.setEndpoints(Collections.singletonList(new Endpoint("http://localhost:" + elasticsearchNode.getHttpPort())));
-//            elasticConfiguration.setIngestPlugins(Arrays.asList("geoip"));
+            elasticConfiguration.setEndpoints(
+                Collections.singletonList(new Endpoint("http://localhost:" + elasticsearchNode.getHttpPort()))
+            );
+            //            elasticConfiguration.setIngestPlugins(Arrays.asList("geoip"));
             return elasticConfiguration;
         }
 

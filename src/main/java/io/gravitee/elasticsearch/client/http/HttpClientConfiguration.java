@@ -16,9 +16,8 @@
 package io.gravitee.elasticsearch.client.http;
 
 import io.gravitee.elasticsearch.config.Endpoint;
-import org.springframework.beans.factory.annotation.Value;
-
 import java.util.List;
+import org.springframework.beans.factory.annotation.Value;
 
 /**
  * @author David BRASSELY (david.brassely at graviteesource.com)

@@ -17,16 +17,14 @@ package io.gravitee.elasticsearch.client.http;
 
 import io.vertx.core.net.KeyCertOptions;
 import io.vertx.core.net.PemKeyCertOptions;
-
 import java.util.List;
 
-public class HttpClientPemSslConfiguration
-        implements ClientSslConfiguration {
+public class HttpClientPemSslConfiguration implements ClientSslConfiguration {
+
     private List<String> certs;
     private List<String> keys;
 
-    public HttpClientPemSslConfiguration() {
-    }
+    public HttpClientPemSslConfiguration() {}
 
     public HttpClientPemSslConfiguration(List<String> certs, List<String> keys) {
         this.certs = certs;

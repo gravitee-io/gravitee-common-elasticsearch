@@ -17,46 +17,45 @@ package io.gravitee.elasticsearch.model.bulk;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-
 import java.io.Serializable;
 
 /**
  * Elasticsearch failure cause details in version 2.x.
- * 
+ *
  *
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CausedBy implements Serializable {
-	
-	/**
-	 * UID
-	 */
-	private static final long serialVersionUID = 1L;
 
-	/**
-	 * Type of the failure.
-	 */
-	private String type;
-	
-	/**
-	 * Description of the failure.
-	 */
-	private String reason;
+    /**
+     * UID
+     */
+    private static final long serialVersionUID = 1L;
 
-	public String getType() {
-		return type;
-	}
+    /**
+     * Type of the failure.
+     */
+    private String type;
 
-	public void setType(String type) {
-		this.type = type;
-	}
+    /**
+     * Description of the failure.
+     */
+    private String reason;
 
-	public String getReason() {
-		return reason;
-	}
+    public String getType() {
+        return type;
+    }
 
-	public void setReason(String reason) {
-		this.reason = reason;
-	}
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
+    }
 }

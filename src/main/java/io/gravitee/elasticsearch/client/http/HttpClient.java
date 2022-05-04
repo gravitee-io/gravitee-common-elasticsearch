@@ -15,6 +15,9 @@
  */
 package io.gravitee.elasticsearch.client.http;
 
+import static java.lang.String.format;
+import static java.util.stream.Collectors.toList;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.gravitee.common.http.HttpHeaders;
 import io.gravitee.common.http.HttpStatusCode;
@@ -41,12 +44,6 @@ import io.vertx.ext.web.client.impl.WebClientInternal;
 import io.vertx.reactivex.core.Vertx;
 import io.vertx.reactivex.core.buffer.Buffer;
 import io.vertx.reactivex.ext.web.client.WebClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-
-import javax.annotation.PostConstruct;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -54,9 +51,11 @@ import java.util.Base64;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import static java.lang.String.format;
-import static java.util.stream.Collectors.toList;
+import javax.annotation.PostConstruct;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 /**
  * @author David BRASSELY (david.brassely at graviteesource.com)
@@ -92,7 +91,7 @@ public class HttpClient implements Client {
      */
     private HttpClientConfiguration configuration;
 
-    private final static ElasticsearchInfo DUMMY_INFO = new ElasticsearchInfo();
+    private static final ElasticsearchInfo DUMMY_INFO = new ElasticsearchInfo();
 
     /**
      * HTTP clients.
@@ -127,14 +126,15 @@ public class HttpClient implements Client {
                     final URI elasticEdpt = URI.create(endpoint.getUrl());
 
                     WebClientOptions options = new WebClientOptions()
-                            .setDefaultHost(elasticEdpt.getHost())
-                            .setDefaultPort(elasticEdpt.getPort() != -1 ? elasticEdpt.getPort() :
-                                    (HTTPS_SCHEME.equalsIgnoreCase(elasticEdpt.getScheme()) ? 443 : 80));
+                        .setDefaultHost(elasticEdpt.getHost())
+                        .setDefaultPort(
+                            elasticEdpt.getPort() != -1
+                                ? elasticEdpt.getPort()
+                                : (HTTPS_SCHEME.equalsIgnoreCase(elasticEdpt.getScheme()) ? 443 : 80)
+                        );
 
                     if (HTTPS_SCHEME.equalsIgnoreCase(elasticEdpt.getScheme())) {
-                        options
-                                .setSsl(true)
-                                .setTrustAll(true);
+                        options.setSsl(true).setTrustAll(true);
 
                         if (this.configuration.getSslConfig() != null) {
                             options.setKeyCertOptions(this.configuration.getSslConfig().getVertxWebClientSslKeystoreOptions());
@@ -162,32 +162,35 @@ public class HttpClient implements Client {
 
                     // Read configuration to authenticate calls to Elasticsearch (basic authentication only)
                     if (this.configuration.getUsername() != null) {
-                        this.authorizationHeader = this.initEncodedAuthorization(this.configuration.getUsername(),
-                                this.configuration.getPassword());
+                        this.authorizationHeader =
+                            this.initEncodedAuthorization(this.configuration.getUsername(), this.configuration.getPassword());
                     }
 
                     ((WebClientInternal) httpClient.getDelegate()).addInterceptor(context -> {
-                        context.request()
+                            context
+                                .request()
                                 .timeout(configuration.getRequestTimeout())
                                 .putHeader(HttpHeaders.ACCEPT, CONTENT_TYPE)
                                 .putHeader(HttpHeaders.ACCEPT_CHARSET, StandardCharsets.UTF_8.name());
 
-                        // Basic authentication
-                        if (authorizationHeader != null) {
-                            context.request().putHeader(HttpHeaders.AUTHORIZATION, authorizationHeader);
-                        }
+                            // Basic authentication
+                            if (authorizationHeader != null) {
+                                context.request().putHeader(HttpHeaders.AUTHORIZATION, authorizationHeader);
+                            }
 
-                        context.next();
-                    });
+                            context.next();
+                        });
 
                     final ElasticsearchClient client = new ElasticsearchClient(httpClient);
                     httpClients.add(client);
 
                     // Health check
                     Observable
-                            .interval(5, TimeUnit.SECONDS)
-                            .flatMapSingle((Function<Long, SingleSource<ElasticsearchInfo>>) aLong -> getInfo(client).onErrorReturnItem(DUMMY_INFO))
-                            .subscribe(info -> client.setAvailable(!info.equals(DUMMY_INFO)));
+                        .interval(5, TimeUnit.SECONDS)
+                        .flatMapSingle(
+                            (Function<Long, SingleSource<ElasticsearchInfo>>) aLong -> getInfo(client).onErrorReturnItem(DUMMY_INFO)
+                        )
+                        .subscribe(info -> client.setAvailable(!info.equals(DUMMY_INFO)));
                 });
             }
         }
@@ -206,10 +209,7 @@ public class HttpClient implements Client {
     }
 
     private List<ElasticsearchClient> clients() {
-        return httpClients
-                .stream()
-                .filter(ElasticsearchClient::isAvailable)
-                .collect(toList());
+        return httpClients.stream().filter(ElasticsearchClient::isAvailable).collect(toList());
     }
 
     private ElasticsearchClient nextClient() {
@@ -222,18 +222,24 @@ public class HttpClient implements Client {
     }
 
     private Single<ElasticsearchInfo> getInfo(final ElasticsearchClient client) throws ElasticsearchException {
-        return client.getClient()
-                .get(URL_ROOT)
-                .rxSend()
-                .doOnError(throwable -> logger.error("Unable to get a connection to Elasticsearch: {}", throwable.getMessage()))
-                .map(response -> {
-                    if (response.statusCode() == HttpStatusCode.OK_200) {
-                        return mapper.readValue(response.bodyAsString(), ElasticsearchInfo.class);
-                    }
+        return client
+            .getClient()
+            .get(URL_ROOT)
+            .rxSend()
+            .doOnError(throwable -> logger.error("Unable to get a connection to Elasticsearch: {}", throwable.getMessage()))
+            .map(response -> {
+                if (response.statusCode() == HttpStatusCode.OK_200) {
+                    return mapper.readValue(response.bodyAsString(), ElasticsearchInfo.class);
+                }
 
-                    throw new ElasticsearchException("Unable to retrieve Elasticsearch information: status[" +
-                            response.statusCode()+"] payload: [" + response.bodyAsString() + "]");
-                });
+                throw new ElasticsearchException(
+                    "Unable to retrieve Elasticsearch information: status[" +
+                    response.statusCode() +
+                    "] payload: [" +
+                    response.bodyAsString() +
+                    "]"
+                );
+            });
     }
 
     @Override
@@ -249,10 +255,11 @@ public class HttpClient implements Client {
      */
     @Override
     public Single<Health> getClusterHealth() {
-        return nextClient().getClient()
-                .get(URL_STATE_CLUSTER)
-                .rxSend()
-                .map(response -> mapper.readValue(response.bodyAsString(), Health.class));
+        return nextClient()
+            .getClient()
+            .get(URL_STATE_CLUSTER)
+            .rxSend()
+            .map(response -> mapper.readValue(response.bodyAsString(), Health.class));
     }
 
     @Override
@@ -261,46 +268,56 @@ public class HttpClient implements Client {
         Buffer payload = Buffer.buffer();
         data.forEach(buffer -> payload.appendBuffer(Buffer.newInstance(buffer)));
 
-        return nextClient().getClient()
-                .post(URL_BULK)
-                .putHeader(HttpHeaders.CONTENT_TYPE, "application/x-ndjson")
-                .rxSendBuffer(payload)
-                .map(response -> {
-                    if (response.statusCode() != HttpStatusCode.OK_200) {
-                        logger.error("Unable to bulk index data: status[{}] response[{}]",
-                                response.statusCode(), response.body());
-                        throw new ElasticsearchException("Unable to bulk index data");
-                    }
+        return nextClient()
+            .getClient()
+            .post(URL_BULK)
+            .putHeader(HttpHeaders.CONTENT_TYPE, "application/x-ndjson")
+            .rxSendBuffer(payload)
+            .map(response -> {
+                if (response.statusCode() != HttpStatusCode.OK_200) {
+                    logger.error("Unable to bulk index data: status[{}] response[{}]", response.statusCode(), response.body());
+                    throw new ElasticsearchException("Unable to bulk index data");
+                }
 
-                    BulkResponse bulkResponse = mapper.readValue(response.bodyAsString(), BulkResponse.class);
-                    if (bulkResponse.getErrors()) {
-                        bulkResponse.getItems().stream()
-                                .filter(bulkItemResponse -> bulkItemResponse.getIndex().getError() != null)
-                                .forEach(bulkItemResponse ->
-                                        logger.error("An error occurs while indexing data into ES: indice[{}] error[{}]",
-                                                bulkItemResponse.getIndex().getIndexName(),
-                                                bulkItemResponse.getIndex().getError().getReason()));
-                    }
+                BulkResponse bulkResponse = mapper.readValue(response.bodyAsString(), BulkResponse.class);
+                if (bulkResponse.getErrors()) {
+                    bulkResponse
+                        .getItems()
+                        .stream()
+                        .filter(bulkItemResponse -> bulkItemResponse.getIndex().getError() != null)
+                        .forEach(bulkItemResponse ->
+                            logger.error(
+                                "An error occurs while indexing data into ES: indice[{}] error[{}]",
+                                bulkItemResponse.getIndex().getIndexName(),
+                                bulkItemResponse.getIndex().getError().getReason()
+                            )
+                        );
+                }
 
-                        return bulkResponse;
-                });
+                return bulkResponse;
+            });
     }
 
     @Override
     public Completable putTemplate(String templateName, String template) {
-        return nextClient().getClient()
-                .put(URL_TEMPLATE + '/' + templateName)
-                .putHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                .rxSendBuffer(Buffer.buffer(template))
-                .flatMapCompletable(response -> {
-                    if (response.statusCode() != HttpStatusCode.OK_200) {
-                        logger.error("Unable to put template mapping: status[{}] template[{}] response[{}]",
-                                response.statusCode(), template, response.body());
-                        return Completable.error(new ElasticsearchException("Unable to put template mapping"));
-                    }
+        return nextClient()
+            .getClient()
+            .put(URL_TEMPLATE + '/' + templateName)
+            .putHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+            .rxSendBuffer(Buffer.buffer(template))
+            .flatMapCompletable(response -> {
+                if (response.statusCode() != HttpStatusCode.OK_200) {
+                    logger.error(
+                        "Unable to put template mapping: status[{}] template[{}] response[{}]",
+                        response.statusCode(),
+                        template,
+                        response.body()
+                    );
+                    return Completable.error(new ElasticsearchException("Unable to put template mapping"));
+                }
 
-                    return Completable.complete();
-                });
+                return Completable.complete();
+            });
     }
 
     /**
@@ -312,28 +329,32 @@ public class HttpClient implements Client {
      */
     public Single<CountResponse> count(final String indexes, final String type, final String query) {
         // index can be null _count on all index
-        final StringBuilder url = new StringBuilder()
-                .append('/')
-                .append(indexes);
+        final StringBuilder url = new StringBuilder().append('/').append(indexes);
 
         if (type != null) {
             url.append('/').append(type);
         }
 
         url.append(URL_COUNT);
-        return nextClient().getClient()
-                .post(url.toString())
-                .putHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                .rxSendBuffer(Buffer.buffer(query))
-                .map(response -> {
-                    if (response.statusCode() != HttpStatusCode.OK_200) {
-                        logger.error("Unable to count: url[{}] status[{}] query[{}] response[{}]",
-                                url.toString(), response.statusCode(), query, response.body());
-                        throw new ElasticsearchException("Unable to count");
-                    }
+        return nextClient()
+            .getClient()
+            .post(url.toString())
+            .putHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+            .rxSendBuffer(Buffer.buffer(query))
+            .map(response -> {
+                if (response.statusCode() != HttpStatusCode.OK_200) {
+                    logger.error(
+                        "Unable to count: url[{}] status[{}] query[{}] response[{}]",
+                        url.toString(),
+                        response.statusCode(),
+                        query,
+                        response.body()
+                    );
+                    throw new ElasticsearchException("Unable to count");
+                }
 
-                    return mapper.readValue(response.bodyAsString(), CountResponse.class);
-                });
+                return mapper.readValue(response.bodyAsString(), CountResponse.class);
+            });
     }
 
     /**
@@ -345,28 +366,32 @@ public class HttpClient implements Client {
      */
     public Single<SearchResponse> search(final String indexes, final String type, final String query) {
         // index can be null _search on all index
-        final StringBuilder url = new StringBuilder()
-                .append('/')
-                .append(indexes);
+        final StringBuilder url = new StringBuilder().append('/').append(indexes);
 
         if (type != null) {
             url.append('/').append(type);
         }
 
         url.append(URL_SEARCH);
-        return nextClient().getClient()
-                .post(url.toString())
-                .putHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                .rxSendBuffer(Buffer.buffer(query))
-                .map(response -> {
-                    if (response.statusCode() != HttpStatusCode.OK_200) {
-                        logger.error("Unable to search: url[{}] status[{}] query[{}] response[{}]",
-                                url.toString(), response.statusCode(), query, response.body());
-                        throw new ElasticsearchException("Unable to search");
-                    }
+        return nextClient()
+            .getClient()
+            .post(url.toString())
+            .putHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+            .rxSendBuffer(Buffer.buffer(query))
+            .map(response -> {
+                if (response.statusCode() != HttpStatusCode.OK_200) {
+                    logger.error(
+                        "Unable to search: url[{}] status[{}] query[{}] response[{}]",
+                        url.toString(),
+                        response.statusCode(),
+                        query,
+                        response.body()
+                    );
+                    throw new ElasticsearchException("Unable to search");
+                }
 
-                    return mapper.readValue(response.bodyAsString(), SearchResponse.class);
-                });
+                return mapper.readValue(response.bodyAsString(), SearchResponse.class);
+            });
     }
 
     /**
@@ -376,44 +401,62 @@ public class HttpClient implements Client {
      * @return elasticsearch response
      */
     public Single<Response> count(final String url, final String query) {
-        return nextClient().getClient()
-                .post(url)
-                .putHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                .rxSendBuffer(Buffer.buffer(query))
-                .map(response -> {
-                    if (response.statusCode() != HttpStatusCode.OK_200) {
-                        logger.error("Unable to count: url[{}] status[{}] query[{}] response[{}]",
-                                url, response.statusCode(), query, response.body());
-                        throw new ElasticsearchException("Unable to count");
-                    }
+        return nextClient()
+            .getClient()
+            .post(url)
+            .putHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+            .rxSendBuffer(Buffer.buffer(query))
+            .map(response -> {
+                if (response.statusCode() != HttpStatusCode.OK_200) {
+                    logger.error(
+                        "Unable to count: url[{}] status[{}] query[{}] response[{}]",
+                        url,
+                        response.statusCode(),
+                        query,
+                        response.body()
+                    );
+                    throw new ElasticsearchException("Unable to count");
+                }
 
-                    return mapper.readValue(response.bodyAsString(), CountResponse.class);
-                });
+                return mapper.readValue(response.bodyAsString(), CountResponse.class);
+            });
     }
 
     @Override
     public Completable putPipeline(String pipelineName, String pipeline) {
-        return nextClient().getClient()
-                .put(URL_INGEST + '/' + pipelineName)
-                .putHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                .rxSendBuffer(Buffer.buffer(pipeline))
-                .flatMapCompletable(response -> {
-                    switch (response.statusCode()) {
-                        case HttpStatusCode.OK_200:
-                            return Completable.complete();
-                        case HttpStatusCode.BAD_REQUEST_400:
-                            logger.warn("Unable to create ES pipeline: {}", pipelineName);
-                            break;
-                        default:
-                            logger.error("Unable to put pipeline: status[{}] pipeline[{}] response[{}]",
-                                    response.statusCode(), pipeline, response.body());
-                            break;
-                    }
+        return nextClient()
+            .getClient()
+            .put(URL_INGEST + '/' + pipelineName)
+            .putHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+            .rxSendBuffer(Buffer.buffer(pipeline))
+            .flatMapCompletable(response -> {
+                switch (response.statusCode()) {
+                    case HttpStatusCode.OK_200:
+                        return Completable.complete();
+                    case HttpStatusCode.BAD_REQUEST_400:
+                        logger.warn("Unable to create ES pipeline: {}", pipelineName);
+                        break;
+                    default:
+                        logger.error(
+                            "Unable to put pipeline: status[{}] pipeline[{}] response[{}]",
+                            response.statusCode(),
+                            pipeline,
+                            response.body()
+                        );
+                        break;
+                }
 
-                    return Completable.error(new ElasticsearchException(
-                            format("Unable to create ES pipeline '%s': status[%s] response[%s]",
-                                    pipelineName, response.statusCode(), response.body())));
-                });
+                return Completable.error(
+                    new ElasticsearchException(
+                        format(
+                            "Unable to create ES pipeline '%s': status[%s] response[%s]",
+                            pipelineName,
+                            response.statusCode(),
+                            response.body()
+                        )
+                    )
+                );
+            });
     }
 
     /**
