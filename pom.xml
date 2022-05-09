@@ -23,23 +23,21 @@
     <parent>
         <groupId>io.gravitee</groupId>
         <artifactId>gravitee-parent</artifactId>
-        <version>20.0</version>
+        <version>21.0.0</version>
     </parent>
 
     <groupId>io.gravitee.elasticsearch</groupId>
     <artifactId>gravitee-common-elasticsearch</artifactId>
-    <version>4.0.0</version>
+    <version>4.0.0-testcontainer-SNAPSHOT</version>
 
     <name>Gravitee.io APIM - Elasticsearch - Common</name>
 
     <properties>
-        <gravitee-bom.version>2.7</gravitee-bom.version>
+        <gravitee-bom.version>3.0.0</gravitee-bom.version>
         <gravitee-common.version>2.0.0</gravitee-common.version>
-        <gravitee-node.version>2.0.0</gravitee-node.version>
         <freemarker.version>2.3.31</freemarker.version>
         <javax.annotation-api.version>1.3.2</javax.annotation-api.version>
-        <netty-all.version>4.1.36.Final</netty-all.version>
-        <log4j-core.version>2.9.1</log4j-core.version>
+        <testcontainers.version>1.17.6</testcontainers.version>
     </properties>
 
     <dependencyManagement>
@@ -140,29 +138,22 @@
         </dependency>
 
         <dependency>
-            <groupId>io.gravitee.node</groupId>
-            <artifactId>gravitee-node-api</artifactId>
-            <version>${gravitee-node.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
             <scope>test</scope>
         </dependency>
 
         <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-all</artifactId>
-            <version>${netty-all.version}</version>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+            <version>${testcontainers.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <version>${log4j-core.version}</version>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>elasticsearch</artifactId>
+            <version>${testcontainers.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -172,10 +163,9 @@
             <plugin>
                 <groupId>com.hubspot.maven.plugins</groupId>
                 <artifactId>prettier-maven-plugin</artifactId>
-                <version>0.17</version>
+                <version>0.18</version>
                 <configuration>
-                    <nodeVersion>12.13.0</nodeVersion>
-                    <prettierJavaVersion>1.6.1</prettierJavaVersion>
+                    <prettierJavaVersion>1.6.2</prettierJavaVersion>
                 </configuration>
                 <executions>
                     <execution>
@@ -186,142 +176,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <systemPropertyVariables>
-                        <es.set.netty.runtime.available.processors>false</es.set.netty.runtime.available.processors>
-                        <vertx.disableFileCPResolving>false</vertx.disableFileCPResolving>
-                    </systemPropertyVariables>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>default-test</id>
-                        <configuration>
-                            <skip>true</skip>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>es5x</id>
-                        <goals>
-                            <goal>test</goal>
-                        </goals>
-                        <configuration>
-                            <systemPropertyVariables>
-                                <elasticsearch>5x</elasticsearch>
-                            </systemPropertyVariables>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>es6x</id>
-                        <goals>
-                            <goal>test</goal>
-                        </goals>
-                        <configuration>
-                            <systemPropertyVariables>
-                                <elasticsearch>6x</elasticsearch>
-                            </systemPropertyVariables>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>es7x</id>
-                        <goals>
-                            <goal>test</goal>
-                        </goals>
-                        <configuration>
-                            <systemPropertyVariables>
-                                <elasticsearch>7x</elasticsearch>
-                            </systemPropertyVariables>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
-
-    <profiles>
-        <profile>
-            <id>es-5x</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-                <property>
-                    <name>elasticsearch</name>
-                    <value>5x</value>
-                </property>
-            </activation>
-            <properties>
-                <elasticsearch.version>5.6.3</elasticsearch.version>
-            </properties>
-            <dependencies>
-                <dependency>
-                    <groupId>org.elasticsearch</groupId>
-                    <artifactId>elasticsearch</artifactId>
-                    <version>${elasticsearch.version}</version>
-                    <scope>test</scope>
-                </dependency>
-
-                <dependency>
-                    <groupId>org.elasticsearch.client</groupId>
-                    <artifactId>transport</artifactId>
-                    <version>${elasticsearch.version}</version>
-                    <scope>test</scope>
-                </dependency>
-            </dependencies>
-        </profile>
-        <profile>
-            <id>es-6x</id>
-            <activation>
-                <property>
-                    <name>elasticsearch</name>
-                    <value>6x</value>
-                </property>
-            </activation>
-            <properties>
-                <elasticsearch.version>6.2.2</elasticsearch.version>
-            </properties>
-            <dependencies>
-                <dependency>
-                    <groupId>org.elasticsearch</groupId>
-                    <artifactId>elasticsearch</artifactId>
-                    <version>${elasticsearch.version}</version>
-                    <scope>test</scope>
-                </dependency>
-
-                <dependency>
-                    <groupId>org.elasticsearch.client</groupId>
-                    <artifactId>transport</artifactId>
-                    <version>${elasticsearch.version}</version>
-                    <scope>test</scope>
-                </dependency>
-            </dependencies>
-        </profile>
-        <profile>
-            <id>es-7x</id>
-            <activation>
-                <property>
-                    <name>elasticsearch</name>
-                    <value>7x</value>
-                </property>
-            </activation>
-            <properties>
-                <elasticsearch.version>7.3.0</elasticsearch.version>
-            </properties>
-            <dependencies>
-                <dependency>
-                    <groupId>org.elasticsearch</groupId>
-                    <artifactId>elasticsearch</artifactId>
-                    <version>${elasticsearch.version}</version>
-                    <scope>test</scope>
-                </dependency>
-
-                <dependency>
-                    <groupId>org.elasticsearch.client</groupId>
-                    <artifactId>transport</artifactId>
-                    <version>${elasticsearch.version}</version>
-                    <scope>test</scope>
-                </dependency>
-            </dependencies>
-        </profile>
-    </profiles>
 </project>
