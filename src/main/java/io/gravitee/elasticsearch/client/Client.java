@@ -35,7 +35,12 @@ import java.util.List;
 public interface Client {
     Single<ElasticsearchInfo> getInfo() throws ElasticsearchException;
     Single<Health> getClusterHealth();
-    Single<BulkResponse> bulk(List<Buffer> data);
+
+    default Single<BulkResponse> bulk(List<Buffer> data) {
+        return bulk(data, false);
+    }
+
+    Single<BulkResponse> bulk(List<Buffer> data, boolean forceRefresh);
     Completable putTemplate(String templateName, String template);
     Completable putPipeline(String templateName, String template);
     Single<SearchResponse> search(String indexes, String type, String query);

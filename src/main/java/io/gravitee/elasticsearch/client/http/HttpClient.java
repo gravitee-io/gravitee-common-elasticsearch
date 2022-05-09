@@ -267,20 +267,24 @@ public class HttpClient implements Client {
     }
 
     @Override
-    public Single<BulkResponse> bulk(final List<io.vertx.core.buffer.Buffer> data) {
+    public Single<BulkResponse> bulk(final List<io.vertx.core.buffer.Buffer> data, boolean forceRefresh) {
         // Compact buffer
         Buffer payload = Buffer.buffer();
         data.forEach(buffer -> payload.appendBuffer(Buffer.newInstance(buffer)));
-
+        String bulkURL = URL_BULK;
+        if (forceRefresh) {
+            bulkURL += "?refresh=true";
+        }
         return nextClient()
             .getClient()
-            .post(URL_BULK)
+            .post(bulkURL)
             .putHeader(HttpHeaders.CONTENT_TYPE, "application/x-ndjson")
             .rxSendBuffer(payload)
+            .doOnError(throwable -> logger.error("Unable to send bulk data to Elasticsearch: {}", throwable.getMessage()))
             .map(response -> {
                 if (response.statusCode() != HttpStatusCode.OK_200) {
-                    logger.error("Unable to bulk index data: status[{}] response[{}]", response.statusCode(), response.body());
-                    throw new ElasticsearchException("Unable to bulk index data");
+                    logger.error("Unable to send bulk index data: status[{}] response[{}]", response.statusCode(), response.body());
+                    throw new ElasticsearchException("Unable to send bulk data");
                 }
 
                 BulkResponse bulkResponse = mapper.readValue(response.bodyAsString(), BulkResponse.class);
@@ -309,6 +313,7 @@ public class HttpClient implements Client {
             .put(URL_TEMPLATE + '/' + templateName)
             .putHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
             .rxSendBuffer(Buffer.buffer(template))
+            .doOnError(throwable -> logger.error("Unable to put a template to Elasticsearch: {}", throwable.getMessage()))
             .flatMapCompletable(response -> {
                 if (response.statusCode() != HttpStatusCode.OK_200) {
                     logger.error(

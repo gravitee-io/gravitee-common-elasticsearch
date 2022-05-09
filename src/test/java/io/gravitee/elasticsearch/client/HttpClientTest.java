@@ -19,7 +19,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import io.gravitee.elasticsearch.client.http.HttpClient;
 import io.gravitee.elasticsearch.client.http.HttpClientConfiguration;
 import io.gravitee.elasticsearch.config.Endpoint;
-import io.gravitee.elasticsearch.embedded.ElasticsearchNode;
 import io.gravitee.elasticsearch.model.Health;
 import io.gravitee.elasticsearch.version.ElasticsearchInfo;
 import io.reactivex.rxjava3.core.Maybe;
@@ -32,10 +31,12 @@ import java.util.concurrent.ExecutionException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.testcontainers.elasticsearch.ElasticsearchContainer;
 
 /**
  * @author David BRASSELY (david.brassely at graviteesource.com)
@@ -44,6 +45,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { HttpClientTest.TestConfig.class })
 public class HttpClientTest {
+
+    public static final String ELASTICSEARCH_DEFAULT_VERSION = "7.17.8";
+
+    public static final String CLUSTER_NAME = "gravitee_test";
 
     /**
      * Elasticsearch client.
@@ -70,8 +75,8 @@ public class HttpClientTest {
 
         observer.assertNoErrors();
         observer.assertComplete();
-        String esVersion = System.getProperty("elasticsearch");
-        //Assert.assertEquals(esVersion, version + "x");
+        String esVersion = System.getProperty("elasticsearch.version", ELASTICSEARCH_DEFAULT_VERSION);
+        observer.assertValue(elasticsearchInfo -> esVersion.equals(elasticsearchInfo.getVersion().getNumber()));
     }
 
     @Test
@@ -83,13 +88,16 @@ public class HttpClientTest {
 
         observer.assertNoErrors();
         observer.assertComplete();
-        observer.assertValue(health1 -> "gravitee_test".equals(health1.getClusterName()));
+        observer.assertValue(health1 -> CLUSTER_NAME.equals(health1.getClusterName()));
     }
 
     @Test
     public void shouldGetAlias() throws InterruptedException {
         String template = "{\"aliases\":{\"gravitee_test_alias\":{\"is_write_index\": true}}}";
-        String expectedAlias = "{\"gravitee_test\":{\"aliases\":{\"gravitee_test_alias\":{}}}}";
+        String esVersion = System.getProperty("elasticsearch.version", ELASTICSEARCH_DEFAULT_VERSION);
+        String expectedAlias = esVersion.startsWith("5")
+            ? "{\"gravitee_test\":{\"aliases\":{\"gravitee_test_alias\":{}}}}"
+            : "{\"gravitee_test\":{\"aliases\":{\"gravitee_test_alias\":{\"is_write_index\":true}}}}";
 
         Maybe<JsonNode> alias = client.createIndexWithAlias("gravitee_test", template).andThen(client.getAlias("gravitee_test_alias"));
 
@@ -149,29 +157,39 @@ public class HttpClientTest {
     @Configuration
     public static class TestConfig {
 
+        @Value("${elasticsearch.version:" + ELASTICSEARCH_DEFAULT_VERSION + "}")
+        private String elasticsearchVersion;
+
         @Bean
         public Vertx vertx() {
             return Vertx.vertx();
         }
 
         @Bean
-        public Client reporter(HttpClientConfiguration clientConfiguration) {
+        public Client client(HttpClientConfiguration clientConfiguration) {
             return new HttpClient(clientConfiguration);
         }
 
         @Bean
-        public HttpClientConfiguration configuration(ElasticsearchNode elasticsearchNode) {
+        public HttpClientConfiguration configuration(ElasticsearchContainer elasticSearchContainer) {
             HttpClientConfiguration elasticConfiguration = new HttpClientConfiguration();
             elasticConfiguration.setEndpoints(
-                Collections.singletonList(new Endpoint("http://localhost:" + elasticsearchNode.getHttpPort()))
+                Collections.singletonList(new Endpoint("http://" + elasticSearchContainer.getHttpHostAddress()))
             );
+            elasticConfiguration.setUsername("elastic");
+            elasticConfiguration.setPassword(ElasticsearchContainer.ELASTICSEARCH_DEFAULT_PASSWORD);
             //            elasticConfiguration.setIngestPlugins(Arrays.asList("geoip"));
             return elasticConfiguration;
         }
 
-        @Bean
-        public ElasticsearchNode elasticsearchNode() {
-            return new ElasticsearchNode();
+        @Bean(destroyMethod = "close")
+        public ElasticsearchContainer elasticSearchContainer() {
+            final ElasticsearchContainer elasticsearchContainer = new ElasticsearchContainer(
+                "docker.elastic.co/elasticsearch/elasticsearch:" + elasticsearchVersion
+            );
+            elasticsearchContainer.withEnv("cluster.name", CLUSTER_NAME);
+            elasticsearchContainer.start();
+            return elasticsearchContainer;
         }
     }
 }
