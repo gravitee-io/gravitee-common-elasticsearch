@@ -10,3 +10,13 @@ image:https://f.hubspotusercontent40.net/hubfs/7600448/gravitee-github-button.jp
 == Description
 The APIM common Elasticsearch library contains interfaces and classes used by Gravitee.io APIM Elasticsearch plugins (Reporter and Repository). +
 An example can be found https://github.com/gravitee-io/gravitee-repoter-elasticsearch[here]
+
+
+== Testing
+By default, unit tests are run with a TestContainer version of ElasticSearch 7.17.7, but sometimes it can be useful to run them against other version of ElasticSearch.
+To do so you can use the following commands:
+
+* ES 5.x: `mvn clean test -Delasticsearch.version=5.6.16`
+* ES 6.x: `mvn clean test -Delasticsearch.version=6.8.23`
+* ES 7.x: `mvn clean test -Delasticsearch.version=7.17.7` (Default)
+
