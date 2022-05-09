@@ -15,6 +15,7 @@
  */
 package io.gravitee.elasticsearch.client;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import io.gravitee.elasticsearch.exception.ElasticsearchException;
 import io.gravitee.elasticsearch.model.CountResponse;
 import io.gravitee.elasticsearch.model.Health;
@@ -24,6 +25,7 @@ import io.gravitee.elasticsearch.version.ElasticsearchInfo;
 import io.reactivex.Completable;
 import io.reactivex.Single;
 import io.vertx.core.buffer.Buffer;
+import io.vertx.core.json.Json;
 import java.util.List;
 
 /**
@@ -38,4 +40,7 @@ public interface Client {
     Completable putPipeline(String templateName, String template);
     Single<SearchResponse> search(String indexes, String type, String query);
     Single<CountResponse> count(String indexes, String type, String query);
+
+    Single<JsonNode> getAlias(String aliasName);
+    Completable createIndexAndAlias(String indexName, String aliasName);
 }
