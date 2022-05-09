@@ -15,6 +15,7 @@
  */
 package io.gravitee.elasticsearch.client;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import io.gravitee.elasticsearch.client.http.HttpClient;
 import io.gravitee.elasticsearch.client.http.HttpClientConfiguration;
 import io.gravitee.elasticsearch.config.Endpoint;
@@ -82,6 +83,22 @@ public class HttpClientTest {
         observer.assertNoErrors();
         observer.assertComplete();
         observer.assertValue(health1 -> "gravitee_test".equals(health1.getClusterName()));
+    }
+
+    @Test
+    public void shouldGetAlias() throws InterruptedException, ExecutionException, IOException {
+        String expectedAlias = "{\"gravitee_test\":{\"aliases\":{\"gravitee_test_alias\":{}}}}";
+
+        Single<JsonNode> alias = client
+            .createIndexAndAlias("gravitee_test", "gravitee_test_alias")
+            .andThen(client.getAlias("gravitee_test_alias"));
+
+        TestObserver<JsonNode> observer = alias.test();
+        observer.awaitTerminalEvent();
+
+        observer.assertNoErrors();
+        observer.assertComplete();
+        observer.assertValue(node -> expectedAlias.equals(node.toString()));
     }
 
     /*
