@@ -33,10 +33,7 @@ import io.gravitee.elasticsearch.model.Response;
 import io.gravitee.elasticsearch.model.SearchResponse;
 import io.gravitee.elasticsearch.model.bulk.BulkResponse;
 import io.gravitee.elasticsearch.version.ElasticsearchInfo;
-import io.reactivex.Completable;
-import io.reactivex.Observable;
-import io.reactivex.Single;
-import io.reactivex.SingleSource;
+import io.reactivex.*;
 import io.reactivex.functions.Function;
 import io.vertx.core.net.ProxyOptions;
 import io.vertx.core.net.ProxyType;
@@ -324,39 +321,24 @@ public class HttpClient implements Client {
     }
 
     @Override
-    public Single<JsonNode> getAlias(String aliasName) {
+    public Maybe<JsonNode> getAlias(String aliasName) {
         return nextClient()
             .getClient()
             .get(URL_ALIAS + '/' + aliasName)
             .rxSend()
             .doOnError(throwable -> logger.error("Unable to get a connection to Elasticsearch: {}", throwable.getMessage()))
-            .map(response -> {
+            .flatMapMaybe(response -> {
                 if (response.statusCode() == HttpStatusCode.OK_200) {
-                    return mapper.readTree(response.bodyAsString());
+                    return Maybe.just(mapper.readTree(response.bodyAsString()));
                 }
 
-                throw new ElasticsearchException(
-                    "Unable to retrieve Elasticsearch information: status[" +
-                    response.statusCode() +
-                    "] payload: [" +
-                    response.bodyAsString() +
-                    "]"
-                );
+                logger.info("Alias [{}] not found", aliasName);
+                return Maybe.empty();
             });
     }
 
     @Override
-    public Completable createIndexAndAlias(String indexName, String aliasName) {
-        String template =
-            "{\n" +
-            "  \"aliases\": {\n" +
-            "    \"" +
-            aliasName +
-            "\": {\n" +
-            "      \"is_write_index\": true\n" +
-            "    }\n" +
-            "  }\n" +
-            "}";
+    public Completable createIndexWithAlias(String indexName, String template) {
         return nextClient()
             .getClient()
             .put(URL_ROOT + indexName)
