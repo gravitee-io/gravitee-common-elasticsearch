@@ -22,12 +22,14 @@ import io.gravitee.elasticsearch.config.Endpoint;
 import io.gravitee.elasticsearch.embedded.ElasticsearchNode;
 import io.gravitee.elasticsearch.model.Health;
 import io.gravitee.elasticsearch.version.ElasticsearchInfo;
+import io.reactivex.Maybe;
 import io.reactivex.Single;
 import io.reactivex.observers.TestObserver;
 import io.vertx.reactivex.core.Vertx;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.concurrent.ExecutionException;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,12 +88,11 @@ public class HttpClientTest {
     }
 
     @Test
-    public void shouldGetAlias() throws InterruptedException, ExecutionException, IOException {
+    public void shouldGetAlias() {
+        String template = "{\"aliases\":{\"gravitee_test_alias\":{\"is_write_index\": true}}}";
         String expectedAlias = "{\"gravitee_test\":{\"aliases\":{\"gravitee_test_alias\":{}}}}";
 
-        Single<JsonNode> alias = client
-            .createIndexAndAlias("gravitee_test", "gravitee_test_alias")
-            .andThen(client.getAlias("gravitee_test_alias"));
+        Maybe<JsonNode> alias = client.createIndexWithAlias("gravitee_test", template).andThen(client.getAlias("gravitee_test_alias"));
 
         TestObserver<JsonNode> observer = alias.test();
         observer.awaitTerminalEvent();
@@ -99,6 +100,18 @@ public class HttpClientTest {
         observer.assertNoErrors();
         observer.assertComplete();
         observer.assertValue(node -> expectedAlias.equals(node.toString()));
+    }
+
+    @Test
+    public void shouldNotGetAlias() {
+        Maybe<JsonNode> alias = client.getAlias("gravitee_test_alias");
+
+        TestObserver<JsonNode> observer = alias.test();
+        observer.awaitTerminalEvent();
+
+        observer.assertNoErrors();
+        observer.assertComplete();
+        observer.assertNoValues();
     }
 
     /*

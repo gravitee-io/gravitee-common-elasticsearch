@@ -23,9 +23,9 @@ import io.gravitee.elasticsearch.model.SearchResponse;
 import io.gravitee.elasticsearch.model.bulk.BulkResponse;
 import io.gravitee.elasticsearch.version.ElasticsearchInfo;
 import io.reactivex.Completable;
+import io.reactivex.Maybe;
 import io.reactivex.Single;
 import io.vertx.core.buffer.Buffer;
-import io.vertx.core.json.Json;
 import java.util.List;
 
 /**
@@ -41,6 +41,6 @@ public interface Client {
     Single<SearchResponse> search(String indexes, String type, String query);
     Single<CountResponse> count(String indexes, String type, String query);
 
-    Single<JsonNode> getAlias(String aliasName);
-    Completable createIndexAndAlias(String indexName, String aliasName);
+    Maybe<JsonNode> getAlias(String aliasName);
+    Completable createIndexWithAlias(String indexName, String template);
 }
