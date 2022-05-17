@@ -18,6 +18,7 @@ package io.gravitee.elasticsearch.client.http;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.gravitee.common.http.HttpHeaders;
 import io.gravitee.common.http.HttpStatusCode;
@@ -32,10 +33,7 @@ import io.gravitee.elasticsearch.model.Response;
 import io.gravitee.elasticsearch.model.SearchResponse;
 import io.gravitee.elasticsearch.model.bulk.BulkResponse;
 import io.gravitee.elasticsearch.version.ElasticsearchInfo;
-import io.reactivex.Completable;
-import io.reactivex.Observable;
-import io.reactivex.Single;
-import io.reactivex.SingleSource;
+import io.reactivex.*;
 import io.reactivex.functions.Function;
 import io.vertx.core.net.ProxyOptions;
 import io.vertx.core.net.ProxyType;
@@ -79,6 +77,7 @@ public class HttpClient implements Client {
     private static String URL_INGEST;
     private static String URL_SEARCH;
     private static String URL_COUNT;
+    private static String URL_ALIAS;
 
     @Autowired
     private Vertx vertx;
@@ -206,6 +205,7 @@ public class HttpClient implements Client {
         URL_INGEST = urlPrefix + "/_ingest/pipeline";
         URL_SEARCH = urlPrefix + "/_search?ignore_unavailable=true";
         URL_COUNT = urlPrefix + "/_count?ignore_unavailable=true";
+        URL_ALIAS = urlPrefix + "/_alias";
     }
 
     private List<ElasticsearchClient> clients() {
@@ -314,6 +314,45 @@ public class HttpClient implements Client {
                         response.body()
                     );
                     return Completable.error(new ElasticsearchException("Unable to put template mapping"));
+                }
+
+                return Completable.complete();
+            });
+    }
+
+    @Override
+    public Maybe<JsonNode> getAlias(String aliasName) {
+        return nextClient()
+            .getClient()
+            .get(URL_ALIAS + '/' + aliasName)
+            .rxSend()
+            .doOnError(throwable -> logger.error("Unable to get a connection to Elasticsearch: {}", throwable.getMessage()))
+            .flatMapMaybe(response -> {
+                if (response.statusCode() == HttpStatusCode.OK_200) {
+                    return Maybe.just(mapper.readTree(response.bodyAsString()));
+                }
+
+                logger.info("Alias [{}] not found", aliasName);
+                return Maybe.empty();
+            });
+    }
+
+    @Override
+    public Completable createIndexWithAlias(String indexName, String template) {
+        return nextClient()
+            .getClient()
+            .put(URL_ROOT + indexName)
+            .putHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+            .rxSendBuffer(Buffer.buffer(template))
+            .flatMapCompletable(response -> {
+                if (response.statusCode() != HttpStatusCode.OK_200) {
+                    logger.error(
+                        "Unable to create index and alias: status[{}] template[{}] response[{}]",
+                        response.statusCode(),
+                        template,
+                        response.body()
+                    );
+                    return Completable.error(new ElasticsearchException("Unable to create index and alias"));
                 }
 
                 return Completable.complete();
