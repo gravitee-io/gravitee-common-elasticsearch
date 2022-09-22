@@ -22,14 +22,13 @@ import io.gravitee.elasticsearch.config.Endpoint;
 import io.gravitee.elasticsearch.embedded.ElasticsearchNode;
 import io.gravitee.elasticsearch.model.Health;
 import io.gravitee.elasticsearch.version.ElasticsearchInfo;
-import io.reactivex.Maybe;
-import io.reactivex.Single;
-import io.reactivex.observers.TestObserver;
-import io.vertx.reactivex.core.Vertx;
+import io.reactivex.rxjava3.core.Maybe;
+import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.observers.TestObserver;
+import io.vertx.rxjava3.core.Vertx;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.concurrent.ExecutionException;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,7 +66,7 @@ public class HttpClientTest {
         Single<ElasticsearchInfo> info = client.getInfo();
 
         TestObserver<ElasticsearchInfo> observer = info.test();
-        observer.awaitTerminalEvent();
+        observer.await();
 
         observer.assertNoErrors();
         observer.assertComplete();
@@ -80,7 +79,7 @@ public class HttpClientTest {
         Single<Health> health = client.getClusterHealth();
 
         TestObserver<Health> observer = health.test();
-        observer.awaitTerminalEvent();
+        observer.await();
 
         observer.assertNoErrors();
         observer.assertComplete();
@@ -88,14 +87,14 @@ public class HttpClientTest {
     }
 
     @Test
-    public void shouldGetAlias() {
+    public void shouldGetAlias() throws InterruptedException {
         String template = "{\"aliases\":{\"gravitee_test_alias\":{\"is_write_index\": true}}}";
         String expectedAlias = "{\"gravitee_test\":{\"aliases\":{\"gravitee_test_alias\":{}}}}";
 
         Maybe<JsonNode> alias = client.createIndexWithAlias("gravitee_test", template).andThen(client.getAlias("gravitee_test_alias"));
 
         TestObserver<JsonNode> observer = alias.test();
-        observer.awaitTerminalEvent();
+        observer.await();
 
         observer.assertNoErrors();
         observer.assertComplete();
@@ -103,11 +102,11 @@ public class HttpClientTest {
     }
 
     @Test
-    public void shouldNotGetAlias() {
+    public void shouldNotGetAlias() throws InterruptedException {
         Maybe<JsonNode> alias = client.getAlias("gravitee_test_alias");
 
         TestObserver<JsonNode> observer = alias.test();
-        observer.awaitTerminalEvent();
+        observer.await();
 
         observer.assertNoErrors();
         observer.assertComplete();
