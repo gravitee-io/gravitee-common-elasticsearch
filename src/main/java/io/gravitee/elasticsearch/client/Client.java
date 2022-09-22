@@ -22,9 +22,9 @@ import io.gravitee.elasticsearch.model.Health;
 import io.gravitee.elasticsearch.model.SearchResponse;
 import io.gravitee.elasticsearch.model.bulk.BulkResponse;
 import io.gravitee.elasticsearch.version.ElasticsearchInfo;
-import io.reactivex.Completable;
-import io.reactivex.Maybe;
-import io.reactivex.Single;
+import io.reactivex.rxjava3.core.Completable;
+import io.reactivex.rxjava3.core.Maybe;
+import io.reactivex.rxjava3.core.Single;
 import io.vertx.core.buffer.Buffer;
 import java.util.List;
 

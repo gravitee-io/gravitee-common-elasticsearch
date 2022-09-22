@@ -15,7 +15,7 @@
  */
 package io.gravitee.elasticsearch.config;
 
-import io.vertx.reactivex.ext.web.client.WebClient;
+import io.vertx.rxjava3.ext.web.client.WebClient;
 
 /**
  * @author David BRASSELY (david.brassely at graviteesource.com)
