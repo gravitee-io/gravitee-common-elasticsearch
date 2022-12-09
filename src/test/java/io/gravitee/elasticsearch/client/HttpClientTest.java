@@ -56,16 +56,6 @@ public class HttpClientTest {
     @Autowired
     private Client client;
 
-    /**
-     * JSON mapper.
-     */
-    /*
-    private final ObjectMapper mapper = new ObjectMapper();
-
-    private final DateTimeFormatter dtf = java.time.format.DateTimeFormatter.ofPattern("yyyy.MM.dd").withZone(ZoneId.systemDefault());
-    private final DateTimeFormatter dtf2 = java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd").withZone(ZoneId.systemDefault());
-    */
-
     @Test
     public void shouldGetVersion() throws InterruptedException, ExecutionException, IOException {
         Single<ElasticsearchInfo> info = client.getInfo();
@@ -80,7 +70,7 @@ public class HttpClientTest {
     }
 
     @Test
-    public void shouldGetHealth() throws InterruptedException, ExecutionException, IOException {
+    public void shouldGetHealth() throws InterruptedException {
         Single<Health> health = client.getClusterHealth();
 
         TestObserver<Health> observer = health.test();
@@ -121,39 +111,6 @@ public class HttpClientTest {
         observer.assertNoValues();
     }
 
-    /*
-    @Test
-    public void shouldSearch() throws ElasticsearchException, IOException {
-        // do the call
-        final Map<String, Object> parameter = new HashMap<>();
-        parameter.put("indexDateToday", new Date());
-        final String query = this.freeMarkerComponent.generateFromTemplate("esQuery.json", parameter);
-
-        final Single<SearchResponse> result = this.client.search("_all", null, query);
-
-        TestObserver<SearchResponse> observer = result.test();
-
-        observer.assertNoErrors();
-        observer.assertComplete();
-
-        observer.assertValue(new Predicate<SearchResponse>() {
-            @Override
-            public boolean test(SearchResponse searchResponse) throws Exception {
-                final Map<String, Object> data = new HashMap<>();
-                data.put("took", searchResponse.getTook());
-                data.put("index", "gravitee-" + dtf.format(new Date().toInstant()));
-                data.put("today", dtf2.format(new Date().toInstant()));
-                final String expectedResponse = freeMarkerComponent.generateFromTemplate("esResponse.json", data);
-                final SearchResponse expectedEsSearchResponse = mapper.readValue(expectedResponse, SearchResponse.class);
-
-                Assert.assertEquals(mapper.writeValueAsString(expectedEsSearchResponse), mapper.writeValueAsString(result));
-
-                return true;
-            }
-        });
-    }
-    */
-
     @Configuration
     public static class TestConfig {
 
@@ -178,7 +135,6 @@ public class HttpClientTest {
             );
             elasticConfiguration.setUsername("elastic");
             elasticConfiguration.setPassword(ElasticsearchContainer.ELASTICSEARCH_DEFAULT_PASSWORD);
-            //            elasticConfiguration.setIngestPlugins(Arrays.asList("geoip"));
             return elasticConfiguration;
         }
 
