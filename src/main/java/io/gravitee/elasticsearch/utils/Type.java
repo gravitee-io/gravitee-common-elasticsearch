@@ -24,13 +24,26 @@ public enum Type {
     HEALTH_CHECK("health"),
     LOG("log"),
     MONITOR("monitor"),
+    LOG_V4("log-v4"),
+    METRICS_V4("metrics-v4"),
+    MESSAGE_METRICS_V4("message-metrics-v4"),
+    MESSAGE_LOG_V4("message-log-v4"),
 
     // For ES7 support
     DOC("_doc");
 
-    private String type;
+    private final String type;
 
-    public static final Type[] TYPES = new Type[] { REQUEST, MONITOR, HEALTH_CHECK, LOG };
+    public static final Type[] TYPES = new Type[] {
+        REQUEST,
+        MONITOR,
+        HEALTH_CHECK,
+        LOG,
+        LOG_V4,
+        METRICS_V4,
+        MESSAGE_LOG_V4,
+        MESSAGE_METRICS_V4,
+    };
 
     Type(final String type) {
         this.type = type;
