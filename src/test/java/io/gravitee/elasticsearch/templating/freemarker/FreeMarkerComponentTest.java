@@ -15,14 +15,13 @@
  */
 package io.gravitee.elasticsearch.templating.freemarker;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test the template.
@@ -31,29 +30,27 @@ import org.mockito.junit.MockitoJUnitRunner;
  * @author Sebastien Devaux
  *
  */
-@RunWith(MockitoJUnitRunner.class)
 public class FreeMarkerComponentTest {
 
-    private FreeMarkerComponent freeMarkerComponent = new FreeMarkerComponent();
+    FreeMarkerComponent freeMarkerComponent = new FreeMarkerComponent();
 
-    @Before
-    public void init() throws IOException {
+    @BeforeEach
+    void init() throws IOException {
         freeMarkerComponent.afterPropertiesSet();
     }
 
     @Test
-    public void testGenerateFromTemplateWithoutData() {
-        Assert.assertNotNull(this.freeMarkerComponent);
+    void testGenerateFromTemplateWithoutData() {
         final String result = this.freeMarkerComponent.generateFromTemplate("template.ftl");
-        Assert.assertEquals("test", result);
+        assertThat(result).isEqualTo("test");
     }
 
     @Test
-    public void testGenerateFromTemplateWithData() {
+    void testGenerateFromTemplateWithData() {
         final Map<String, Object> data = new HashMap<>();
         data.put("data", "test");
 
         final String result = this.freeMarkerComponent.generateFromTemplate("templateWithData.ftl", data);
-        Assert.assertEquals("test with data : test", result);
+        assertThat(result).isEqualTo("test with data : test");
     }
 }
