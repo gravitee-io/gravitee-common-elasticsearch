@@ -25,24 +25,22 @@ import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.observers.TestObserver;
 import io.vertx.rxjava3.core.Vertx;
-import java.io.IOException;
 import java.util.Collections;
-import java.util.concurrent.ExecutionException;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 
 /**
  * @author David BRASSELY (david.brassely at graviteesource.com)
  * @author GraviteeSource Team
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = { HttpClientTest.TestConfig.class })
 public class HttpClientTest {
 
@@ -57,7 +55,7 @@ public class HttpClientTest {
     private Client client;
 
     @Test
-    public void shouldGetVersion() throws InterruptedException, ExecutionException, IOException {
+    public void shouldGetVersion() throws InterruptedException {
         Single<ElasticsearchInfo> info = client.getInfo();
 
         TestObserver<ElasticsearchInfo> observer = info.test();
