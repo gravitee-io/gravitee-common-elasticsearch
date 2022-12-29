@@ -15,9 +15,10 @@
  */
 package io.gravitee.elasticsearch.utils;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.List;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author David BRASSELY (david.brassely at graviteesource.com)
@@ -26,14 +27,14 @@ import org.junit.Test;
 public class DateUtilsTest {
 
     @Test
-    public void shouldReturnSingleDate() {
-        List<String> indices = DateUtils.rangedIndices(1474581851724l, 1474582151724l);
-        Assert.assertEquals(1, indices.size());
+    void shouldReturnSingleDate() {
+        List<String> indices = DateUtils.rangedIndices(1474581851724L, 1474582151724L);
+        assertThat(indices).hasSize(1);
     }
 
     @Test
-    public void shouldReturnMultipleDate() {
-        List<String> indices = DateUtils.rangedIndices(1473459236000l, 1474582436000l);
-        Assert.assertEquals(14, indices.size());
+    void shouldReturnMultipleDate() {
+        List<String> indices = DateUtils.rangedIndices(1473459236000L, 1474582436000L);
+        assertThat(indices).hasSize(14);
     }
 }

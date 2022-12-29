@@ -15,9 +15,10 @@
  */
 package io.gravitee.elasticsearch.index;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.gravitee.elasticsearch.utils.Type;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author David BRASSELY (david.brassely at graviteesource.com)
@@ -30,12 +31,12 @@ public class ILMIndexNameGeneratorTest {
     @Test
     public void shouldGenerateIndexName() {
         String indexName = generator.getIndexName(Type.REQUEST, 0, 0, null);
-        Assert.assertEquals("gravitee-request", indexName);
+        assertThat(indexName).isEqualTo("gravitee-request");
     }
 
     @Test
     public void shouldGenerateIndexName_withClusters() {
         String indexName = generator.getIndexName(Type.REQUEST, 0, 0, new String[] { "europe", "asia" });
-        Assert.assertEquals("europe:gravitee-request,asia:gravitee-request", indexName);
+        assertThat(indexName).isEqualTo("europe:gravitee-request,asia:gravitee-request");
     }
 }
