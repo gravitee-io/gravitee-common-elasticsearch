@@ -27,10 +27,7 @@ public enum Type {
     V4_LOG("v4-log"),
     V4_METRICS("v4-metrics"),
     V4_MESSAGE_METRICS("v4-message-metrics"),
-    V4_MESSAGE_LOG("v4-message-log"),
-
-    // For ES7 support
-    DOC("_doc");
+    V4_MESSAGE_LOG("v4-message-log");
 
     private final String type;
 
