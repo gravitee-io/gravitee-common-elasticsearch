@@ -1,3 +1,10 @@
+# [4.1.0-alpha.2](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/4.1.0-alpha.1...4.1.0-alpha.2) (2023-01-16)
+
+
+### Features
+
+* define template for log-v4 and request-v4 ([d768735](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/d7687352ed4d4a5245ee24233bfdfc4587b86032))
+
 # [4.1.0-alpha.1](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/4.0.0...4.1.0-alpha.1) (2022-12-22)
 
 
