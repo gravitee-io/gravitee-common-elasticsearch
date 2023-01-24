@@ -1,3 +1,10 @@
+# [4.1.0-alpha.3](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/4.1.0-alpha.2...4.1.0-alpha.3) (2023-01-24)
+
+
+### Bug Fixes
+
+* rename metrics for message ([78fc4ac](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/78fc4ac3fd47cfef7f26d7f83960c9a4c9f89233))
+
 # [4.1.0-alpha.2](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/4.1.0-alpha.1...4.1.0-alpha.2) (2023-01-16)
 
 
