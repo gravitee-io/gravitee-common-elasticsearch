@@ -5,7 +5,7 @@
 <#-- @ftlvariable name="metrics" type="io.gravitee.reporter.api.v4.metric.MessageMetrics" -->
 <#-- @ftlvariable name="contentLength" type="java.lang.Long" -->
 <#-- @ftlvariable name="count" type="java.lang.Long" -->
-<#-- @ftlvariable name="errorsCount" type="java.lang.Long" -->
+<#-- @ftlvariable name="errorCount" type="java.lang.Long" -->
 <#-- @ftlvariable name="gatewayLatencyMs" type="java.lang.Long" -->
 
 { "index" : { "_index" : "${index}", "_id" : "${metrics.getCorrelationId()}-${metrics.getConnectorType().getLabel()}"} }
@@ -29,8 +29,8 @@
   <#if count??>
   ,"count":${count}
   </#if>
-  <#if errorsCount??>
-  ,"errors-count":"${errorsCount}"
+  <#if errorCount??>
+  ,"error-count":"${errorCount}"
   </#if>
   <#if gatewayLatencyMs??>
   ,"gateway-latency-ms":${gatewayLatencyMs}
