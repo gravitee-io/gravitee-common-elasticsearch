@@ -53,7 +53,7 @@
   ,"uri":"${metrics.getUri()}"
   </#if>
   <#if metrics.getPath()??>
-  ,"path":"${metrics.getPath()}"
+  ,"path-info":"${metrics.getPathInfo()}"
   </#if>
   <#if metrics.getMappedPath()??>
   ,"mapped-path":"${metrics.getMappedPath()}"
