@@ -24,10 +24,10 @@ public enum Type {
     HEALTH_CHECK("health"),
     LOG("log"),
     MONITOR("monitor"),
-    LOG_V4("log-v4"),
-    METRICS_V4("metrics-v4"),
-    MESSAGE_METRICS_V4("message-metrics-v4"),
-    MESSAGE_LOG_V4("message-log-v4"),
+    V4_LOG("v4-log"),
+    V4_METRICS("v4-metrics"),
+    V4_MESSAGE_METRICS("v4-message-metrics"),
+    V4_MESSAGE_LOG("v4-message-log"),
 
     // For ES7 support
     DOC("_doc");
@@ -39,10 +39,10 @@ public enum Type {
         MONITOR,
         HEALTH_CHECK,
         LOG,
-        LOG_V4,
-        METRICS_V4,
-        MESSAGE_LOG_V4,
-        MESSAGE_METRICS_V4,
+        V4_LOG,
+        V4_METRICS,
+        V4_MESSAGE_LOG,
+        V4_MESSAGE_METRICS,
     };
 
     Type(final String type) {
