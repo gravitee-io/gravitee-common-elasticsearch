@@ -1,3 +1,10 @@
+# [4.1.0-alpha.6](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/4.1.0-alpha.5...4.1.0-alpha.6) (2023-01-27)
+
+
+### Bug Fixes
+
+* fix v4 metrics index ([f2d6686](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/f2d6686746cb89fa579827ec192bfb9604a76cd7))
+
 # [4.1.0-alpha.5](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/4.1.0-alpha.4...4.1.0-alpha.5) (2023-01-25)
 
 
