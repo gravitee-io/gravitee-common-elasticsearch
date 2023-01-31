@@ -50,6 +50,9 @@
             "errors-count": {
                 "type": "integer"
             },
+            "error": {
+                "type": "boolean"
+            },
             "gateway-latency-ms": {
                 "type": "integer"
             }
