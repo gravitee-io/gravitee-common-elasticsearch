@@ -18,6 +18,9 @@
   ,"connector-id":"${log.getConnectorId()}"
   ,"message": {
     "id":"${(log.getMessage().getId())!}"
+    <#if log.getMessage().isError()>
+    ,"error":"${log.getMessage().isError()}"
+    </#if>
     <#if log.getMessage().getPayload()??>
     ,"payload":"${log.getMessage().getPayload()?j_string}"
     </#if>

@@ -48,13 +48,16 @@
                         "type": "text"
                     },
                     "headers":{
-                        "enabled":  false,
+                        "enabled": false,
                         "type": "object"
                     },
                     "metadata":  {
-                       "enabled":  false,
+                       "enabled": false,
                        "type": "object"
-                   }
+                    },
+                    "error":  {
+                        "type": "boolean"
+                    }
                 }
             }
         }
