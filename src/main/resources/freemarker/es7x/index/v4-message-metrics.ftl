@@ -33,7 +33,7 @@
   ,"error-count":"${errorCount}"
   </#if>
   <#if metrics.isError()>
-  ,"error":"${metrics.isError()}"
+  ,"error":"${metrics.isError()?c}"
   </#if>
   <#if gatewayLatencyMs??>
   ,"gateway-latency-ms":${gatewayLatencyMs}
