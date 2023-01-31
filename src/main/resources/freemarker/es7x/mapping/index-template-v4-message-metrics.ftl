@@ -47,7 +47,7 @@
             "count": {
                 "type": "integer"
             },
-            "errors-count": {
+            "error-count": {
                 "type": "integer"
             },
             "error": {
