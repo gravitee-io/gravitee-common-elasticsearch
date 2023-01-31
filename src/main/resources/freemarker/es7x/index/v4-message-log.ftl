@@ -19,7 +19,7 @@
   ,"message": {
     "id":"${(log.getMessage().getId())!}"
     <#if log.getMessage().isError()>
-    ,"error":"${log.getMessage().isError()}"
+    ,"error":"${log.getMessage().isError()?c}"
     </#if>
     <#if log.getMessage().getPayload()??>
     ,"payload":"${log.getMessage().getPayload()?j_string}"
