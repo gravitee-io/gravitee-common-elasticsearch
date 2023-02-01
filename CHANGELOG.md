@@ -1,3 +1,15 @@
+# [4.1.0-alpha.7](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/4.1.0-alpha.6...4.1.0-alpha.7) (2023-02-01)
+
+
+### Bug Fixes
+
+* fix error-count template ([23d31c5](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/23d31c53f02604334a2de0370a1f79ee158f3ec5))
+
+
+### Features
+
+* add error status on message metrics ([b733bb2](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/b733bb2ad53cf99a2df4055d91d8f5eebebe0a68))
+
 # [4.1.0-alpha.6](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/4.1.0-alpha.5...4.1.0-alpha.6) (2023-01-27)
 
 
