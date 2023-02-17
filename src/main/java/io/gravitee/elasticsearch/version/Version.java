@@ -83,4 +83,9 @@ public class Version {
         // from ES version 6, we can use ILM managed indexes, which names are not suffixed by date
         return isOpenSearch() || getMajorVersion() >= 6;
     }
+
+    public boolean canUseDateHistogramFixedInterval() {
+        // in ES version 7, time interval in dateHistogram aggregation is deprecated and removed in ES 8. Instead, we have to use fixed_interval
+        return !isOpenSearch() && getMajorVersion() >= 7;
+    }
 }
