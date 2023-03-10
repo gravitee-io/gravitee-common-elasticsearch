@@ -1,3 +1,14 @@
+# [4.1.0-alpha.8](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/4.1.0-alpha.7...4.1.0-alpha.8) (2023-03-10)
+
+
+### Features
+
+* add support of ES 8.x ([3c65b1f](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/3c65b1f25ae5ce4739946c4e52aa40b8466b15c0))
+* add support of ES 8.x ([e53dcd7](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/e53dcd73d6cf29a0f1bf51979521de45960120bb))
+* add v4 files templates for index and mapping ([db0912e](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/db0912eb49a7892bf9487c7c08425b4cbff73827))
+* check if ES handle `interval` in aggregation ([223981f](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/223981fa27aab18c5d4dd41586ef55f5e13e2d5a))
+* useless ([cb056ee](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/cb056ee55073974dd3b234ef6f3b830affcbc64a))
+
 # [4.1.0-alpha.7](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/4.1.0-alpha.6...4.1.0-alpha.7) (2023-02-01)
 
 
