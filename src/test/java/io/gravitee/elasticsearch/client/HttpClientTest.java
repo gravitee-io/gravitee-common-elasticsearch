@@ -44,7 +44,7 @@ import org.testcontainers.elasticsearch.ElasticsearchContainer;
 @ContextConfiguration(classes = { HttpClientTest.TestConfig.class })
 public class HttpClientTest {
 
-    public static final String ELASTICSEARCH_DEFAULT_VERSION = "7.17.8";
+    public static final String ELASTICSEARCH_DEFAULT_VERSION = "8.5.2";
 
     public static final String CLUSTER_NAME = "gravitee_test";
 
@@ -142,6 +142,9 @@ public class HttpClientTest {
                 "docker.elastic.co/elasticsearch/elasticsearch:" + elasticsearchVersion
             );
             elasticsearchContainer.withEnv("cluster.name", CLUSTER_NAME);
+            if (elasticsearchVersion.startsWith("8")) {
+                elasticsearchContainer.withEnv("xpack.security.enabled", "false");
+            }
             elasticsearchContainer.start();
             return elasticsearchContainer;
         }
