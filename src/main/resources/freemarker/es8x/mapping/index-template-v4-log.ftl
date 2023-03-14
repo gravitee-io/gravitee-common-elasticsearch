@@ -7,6 +7,19 @@
         "index.number_of_shards":${numberOfShards},
         "index.number_of_replicas":${numberOfReplicas},
         "index.refresh_interval": "${refreshInterval}"
+        <#if !(extendedSettingsTemplate.analysis)??>,
+        "analysis": {
+            "analyzer": {
+                "gravitee_body_analyzer": {
+                    "type": "custom",
+                    "tokenizer": "whitespace",
+                    "filter": [
+                        "lowercase"
+                    ]
+                }
+            }
+        }
+        </#if>
         <#if extendedSettingsTemplate??>,<#include "/${extendedSettingsTemplate}"></#if>
     },
     "mappings": {
@@ -30,7 +43,8 @@
                 "type": "object",
                 "properties": {
                     "body":{
-                        "type": "text"
+                        "type": "text",
+                        "analyzer": "gravitee_body_analyzer"
                     },
                     "headers":  {
                        "enabled":  false,
@@ -42,7 +56,8 @@
                 "type": "object",
                 "properties": {
                     "body":{
-                        "type": "text"
+                        "type": "text",
+                        "analyzer": "gravitee_body_analyzer"
                     },
                     "headers":  {
                        "enabled":  false,
@@ -54,7 +69,8 @@
                 "type": "object",
                 "properties": {
                     "body":{
-                        "type": "text"
+                        "type": "text",
+                        "analyzer": "gravitee_body_analyzer"
                     },
                     "headers":  {
                        "enabled":  false,
@@ -66,7 +82,8 @@
                 "type": "object",
                 "properties": {
                     "body":{
-                        "type": "text"
+                        "type": "text",
+                        "analyzer": "gravitee_body_analyzer"
                     },
                     "headers": {
                         "enabled":  false,
