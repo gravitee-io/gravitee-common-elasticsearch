@@ -1,3 +1,10 @@
+# [4.1.0-alpha.9](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/4.1.0-alpha.8...4.1.0-alpha.9) (2023-03-16)
+
+
+### Bug Fixes
+
+* use custom body analyzer ([0e698a7](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/0e698a7b5108a0159ef3b4461e747544e5793c93)), closes [gravitee-io/issues#8470](https://github.com/gravitee-io/issues/issues/8470)
+
 # [4.1.0-alpha.8](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/4.1.0-alpha.7...4.1.0-alpha.8) (2023-03-10)
 
 
