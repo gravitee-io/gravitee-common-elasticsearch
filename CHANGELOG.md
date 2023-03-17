@@ -1,3 +1,27 @@
+# [4.1.0](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/4.0.0...4.1.0) (2023-03-17)
+
+
+### Bug Fixes
+
+* **deps:** upgrade gravitee-bom & alpha version ([3b188fc](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/3b188fc126f0310d95ce5e087b8fa68a230cf8bc))
+* fix error-count template ([9e21f86](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/9e21f86f44754b1f19db035a650f1b08ff980c10))
+* fix v4 metrics index ([0aac478](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/0aac478ded74397bd827cb59fc21a00dd6e155f9))
+* rename metrics for message ([36acc92](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/36acc927b3cd9105d8a4765ec9a26523fb7b6c0a))
+* rename v4 metrics ([c8d562a](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/c8d562a3c5f7f32e21fbc6c44dcdfa2e24f878f0))
+* rename v4 metrics template ([25493b4](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/25493b43df9bd05df51426b8665d91b440e800fa))
+* use custom body analyzer ([c172dc8](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/c172dc821aa9c69ae28c38cc1215ce107745ac68)), closes [gravitee-io/issues#8470](https://github.com/gravitee-io/issues/issues/8470)
+
+
+### Features
+
+* add error status on message metrics ([471c5e4](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/471c5e48ee225cced1a15f060566f15f3260ae50))
+* add support of ES 8.x ([f774e86](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/f774e86863b5af2d989d08f19812fb4cfde828d3))
+* add v4 files templates for index and mapping ([a486f68](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/a486f6836c34c855b83dd91c7a3675ce90086ad8))
+* check if ES handle `interval` in aggregation ([23a49d4](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/23a49d48eb4539870f7f9f6f5d2fe9a1827945eb))
+* define template for log-v4 and request-v4 ([058cb9e](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/058cb9e1ff225b0dcf8973d774cb2bb2721b4ac3))
+* share all ES templates in gravitee-common-elasticsearch ([4d8f890](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/4d8f89046bf860b9ae9a61d249e55347de9edfcc))
+* useless ([2403cb3](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/2403cb38b69740579c903f5d26ae3de95003419a))
+
 # [4.1.0-alpha.9](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/4.1.0-alpha.8...4.1.0-alpha.9) (2023-03-16)
 
 
