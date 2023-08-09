@@ -15,10 +15,11 @@
  */
 package io.gravitee.elasticsearch.utils;
 
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -35,6 +36,7 @@ public final class DateUtils {
      * Date format for Elasticsearch indexes.
      */
     private static final DateTimeFormatter ES_DAILY_INDICE = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+    private static final DateTimeFormatter ES_MONTHLY_INDICE = DateTimeFormatter.ofPattern("yyyy.MM.*");
 
     private DateUtils() {}
 
@@ -48,14 +50,55 @@ public final class DateUtils {
     public static List<String> rangedIndices(final long from, final long to) {
         final List<String> indices = new ArrayList<>();
 
-        LocalDate start = new Date(from).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        final LocalDate stop = new Date(to).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate start = Instant.ofEpochMilli(from).atZone(ZoneId.systemDefault()).toLocalDate();
+        final LocalDate stop = Instant.ofEpochMilli(to).atZone(ZoneId.systemDefault()).toLocalDate();
+        YearMonth startYearMonth = YearMonth.from(start);
+        YearMonth stopYearMonth = YearMonth.from(stop);
 
-        while (start.isBefore(stop) || start.isEqual(stop)) {
-            indices.add(ES_DAILY_INDICE.format(start));
-            start = start.plus(1, ChronoUnit.DAYS);
+        // if the start date and the stop date are in the same month
+        if (startYearMonth.getMonth().equals(stopYearMonth.getMonth())) {
+            // if we selected an entire month then add the monthly indice otherwise loop on daily indices
+            if (startYearMonth.atDay(1).equals(start) && stopYearMonth.atEndOfMonth().equals(stop)) {
+                indices.add(ES_MONTHLY_INDICE.format(startYearMonth));
+            } else {
+                while (start.isBefore(stop) || start.isEqual(stop)) {
+                    indices.add(ES_DAILY_INDICE.format(start));
+                    start = start.plusDays(1);
+                }
+            }
+        } else {
+            if (startYearMonth.atDay(1).equals(start)) {
+                // loop on monthly indices until the last month
+                while (startYearMonth.isBefore(stopYearMonth)) {
+                    indices.add(ES_MONTHLY_INDICE.format(startYearMonth));
+                    startYearMonth = startYearMonth.plusMonths(1);
+                }
+            } else {
+                // loop on daily indices until the end of the month
+                while (start.isBefore(startYearMonth.atEndOfMonth()) || start.isEqual(startYearMonth.atEndOfMonth())) {
+                    indices.add(ES_DAILY_INDICE.format(start));
+                    start = start.plusDays(1);
+                }
+
+                // add other monthly indices until the last month
+                startYearMonth = startYearMonth.plusMonths(1);
+                while (startYearMonth.isBefore(stopYearMonth)) {
+                    indices.add(ES_MONTHLY_INDICE.format(startYearMonth));
+                    startYearMonth = startYearMonth.plusMonths(1);
+                }
+            }
+
+            // if end date is the last day of the month then add the monthly indices
+            if (stopYearMonth.atEndOfMonth().isEqual(stop)) {
+                indices.add(ES_MONTHLY_INDICE.format(stopYearMonth));
+            } else { // loop on daily indices until the end date of the last month
+                LocalDate day = stopYearMonth.atDay(1);
+                while (day.isBefore(stop) || day.isEqual(stop)) {
+                    indices.add(ES_DAILY_INDICE.format(day));
+                    day = day.plusDays(1);
+                }
+            }
         }
-
         return indices;
     }
 }
