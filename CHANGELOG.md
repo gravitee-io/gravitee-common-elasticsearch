@@ -1,3 +1,10 @@
+# [4.2.0](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/4.1.0...4.2.0) (2023-08-16)
+
+
+### Features
+
+* use wildcards when computing elastic query indices ([0155cbb](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/0155cbb16687c4bdf42310d897c99320f48ab7d2))
+
 # [4.1.0](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/4.0.0...4.1.0) (2023-03-17)
 
 
