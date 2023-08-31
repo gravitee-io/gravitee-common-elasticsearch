@@ -1,3 +1,15 @@
+# [5.0.0](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/4.2.0...5.0.0) (2023-08-31)
+
+
+### Code Refactoring
+
+* move index mappings to reporter common ([36e7fcc](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/36e7fcce227d984180d1827fe785016dc360a8ae))
+
+
+### BREAKING CHANGES
+
+* index mappings must now be imported from gravitee-reporter-common
+
 # [4.2.0](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/4.1.0...4.2.0) (2023-08-16)
 
 
