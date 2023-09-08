@@ -40,9 +40,13 @@ import org.springframework.beans.factory.annotation.Value;
 /**
  * Utility Spring bean that encapsulates FreeMarker tools.
  *
+ * @deprecated This class is marked for removal as dependant modules should use the
+ * FreemarkerComponent class made available in gravitee-common since version 3.3.0.
+ *
  * @author Guillaume Waignier
  * @author Sebastien Devaux
  */
+@Deprecated(since = "5.0.1", forRemoval = true)
 public class FreeMarkerComponent implements InitializingBean {
 
     /** Logger. */
