@@ -1,3 +1,10 @@
+## [5.0.1](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/5.0.0...5.0.1) (2023-09-12)
+
+
+### Bug Fixes
+
+* deprecate freemarker component ([3845010](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/3845010f8ac9ca3e5ab5f215b63bab7a0b055813))
+
 # [5.0.0](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/4.2.0...5.0.0) (2023-08-31)
 
 
