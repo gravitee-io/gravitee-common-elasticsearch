@@ -13,7 +13,7 @@
   <#if log.getEntrypointRequest()??>
   ,"entrypoint-request": {
   "method":"${log.getEntrypointRequest().getMethod()}",
-  "uri":"${log.getEntrypointRequest().getUri()}"
+  "uri":"${log.getEntrypointRequest().getUri()?j_string}"
     <#if log.getEntrypointRequest().getBody()??>
     ,"body":"${log.getEntrypointRequest().getBody()?j_string}"
     </#if>
@@ -60,7 +60,7 @@
   <#if log.getEndpointRequest()??>
   ,"endpoint-request": {
   "method":"${log.getEndpointRequest().getMethod()}",
-  "uri":"${log.getEndpointRequest().getUri()}"
+  "uri":"${log.getEndpointRequest().getUri()?j_string}"
     <#if log.getEndpointRequest().getBody()??>
     ,"body":"${log.getEndpointRequest().getBody()?j_string}"
     </#if>
