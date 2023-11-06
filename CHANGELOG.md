@@ -1,3 +1,10 @@
+## [4.2.1](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/4.2.0...4.2.1) (2023-11-06)
+
+
+### Bug Fixes
+
+* add j_string to escape endpoint URL ([56a13af](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/56a13af79c2ae2ed7145fa6c5901c9c8a6c0cdbf))
+
 # [4.2.0](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/4.1.0...4.2.0) (2023-08-16)
 
 
