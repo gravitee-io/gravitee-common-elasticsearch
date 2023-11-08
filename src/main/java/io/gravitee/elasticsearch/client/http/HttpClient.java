@@ -78,6 +78,7 @@ public class HttpClient implements Client {
     private static String URL_STATE_CLUSTER;
     private static String URL_BULK;
     private static String URL_TEMPLATE;
+    private static String URL_INDEX_TEMPLATE;
     private static String URL_INGEST;
     private static String URL_SEARCH;
     private static String URL_COUNT;
@@ -206,6 +207,7 @@ public class HttpClient implements Client {
         URL_STATE_CLUSTER = urlPrefix + "/_cluster/health";
         URL_BULK = urlPrefix + "/_bulk";
         URL_TEMPLATE = urlPrefix + "/_template";
+        URL_INDEX_TEMPLATE = urlPrefix + "/_index_template";
         URL_INGEST = urlPrefix + "/_ingest/pipeline";
         URL_SEARCH = urlPrefix + "/_search?ignore_unavailable=true";
         URL_COUNT = urlPrefix + "/_count?ignore_unavailable=true";
@@ -323,6 +325,29 @@ public class HttpClient implements Client {
                         response.body()
                     );
                     return Completable.error(new ElasticsearchException("Unable to put template mapping"));
+                }
+
+                return Completable.complete();
+            });
+    }
+
+    @Override
+    public Completable putIndexTemplate(String templateName, String template) {
+        return nextClient()
+            .getClient()
+            .put(URL_INDEX_TEMPLATE + '/' + templateName)
+            .putHeader(io.vertx.core.http.HttpHeaders.CONTENT_TYPE.toString(), MediaType.APPLICATION_JSON)
+            .rxSendBuffer(Buffer.buffer(template))
+            .doOnError(throwable -> logger.error("Unable to put an index template to Elasticsearch: {}", throwable.getMessage()))
+            .flatMapCompletable(response -> {
+                if (response.statusCode() != HttpStatusCode.OK_200) {
+                    logger.error(
+                        "Unable to put index template mapping: status[{}] template[{}] response[{}]",
+                        response.statusCode(),
+                        template,
+                        response.body()
+                    );
+                    return Completable.error(new ElasticsearchException("Unable to put index template mapping"));
                 }
 
                 return Completable.complete();

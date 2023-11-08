@@ -98,6 +98,41 @@ public class HttpClientTest {
     }
 
     @Test
+    public void shouldPutIndexTemplate() throws InterruptedException {
+        String template =
+            """
+                {
+                  "index_patterns": ["te*", "bar*"],
+                  "template": {
+                    "settings": {
+                      "number_of_shards": 1
+                    },
+                    "mappings": {
+                      "_source": {
+                        "enabled": true
+                      },
+                      "properties": {
+                        "host_name": {
+                          "type": "keyword"
+                        },
+                        "created_at": {
+                          "type": "date",
+                          "format": "EEE MMM dd HH:mm:ss Z yyyy"
+                        }
+                      }
+                    },
+                    "aliases": {
+                      "mydata": { }
+                    }
+                  },
+                  "priority": 500
+                }
+                """;
+
+        client.putIndexTemplate("gravitee_test_index_template", template).test().await().assertNoErrors().assertComplete();
+    }
+
+    @Test
     public void shouldNotGetAlias() throws InterruptedException {
         Maybe<JsonNode> alias = client.getAlias("gravitee_test_alias");
 
