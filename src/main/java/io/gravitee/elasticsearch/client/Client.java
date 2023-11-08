@@ -42,6 +42,7 @@ public interface Client {
 
     Single<BulkResponse> bulk(List<Buffer> data, boolean forceRefresh);
     Completable putTemplate(String templateName, String template);
+    Completable putIndexTemplate(String templateName, String template);
     Completable putPipeline(String templateName, String template);
     Single<SearchResponse> search(String indexes, String type, String query);
     Single<CountResponse> count(String indexes, String type, String query);
