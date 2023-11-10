@@ -1,3 +1,10 @@
+# [5.1.0](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/5.0.1...5.1.0) (2023-11-10)
+
+
+### Features
+
+* add method to put index template ([aef19b3](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/aef19b3185bd17d572bbbdb74b9b1f02971dfb36))
+
 ## [5.0.1](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/5.0.0...5.0.1) (2023-09-12)
 
 
