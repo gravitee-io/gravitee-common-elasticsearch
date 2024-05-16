@@ -20,24 +20,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.gravitee.elasticsearch.utils.Type;
 import java.util.Map;
 import java.util.stream.Stream;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 /**
- * @author David BRASSELY (david.brassely at graviteesource.com)
+ * @author Aurelien PACAUD (aurelien.pacaud at graviteesource.com)
  * @author GraviteeSource Team
  */
-public class ILMIndexNameGeneratorTest {
-
-    private final Map<String, String> parameters = Map.of("firstPlaceholder", "value1", "secondPlaceholder", "value2");
-
-    @Test
-    void shouldGenerateIndexName() {
-        String indexName = new ILMIndexNameGenerator("gravitee").getIndexName(parameters, Type.REQUEST, 0, 0, null);
-        assertThat(indexName).isEqualTo("gravitee-request");
-    }
+public class MultiTypeIndexNameGeneratorTest {
 
     @ParameterizedTest
     @MethodSource
@@ -47,52 +38,45 @@ public class ILMIndexNameGeneratorTest {
         String[] clusters,
         String expectedIndexName
     ) {
-        assertThat(new ILMIndexNameGenerator(indexName).getIndexName(parameters, Type.REQUEST, 0, 0, clusters))
+        assertThat(new MultiTypeIndexNameGenerator(indexName).getIndexName(parameters, Type.REQUEST, 0, 0, clusters))
             .isEqualTo(expectedIndexName);
     }
 
     private static Stream<Arguments> shouldGenerateIndexNameWithPlaceholder() {
         return Stream.of(
-            Arguments.of("gravitee", Map.of(), null, "gravitee-request"),
-            Arguments.of("gravitee", Map.of(), new String[] { "europe", "asia" }, "europe:gravitee-request,asia:gravitee-request"),
+            Arguments.of("gravitee", Map.of(), null, "gravitee-1970.01.01"),
+            Arguments.of("gravitee", Map.of(), new String[] { "europe", "asia" }, "europe:gravitee-1970.01.01,asia:gravitee-1970.01.01"),
             Arguments.of(
                 "gravitee-{firstPlaceholder}-{secondPlaceholder}",
                 Map.of(),
                 null,
-                "gravitee-{firstPlaceholder}-{secondPlaceholder}-request"
+                "gravitee-{firstPlaceholder}-{secondPlaceholder}-1970.01.01"
             ),
-            Arguments.of("gravitee-{firstPlaceholder}", Map.of("firstPlaceholder", "VALUE1"), null, "gravitee-value1-request"),
+            Arguments.of("gravitee-{firstPlaceholder}", Map.of("firstPlaceholder", "VALUE1"), null, "gravitee-value1-1970.01.01"),
             Arguments.of(
                 "gravitee-{firstPlaceholder}-{secondPlaceholder}",
                 Map.of("firstPlaceholder", "value1", "secondPlaceholder", "value2"),
                 null,
-                "gravitee-value1-value2-request"
+                "gravitee-value1-value2-1970.01.01"
             ),
             Arguments.of(
                 "gravitee-{firstPlaceholder}-{placeholderNotFound}",
                 Map.of("firstPlaceholder", "value1"),
                 null,
-                "gravitee-value1-{placeholderNotFound}-request"
+                "gravitee-value1-{placeholderNotFound}-1970.01.01"
             ),
             Arguments.of(
                 "gravitee-{firstPlaceholder}",
                 Map.of("firstPlaceholder", "value1"),
                 new String[] { "europe", "asia" },
-                "europe:gravitee-value1-request,asia:gravitee-value1-request"
+                "europe:gravitee-value1-1970.01.01,asia:gravitee-value1-1970.01.01"
             ),
             Arguments.of(
                 "gravitee-{firstPlaceholder}-{placeholderNotFound}",
                 Map.of("firstPlaceholder", "value1"),
                 new String[] { "europe", "asia" },
-                "europe:gravitee-value1-{placeholderNotFound}-request,asia:gravitee-value1-{placeholderNotFound}-request"
+                "europe:gravitee-value1-{placeholderNotFound}-1970.01.01,asia:gravitee-value1-{placeholderNotFound}-1970.01.01"
             )
         );
-    }
-
-    @Test
-    void shouldGenerateIndexName_withClusters() {
-        String indexName = new ILMIndexNameGenerator("gravitee")
-            .getIndexName(parameters, Type.REQUEST, 0, 0, new String[] { "europe", "asia" });
-        assertThat(indexName).isEqualTo("europe:gravitee-request,asia:gravitee-request");
     }
 }

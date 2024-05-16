@@ -17,6 +17,7 @@ package io.gravitee.elasticsearch.index;
 
 import io.gravitee.elasticsearch.utils.Type;
 import java.time.Instant;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -32,45 +33,43 @@ public class ILMIndexNameGenerator extends AbstractIndexNameGenerator {
     private static final char CLUSTER_SEPARATOR = ':';
     private static final String INDEX_SEPARATOR = ",";
 
-    private final String indexPrefix;
-
-    public ILMIndexNameGenerator(String indexPrefix) {
-        this.indexPrefix = indexPrefix;
+    public ILMIndexNameGenerator(String indexName) {
+        super(indexName);
     }
 
     @Override
-    public String getIndexName(Type type, Instant instant, String[] clusters) {
-        return getILMIndexName(type, clusters);
+    public String getIndexName(Map<String, String> placeholder, Type type, Instant instant, String[] clusters) {
+        return getILMIndexName(placeholder, type, clusters);
     }
 
     @Override
-    public String getIndexName(Type type, long from, long to, String[] clusters) {
-        return getILMIndexName(type, clusters);
+    public String getIndexName(Map<String, String> placeholder, Type type, long from, long to, String[] clusters) {
+        return getILMIndexName(placeholder, type, clusters);
     }
 
     @Override
-    public String getTodayIndexName(Type type, String[] clusters) {
-        return getILMIndexName(type, clusters);
+    public String getTodayIndexName(Map<String, String> placeholder, Type type, String[] clusters) {
+        return getILMIndexName(placeholder, type, clusters);
     }
 
     @Override
-    public String getWildcardIndexName(Type type, String[] clusters) {
-        return getILMIndexName(type, clusters);
+    public String getWildcardIndexName(Map<String, String> placeholder, Type type, String[] clusters) {
+        return getILMIndexName(placeholder, type, clusters);
     }
 
-    private String getILMIndexName(Type type, String[] clusters) {
+    private String getILMIndexName(Map<String, String> parameters, Type type, String[] clusters) {
         if (clusters == null || clusters.length == 0) {
-            return getIndexPrefix(type);
+            return getIndexPrefix(parameters, type);
         } else {
             return Stream
                 .of(clusters)
-                .map(cluster -> cluster + CLUSTER_SEPARATOR + getIndexPrefix(type))
+                .map(cluster -> cluster + CLUSTER_SEPARATOR + getIndexPrefix(parameters, type))
                 .collect(Collectors.joining(INDEX_SEPARATOR));
         }
     }
 
     @Override
-    protected String getIndexPrefix(Type type) {
-        return indexPrefix + '-' + type.getType();
+    protected String getIndexPrefix(Map<String, String> placeholder, Type type) {
+        return getIndexName(placeholder) + '-' + type.getType();
     }
 }

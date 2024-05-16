@@ -16,11 +16,13 @@
 package io.gravitee.elasticsearch.index;
 
 import io.gravitee.elasticsearch.utils.DateUtils;
+import io.gravitee.elasticsearch.utils.IndexNameUtils;
 import io.gravitee.elasticsearch.utils.Type;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -39,25 +41,37 @@ public abstract class AbstractIndexNameGenerator implements IndexNameGenerator {
 
     private final DateTimeFormatter ES_DAILY_INDICE = DateTimeFormatter.ofPattern("yyyy.MM.dd").withZone(ZoneId.systemDefault());
 
+    private final String indexName;
+
+    protected AbstractIndexNameGenerator(String indexName) {
+        this.indexName = indexName;
+    }
+
+    protected String getIndexName(Map<String, String> parameters) {
+        return IndexNameUtils.format(indexName, parameters);
+    }
+
     @Override
-    public String getIndexName(Type type, Instant instant, String[] clusters) {
+    public String getIndexName(Map<String, String> placeholder, Type type, Instant instant, String[] clusters) {
         if (clusters == null || clusters.length == 0) {
-            return getIndexPrefix(type) + INDEX_DATE_SEPARATOR + ES_DAILY_INDICE.format(instant);
+            return getIndexPrefix(placeholder, type) + INDEX_DATE_SEPARATOR + ES_DAILY_INDICE.format(instant);
         } else {
             return Stream
                 .of(clusters)
-                .map(cluster -> cluster + CLUSTER_SEPARATOR + getIndexPrefix(type) + INDEX_DATE_SEPARATOR + ES_DAILY_INDICE.format(instant))
+                .map(cluster ->
+                    cluster + CLUSTER_SEPARATOR + getIndexPrefix(placeholder, type) + INDEX_DATE_SEPARATOR + ES_DAILY_INDICE.format(instant)
+                )
                 .collect(Collectors.joining(INDEX_SEPARATOR));
         }
     }
 
     @Override
-    public String getIndexName(Type type, long from, long to, String[] clusters) {
+    public String getIndexName(Map<String, String> placeholder, Type type, long from, long to, String[] clusters) {
         if (clusters == null || clusters.length == 0) {
             return DateUtils
                 .rangedIndices(from, to)
                 .stream()
-                .map(date -> getIndexPrefix(type) + INDEX_DATE_SEPARATOR + date)
+                .map(date -> getIndexPrefix(placeholder, type) + INDEX_DATE_SEPARATOR + date)
                 .collect(Collectors.joining(INDEX_SEPARATOR));
         } else {
             return DateUtils
@@ -65,36 +79,38 @@ public abstract class AbstractIndexNameGenerator implements IndexNameGenerator {
                 .stream()
                 .flatMap(
                     (Function<String, Stream<String>>) date ->
-                        Stream.of(clusters).map(cluster -> cluster + CLUSTER_SEPARATOR + getIndexPrefix(type) + INDEX_DATE_SEPARATOR + date)
+                        Stream
+                            .of(clusters)
+                            .map(cluster -> cluster + CLUSTER_SEPARATOR + getIndexPrefix(placeholder, type) + INDEX_DATE_SEPARATOR + date)
                 )
                 .collect(Collectors.joining(INDEX_SEPARATOR));
         }
     }
 
     @Override
-    public String getTodayIndexName(Type type, String[] clusters) {
+    public String getTodayIndexName(Map<String, String> placeholder, Type type, String[] clusters) {
         final String suffixDay = LocalDate.now().format(ES_DAILY_INDICE);
         if (clusters == null || clusters.length == 0) {
-            return getIndexPrefix(type) + INDEX_DATE_SEPARATOR + suffixDay;
+            return getIndexPrefix(placeholder, type) + INDEX_DATE_SEPARATOR + suffixDay;
         } else {
             return Stream
                 .of(clusters)
-                .map(cluster -> cluster + CLUSTER_SEPARATOR + getIndexPrefix(type) + INDEX_DATE_SEPARATOR + suffixDay)
+                .map(cluster -> cluster + CLUSTER_SEPARATOR + getIndexPrefix(placeholder, type) + INDEX_DATE_SEPARATOR + suffixDay)
                 .collect(Collectors.joining(INDEX_SEPARATOR));
         }
     }
 
     @Override
-    public String getWildcardIndexName(Type type, String[] clusters) {
+    public String getWildcardIndexName(Map<String, String> placeholder, Type type, String[] clusters) {
         if (clusters == null || clusters.length == 0) {
-            return getIndexPrefix(type) + INDEX_DATE_SEPARATOR + INDEX_WILDCARD;
+            return getIndexPrefix(placeholder, type) + INDEX_DATE_SEPARATOR + INDEX_WILDCARD;
         } else {
             return Stream
                 .of(clusters)
-                .map(cluster -> cluster + CLUSTER_SEPARATOR + getIndexPrefix(type) + INDEX_DATE_SEPARATOR + INDEX_WILDCARD)
+                .map(cluster -> cluster + CLUSTER_SEPARATOR + getIndexPrefix(placeholder, type) + INDEX_DATE_SEPARATOR + INDEX_WILDCARD)
                 .collect(Collectors.joining(INDEX_SEPARATOR));
         }
     }
 
-    protected abstract String getIndexPrefix(Type type);
+    protected abstract String getIndexPrefix(Map<String, String> placeholder, Type type);
 }

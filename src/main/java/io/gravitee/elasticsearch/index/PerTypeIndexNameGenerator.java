@@ -16,6 +16,7 @@
 package io.gravitee.elasticsearch.index;
 
 import io.gravitee.elasticsearch.utils.Type;
+import java.util.Map;
 
 /**
  * @author David BRASSELY (david.brassely at graviteesource.com)
@@ -23,14 +24,12 @@ import io.gravitee.elasticsearch.utils.Type;
  */
 public class PerTypeIndexNameGenerator extends AbstractIndexNameGenerator {
 
-    private final String indexPrefix;
-
-    public PerTypeIndexNameGenerator(String indexPrefix) {
-        this.indexPrefix = indexPrefix;
+    public PerTypeIndexNameGenerator(String indexName) {
+        super(indexName);
     }
 
     @Override
-    protected String getIndexPrefix(Type type) {
-        return indexPrefix + '-' + type.getType();
+    protected String getIndexPrefix(Map<String, String> placeholder, Type type) {
+        return getIndexName(placeholder) + '-' + type.getType();
     }
 }
