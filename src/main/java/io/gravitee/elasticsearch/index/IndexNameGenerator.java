@@ -17,6 +17,7 @@ package io.gravitee.elasticsearch.index;
 
 import io.gravitee.elasticsearch.utils.Type;
 import java.time.Instant;
+import java.util.Map;
 
 /**
  * @author David BRASSELY (david.brassely at graviteesource.com)
@@ -30,11 +31,11 @@ public interface IndexNameGenerator {
      * @param type Type of metrics
      * @return the ES index name
      */
-    String getIndexName(Type type, Instant timestamp, String[] clusters);
+    String getIndexName(Map<String, String> parameters, Type type, Instant timestamp, String[] clusters);
 
-    String getIndexName(Type type, long from, long to, String[] clusters);
+    String getIndexName(Map<String, String> parameters, Type type, long from, long to, String[] clusters);
 
-    String getTodayIndexName(Type type, String[] clusters);
+    String getTodayIndexName(Map<String, String> parameters, Type type, String[] clusters);
 
-    String getWildcardIndexName(Type type, String[] clusters);
+    String getWildcardIndexName(Map<String, String> parameters, Type type, String[] clusters);
 }

@@ -13,23 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.gravitee.elasticsearch.index;
+package io.gravitee.elasticsearch.utils;
 
-import io.gravitee.elasticsearch.utils.Type;
 import java.util.Map;
 
-/**
- * @author David BRASSELY (david.brassely at graviteesource.com)
- * @author GraviteeSource Team
- */
-public class MultiTypeIndexNameGenerator extends AbstractIndexNameGenerator {
+public class IndexNameUtils {
 
-    public MultiTypeIndexNameGenerator(String indexName) {
-        super(indexName);
-    }
+    public static String format(String template, Map<String, String> parameters) {
+        var newTemplate = template;
 
-    @Override
-    protected String getIndexPrefix(Map<String, String> placeholder, Type type) {
-        return getIndexName(placeholder);
+        for (var entry : parameters.entrySet()) {
+            newTemplate = newTemplate.replaceAll(String.format("\\{%s}", entry.getKey()), entry.getValue().toLowerCase());
+        }
+
+        return newTemplate;
     }
 }
