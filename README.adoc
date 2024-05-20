@@ -9,7 +9,7 @@ image:https://f.hubspotusercontent40.net/hubfs/7600448/gravitee-github-button.jp
 
 == Description
 The APIM common Elasticsearch library contains interfaces and classes used by Gravitee.io APIM Elasticsearch plugins (Reporter and Repository). +
-An example can be found https://github.com/gravitee-io/gravitee-repoter-elasticsearch[here]
+An example can be found https://github.com/gravitee-io/gravitee-reporter-elasticsearch[here]
 
 
 == Testing
