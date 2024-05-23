@@ -1,3 +1,20 @@
+# [6.0.0](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/5.1.0...6.0.0) (2024-05-23)
+
+
+### Bug Fixes
+
+* **deps:** update dependency io.gravitee:gravitee-bom to 6.0.10 ([ad9ab4f](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/ad9ab4ff7d88231f810b84800aed617e86cdca31))
+
+
+### Features
+
+* allow index name with placeholders ([cac1184](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/cac11847811bad922306e2a1a69a8a32e6baeb15))
+
+
+### BREAKING CHANGES
+
+* index name generator signature changes
+
 # [5.1.0](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/5.0.1...5.1.0) (2023-11-10)
 
 
