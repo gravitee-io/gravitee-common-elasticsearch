@@ -35,6 +35,7 @@ import java.util.List;
 public interface Client {
     Single<ElasticsearchInfo> getInfo() throws ElasticsearchException;
     Single<Health> getClusterHealth();
+    Single<List<String>> getFieldTypes(String indexName, String fieldName);
 
     default Single<BulkResponse> bulk(List<Buffer> data) {
         return bulk(data, false);

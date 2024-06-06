@@ -83,6 +83,7 @@ public class HttpClient implements Client {
     private static String URL_SEARCH;
     private static String URL_COUNT;
     private static String URL_ALIAS;
+    private static String URL_FIELD_MAPPING;
 
     @Autowired
     private Vertx vertx;
@@ -212,6 +213,7 @@ public class HttpClient implements Client {
         URL_SEARCH = urlPrefix + "/_search?ignore_unavailable=true";
         URL_COUNT = urlPrefix + "/_count?ignore_unavailable=true";
         URL_ALIAS = urlPrefix + "/_alias";
+        URL_FIELD_MAPPING = urlPrefix + "/_mapping/field/";
     }
 
     private List<ElasticsearchClient> clients() {
@@ -266,6 +268,18 @@ public class HttpClient implements Client {
             .get(URL_STATE_CLUSTER)
             .rxSend()
             .map(response -> mapper.readValue(response.bodyAsString(), Health.class));
+    }
+
+    @Override
+    public Single<List<String>> getFieldTypes(String indexName, String fieldName) {
+        return nextClient()
+            .getClient()
+            .get("/" + indexName + URL_FIELD_MAPPING + fieldName)
+            .rxSend()
+            .map(response -> {
+                JsonNode rootNode = mapper.readTree(response.bodyAsString());
+                return rootNode.findValuesAsText("type");
+            });
     }
 
     @Override
