@@ -144,6 +144,32 @@ public class HttpClientTest {
         observer.assertNoValues();
     }
 
+    @Test
+    public void shouldGetFieldTypes() throws InterruptedException {
+        String template =
+            """
+        {
+          "mappings": {
+            "properties": {
+              "api-id": {
+                "type": "keyword"
+              }
+            }
+          },
+          "aliases": {}
+        }
+        """;
+        client.createIndexWithAlias("gravitee_field_types_test_1", template).test().await().assertNoErrors().assertComplete();
+        client.createIndexWithAlias("gravitee_field_types_test_2", template).test().await().assertNoErrors().assertComplete();
+
+        client
+            .getFieldTypes("gravitee_field_types_test_*", "api-id")
+            .test()
+            .await()
+            .assertNoErrors()
+            .assertValue(fieldTypes -> fieldTypes.size() == 2 && fieldTypes.stream().allMatch("keyword"::equals));
+    }
+
     @Configuration
     public static class TestConfig {
 
