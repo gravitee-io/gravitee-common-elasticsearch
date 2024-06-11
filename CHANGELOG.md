@@ -1,3 +1,10 @@
+# [6.1.0](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/6.0.0...6.1.0) (2024-06-11)
+
+
+### Features
+
+* get index field types ([83eac89](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/83eac897d47a62c4801df98e2fc110dd99cc5eef))
+
 # [6.0.0](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/5.1.0...6.0.0) (2024-05-23)
 
 
