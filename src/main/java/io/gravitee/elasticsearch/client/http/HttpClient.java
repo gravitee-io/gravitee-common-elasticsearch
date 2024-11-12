@@ -27,6 +27,7 @@ import io.gravitee.elasticsearch.client.Client;
 import io.gravitee.elasticsearch.config.ElasticsearchClient;
 import io.gravitee.elasticsearch.config.Endpoint;
 import io.gravitee.elasticsearch.exception.ElasticsearchException;
+import io.gravitee.elasticsearch.exception.OpensearchException;
 import io.gravitee.elasticsearch.model.CountResponse;
 import io.gravitee.elasticsearch.model.Health;
 import io.gravitee.elasticsearch.model.Response;
@@ -83,6 +84,7 @@ public class HttpClient implements Client {
     private static String URL_SEARCH;
     private static String URL_COUNT;
     private static String URL_ALIAS;
+    private static String URL_ISM_POLICIES;
 
     @Autowired
     private Vertx vertx;
@@ -212,6 +214,7 @@ public class HttpClient implements Client {
         URL_SEARCH = urlPrefix + "/_search?ignore_unavailable=true";
         URL_COUNT = urlPrefix + "/_count?ignore_unavailable=true";
         URL_ALIAS = urlPrefix + "/_alias";
+        URL_ISM_POLICIES = urlPrefix + "/_plugins/_ism/policies";
     }
 
     private List<ElasticsearchClient> clients() {
@@ -529,6 +532,45 @@ public class HttpClient implements Client {
                         )
                     )
                 );
+            });
+    }
+
+    @Override
+    public Completable createIsmPolicy(String policyName, String policy) {
+        logger.info("Create ISM policy: url [{}] name[{}] policy[{}]", URL_ISM_POLICIES + '/' + policyName, policyName, policy);
+        return nextClient()
+            .getClient()
+            .put(URL_ISM_POLICIES + '/' + policyName)
+            .putHeader(io.vertx.core.http.HttpHeaders.CONTENT_TYPE.toString(), MediaType.APPLICATION_JSON)
+            .rxSendBuffer(Buffer.buffer(policy))
+            .doOnError(throwable -> logger.error("Unable to create the index state management policy: {}", throwable.getMessage()))
+            .flatMapCompletable(response -> {
+                if (response.statusCode() != HttpStatusCode.CREATED_201) {
+                    logger.error(
+                        "Unable to create the policy: status[{}] policy[{}] response[{}]",
+                        response.statusCode(),
+                        policy,
+                        response.body()
+                    );
+                    return Completable.error(new OpensearchException("Unable to create the index state management policy"));
+                }
+                return Completable.complete();
+            });
+    }
+
+    @Override
+    public Single<JsonNode> getIsmPolicy(String policyName) {
+        return nextClient()
+            .getClient()
+            .get(URL_ISM_POLICIES + '/' + policyName)
+            .putHeader(io.vertx.core.http.HttpHeaders.CONTENT_TYPE.toString(), MediaType.APPLICATION_JSON)
+            .rxSend()
+            .doOnError(throwable -> logger.error("Unable to get the index state management policy: {}", throwable.getMessage()))
+            .flatMap(response -> {
+                if (response.statusCode() == HttpStatusCode.OK_200) {
+                    return Single.just(mapper.readTree(response.bodyAsString()));
+                }
+                return Single.error(new OpensearchException("Unable to get the index state management policy"));
             });
     }
 
