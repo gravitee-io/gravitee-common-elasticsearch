@@ -49,4 +49,7 @@ public interface Client {
 
     Maybe<JsonNode> getAlias(String aliasName);
     Completable createIndexWithAlias(String indexName, String template);
+
+    Completable createIsmPolicy(String policyName, String policy);
+    Single<JsonNode> getIsmPolicy(String policyName);
 }
