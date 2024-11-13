@@ -536,6 +536,10 @@ public class HttpClient implements Client {
             });
     }
 
+    /**
+     * Creates or updates an OpenSearch policy. This method is specifically designed for use with OpenSearch
+     * and is not compatible with Elasticsearch, as it uses OpenSearch-specific APIs for Index State Management (ISM).
+     **/
     @Override
     public Completable createOrUpdatePolicy(String policyName, String policy, String seqNo, String primaryTerm) {
         logger.debug("Create or update policy: url [{}] name[{}] policy[{}]", URL_ISM_POLICIES + '/' + policyName, policyName, policy);
@@ -567,6 +571,10 @@ public class HttpClient implements Client {
             });
     }
 
+    /**
+     * Retrieves an OpenSearch policy by name. This method is intended for use with OpenSearch only and is not
+     * compatible with Elasticsearch, as it utilizes OpenSearch-specific APIs for Index State Management (ISM).
+     **/
     @Override
     public Single<JsonNode> getPolicy(String policyName) {
         return nextClient()
