@@ -46,6 +46,7 @@ import io.vertx.ext.web.client.WebClientOptions;
 import io.vertx.ext.web.client.impl.WebClientInternal;
 import io.vertx.rxjava3.core.Vertx;
 import io.vertx.rxjava3.core.buffer.Buffer;
+import io.vertx.rxjava3.ext.web.client.HttpRequest;
 import io.vertx.rxjava3.ext.web.client.WebClient;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
@@ -536,41 +537,49 @@ public class HttpClient implements Client {
     }
 
     @Override
-    public Completable createIsmPolicy(String policyName, String policy) {
-        logger.info("Create ISM policy: url [{}] name[{}] policy[{}]", URL_ISM_POLICIES + '/' + policyName, policyName, policy);
-        return nextClient()
+    public Completable createOrUpdatePolicy(String policyName, String policy, String seqNo, String primaryTerm) {
+        logger.debug("Create or update policy: url [{}] name[{}] policy[{}]", URL_ISM_POLICIES + '/' + policyName, policyName, policy);
+
+        HttpRequest<Buffer> request = nextClient()
             .getClient()
             .put(URL_ISM_POLICIES + '/' + policyName)
-            .putHeader(io.vertx.core.http.HttpHeaders.CONTENT_TYPE.toString(), MediaType.APPLICATION_JSON)
+            .putHeader(io.vertx.core.http.HttpHeaders.CONTENT_TYPE.toString(), MediaType.APPLICATION_JSON);
+
+        if (seqNo != null && primaryTerm != null) {
+            request.addQueryParam("if_seq_no", seqNo);
+            request.addQueryParam("if_primary_term", primaryTerm);
+        }
+
+        return request
             .rxSendBuffer(Buffer.buffer(policy))
-            .doOnError(throwable -> logger.error("Unable to create the index state management policy: {}", throwable.getMessage()))
+            .doOnError(throwable -> logger.error("Unable to create or update the policy: {}", throwable.getMessage()))
             .flatMapCompletable(response -> {
-                if (response.statusCode() != HttpStatusCode.CREATED_201) {
+                if (!List.of(HttpStatusCode.OK_200, HttpStatusCode.CREATED_201).contains(response.statusCode())) {
                     logger.error(
-                        "Unable to create the policy: status[{}] policy[{}] response[{}]",
+                        "Unable to create or update the policy: status[{}] policy[{}] response[{}]",
                         response.statusCode(),
                         policy,
                         response.body()
                     );
-                    return Completable.error(new OpensearchException("Unable to create the index state management policy"));
+                    return Completable.error(new OpensearchException("Unable to create or update the policy"));
                 }
                 return Completable.complete();
             });
     }
 
     @Override
-    public Single<JsonNode> getIsmPolicy(String policyName) {
+    public Single<JsonNode> getPolicy(String policyName) {
         return nextClient()
             .getClient()
             .get(URL_ISM_POLICIES + '/' + policyName)
             .putHeader(io.vertx.core.http.HttpHeaders.CONTENT_TYPE.toString(), MediaType.APPLICATION_JSON)
             .rxSend()
-            .doOnError(throwable -> logger.error("Unable to get the index state management policy: {}", throwable.getMessage()))
+            .doOnError(throwable -> logger.error("Unable to get the policy: {}", throwable.getMessage()))
             .flatMap(response -> {
                 if (response.statusCode() == HttpStatusCode.OK_200) {
                     return Single.just(mapper.readTree(response.bodyAsString()));
                 }
-                return Single.error(new OpensearchException("Unable to get the index state management policy"));
+                return Single.error(new OpensearchException("Unable to get the policy"));
             });
     }
 
