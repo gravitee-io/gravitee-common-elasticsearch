@@ -1,3 +1,11 @@
+## [5.1.1](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/5.1.0...5.1.1) (2024-11-14)
+
+
+### Bug Fixes
+
+* implement create and get policy ([3094d95](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/3094d9536a7e0a3ba933d5c89caf86af1383961e))
+* implement create or update policy ([c4c9a8c](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/c4c9a8c975ffece8616848ac2de53fda1d662aea))
+
 # [5.1.0](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/5.0.1...5.1.0) (2023-11-10)
 
 
