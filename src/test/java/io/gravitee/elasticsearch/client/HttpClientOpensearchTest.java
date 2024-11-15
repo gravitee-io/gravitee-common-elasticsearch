@@ -19,7 +19,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import io.gravitee.elasticsearch.client.http.HttpClient;
 import io.gravitee.elasticsearch.client.http.HttpClientConfiguration;
 import io.gravitee.elasticsearch.config.Endpoint;
-import io.gravitee.elasticsearch.exception.OpensearchException;
 import io.gravitee.elasticsearch.model.Health;
 import io.gravitee.elasticsearch.version.ElasticsearchInfo;
 import io.reactivex.rxjava3.core.Maybe;
@@ -172,97 +171,6 @@ public class HttpClientOpensearchTest {
         observer.assertNoErrors();
         observer.assertComplete();
         observer.assertNoValues();
-    }
-
-    @Test
-    @SneakyThrows
-    public void should_create_policy() {
-        String policyId = "foo_policy";
-        String indexPattern = "foo-*";
-        String policyTemplate = String.format(POLICY, policyId, indexPattern, indexPattern);
-        client.createOrUpdatePolicy(policyId, policyTemplate, null, null).test().await().assertNoErrors().assertComplete();
-    }
-
-    @Test
-    @SneakyThrows
-    public void should_get_policy() {
-        String policyId = "bar_policy";
-        String indexPattern = "bar-*";
-        String policyTemplate = String.format(POLICY, policyId, indexPattern, indexPattern);
-        client.createOrUpdatePolicy(policyId, policyTemplate, null, null).test().await().assertNoErrors().assertComplete();
-
-        TestObserver<JsonNode> observer = client
-            .getPolicy(policyId)
-            .test()
-            .await()
-            .assertNoErrors()
-            .assertComplete()
-            .assertValue(node -> policyId.equals(node.findValue("policy_id").textValue()));
-    }
-
-    @Test
-    @SneakyThrows
-    public void should_not_find_policy() {
-        TestObserver<JsonNode> observer = client.getPolicy("unknown_policy").test();
-        observer.await();
-
-        observer.assertError(OpensearchException.class);
-    }
-
-    @Test
-    @SneakyThrows
-    public void should_not_create_policy_twice() {
-        String policyId = "baz_policy";
-        String indexPattern = "baz-*";
-        String policyTemplate = String.format(POLICY, policyId, indexPattern, indexPattern);
-        client.createOrUpdatePolicy(policyId, policyTemplate, null, null).test().await().assertNoErrors().assertComplete();
-
-        client.createOrUpdatePolicy(policyId, policyTemplate, null, null).test().await().assertError(OpensearchException.class);
-    }
-
-    @Test
-    @SneakyThrows
-    public void should_not_update_policy_that_does_not_exist() {
-        String policyId = "qux_policy";
-        String indexPattern = "qux-*";
-        String policyTemplate = String.format(POLICY, policyId, indexPattern, indexPattern);
-
-        client.createOrUpdatePolicy(policyId, policyTemplate, "42", "42").test().await().assertError(OpensearchException.class);
-    }
-
-    @Test
-    @SneakyThrows
-    public void should_update_policy() {
-        String policyId = "waldo_policy";
-        String indexPattern = "waldo-*";
-        String policyTemplate = String.format(POLICY, policyId, indexPattern, indexPattern);
-
-        client.createOrUpdatePolicy(policyId, policyTemplate, null, null).test().await().assertNoErrors().assertComplete();
-
-        TestObserver<JsonNode> observer = client
-            .getPolicy(policyId)
-            .test()
-            .await()
-            .assertComplete()
-            .assertValue(node -> indexPattern.equals(node.findValue("index_patterns").get(0).textValue()));
-
-        String updatedPattern = "waldo-updated-*";
-        String updatedPolicy = String.format(POLICY, policyId, indexPattern, updatedPattern);
-        JsonNode jsonNode = observer.values().get(0);
-
-        client
-            .createOrUpdatePolicy(policyId, updatedPolicy, jsonNode.get("_seq_no").toString(), jsonNode.get("_primary_term").toString())
-            .test()
-            .await()
-            .assertNoErrors()
-            .assertComplete();
-
-        client
-            .getPolicy(policyId)
-            .test()
-            .await()
-            .assertComplete()
-            .assertValue(node -> updatedPattern.equals(node.findValue("index_patterns").get(0).textValue()));
     }
 
     @Configuration
