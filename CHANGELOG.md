@@ -1,3 +1,10 @@
+## [5.1.2](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/5.1.1...5.1.2) (2024-11-15)
+
+
+### Bug Fixes
+
+* do not allow to create index policy from the gateway ([267fcd5](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/267fcd506692531b99b4fd2c61de8cbf68f59ca1))
+
 ## [5.1.1](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/5.1.0...5.1.1) (2024-11-14)
 
 
