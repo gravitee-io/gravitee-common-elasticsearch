@@ -27,7 +27,6 @@ import io.gravitee.elasticsearch.client.Client;
 import io.gravitee.elasticsearch.config.ElasticsearchClient;
 import io.gravitee.elasticsearch.config.Endpoint;
 import io.gravitee.elasticsearch.exception.ElasticsearchException;
-import io.gravitee.elasticsearch.exception.OpensearchException;
 import io.gravitee.elasticsearch.model.CountResponse;
 import io.gravitee.elasticsearch.model.Health;
 import io.gravitee.elasticsearch.model.Response;
@@ -46,7 +45,6 @@ import io.vertx.ext.web.client.WebClientOptions;
 import io.vertx.ext.web.client.impl.WebClientInternal;
 import io.vertx.rxjava3.core.Vertx;
 import io.vertx.rxjava3.core.buffer.Buffer;
-import io.vertx.rxjava3.ext.web.client.HttpRequest;
 import io.vertx.rxjava3.ext.web.client.WebClient;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
@@ -85,7 +83,6 @@ public class HttpClient implements Client {
     private static String URL_SEARCH;
     private static String URL_COUNT;
     private static String URL_ALIAS;
-    private static String URL_ISM_POLICIES;
 
     @Autowired
     private Vertx vertx;
@@ -215,7 +212,6 @@ public class HttpClient implements Client {
         URL_SEARCH = urlPrefix + "/_search?ignore_unavailable=true";
         URL_COUNT = urlPrefix + "/_count?ignore_unavailable=true";
         URL_ALIAS = urlPrefix + "/_alias";
-        URL_ISM_POLICIES = urlPrefix + "/_plugins/_ism/policies";
     }
 
     private List<ElasticsearchClient> clients() {
@@ -533,61 +529,6 @@ public class HttpClient implements Client {
                         )
                     )
                 );
-            });
-    }
-
-    /**
-     * Creates or updates an OpenSearch policy. This method is specifically designed for use with OpenSearch
-     * and is not compatible with Elasticsearch, as it uses OpenSearch-specific APIs for Index State Management (ISM).
-     **/
-    @Override
-    public Completable createOrUpdatePolicy(String policyName, String policy, String seqNo, String primaryTerm) {
-        logger.debug("Create or update policy: url [{}] name[{}] policy[{}]", URL_ISM_POLICIES + '/' + policyName, policyName, policy);
-
-        HttpRequest<Buffer> request = nextClient()
-            .getClient()
-            .put(URL_ISM_POLICIES + '/' + policyName)
-            .putHeader(io.vertx.core.http.HttpHeaders.CONTENT_TYPE.toString(), MediaType.APPLICATION_JSON);
-
-        if (seqNo != null && primaryTerm != null) {
-            request.addQueryParam("if_seq_no", seqNo);
-            request.addQueryParam("if_primary_term", primaryTerm);
-        }
-
-        return request
-            .rxSendBuffer(Buffer.buffer(policy))
-            .doOnError(throwable -> logger.error("Unable to create or update the policy: {}", throwable.getMessage()))
-            .flatMapCompletable(response -> {
-                if (!List.of(HttpStatusCode.OK_200, HttpStatusCode.CREATED_201).contains(response.statusCode())) {
-                    logger.error(
-                        "Unable to create or update the policy: status[{}] policy[{}] response[{}]",
-                        response.statusCode(),
-                        policy,
-                        response.body()
-                    );
-                    return Completable.error(new OpensearchException("Unable to create or update the policy"));
-                }
-                return Completable.complete();
-            });
-    }
-
-    /**
-     * Retrieves an OpenSearch policy by name. This method is intended for use with OpenSearch only and is not
-     * compatible with Elasticsearch, as it utilizes OpenSearch-specific APIs for Index State Management (ISM).
-     **/
-    @Override
-    public Single<JsonNode> getPolicy(String policyName) {
-        return nextClient()
-            .getClient()
-            .get(URL_ISM_POLICIES + '/' + policyName)
-            .putHeader(io.vertx.core.http.HttpHeaders.CONTENT_TYPE.toString(), MediaType.APPLICATION_JSON)
-            .rxSend()
-            .doOnError(throwable -> logger.error("Unable to get the policy: {}", throwable.getMessage()))
-            .flatMap(response -> {
-                if (response.statusCode() == HttpStatusCode.OK_200) {
-                    return Single.just(mapper.readTree(response.bodyAsString()));
-                }
-                return Single.error(new OpensearchException("Unable to get the policy"));
             });
     }
 
