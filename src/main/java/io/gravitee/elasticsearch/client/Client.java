@@ -41,7 +41,18 @@ public interface Client {
         return bulk(data, false);
     }
 
-    Single<BulkResponse> bulk(List<Buffer> data, boolean forceRefresh);
+    default Single<BulkResponse> bulk(List<Buffer> data, boolean forceRefresh) {
+        Buffer payload = Buffer.buffer();
+        data.forEach(payload::appendBuffer);
+        return bulk(payload, forceRefresh);
+    }
+
+    default Single<BulkResponse> bulk(Buffer data) {
+        return bulk(data, false);
+    }
+
+    Single<BulkResponse> bulk(Buffer data, boolean forceRefresh);
+
     Completable putTemplate(String templateName, String template);
     Completable putIndexTemplate(String templateName, String template);
     Completable putPipeline(String templateName, String template);

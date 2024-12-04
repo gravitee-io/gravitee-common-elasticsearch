@@ -283,10 +283,9 @@ public class HttpClient implements Client {
     }
 
     @Override
-    public Single<BulkResponse> bulk(final List<io.vertx.core.buffer.Buffer> data, boolean forceRefresh) {
+    public Single<BulkResponse> bulk(final io.vertx.core.buffer.Buffer data, boolean forceRefresh) {
         // Compact buffer
-        Buffer payload = Buffer.buffer();
-        data.forEach(buffer -> payload.appendBuffer(Buffer.newInstance(buffer)));
+        Buffer payload = Buffer.newInstance(data);
         String bulkURL = URL_BULK;
         if (forceRefresh) {
             bulkURL += "?refresh=true";
