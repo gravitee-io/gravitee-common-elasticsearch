@@ -1,3 +1,10 @@
+# [6.2.0](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/6.1.0...6.2.0) (2024-12-05)
+
+
+### Features
+
+* add new bulk method with simple buffer ([74048d0](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/74048d0210ee7c3313c349f51738a32bb741809e))
+
 # [6.1.0](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/6.0.0...6.1.0) (2024-06-11)
 
 
