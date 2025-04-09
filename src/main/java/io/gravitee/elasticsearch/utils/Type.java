@@ -27,7 +27,8 @@ public enum Type {
     V4_LOG("v4-log"),
     V4_METRICS("v4-metrics"),
     V4_MESSAGE_METRICS("v4-message-metrics"),
-    V4_MESSAGE_LOG("v4-message-log");
+    V4_MESSAGE_LOG("v4-message-log"),
+    V4_METRICS_DATA_STREAM("v4-metrics-data-stream");
 
     private final String type;
 
@@ -40,6 +41,7 @@ public enum Type {
         V4_METRICS,
         V4_MESSAGE_LOG,
         V4_MESSAGE_METRICS,
+        V4_METRICS_DATA_STREAM
     };
 
     Type(final String type) {
