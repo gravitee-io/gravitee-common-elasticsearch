@@ -1,3 +1,10 @@
+# [6.3.0-alpha.1](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/6.2.0...6.3.0-alpha.1) (2025-07-17)
+
+
+### Features
+
+* add new EVENT_METRICS type ([4c4ea25](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/4c4ea2563d5ad1744943bdb589b276f5741c0879))
+
 # [6.2.0](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/6.1.0...6.2.0) (2024-12-05)
 
 
