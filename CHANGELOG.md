@@ -1,3 +1,10 @@
+# [6.3.0-alpha.2](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/6.3.0-alpha.1...6.3.0-alpha.2) (2025-07-17)
+
+
+### Bug Fixes
+
+* **dependencies:** fix dependencies scopes ([abb67b4](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/abb67b4d822665bde4f5acf79d5568d0672497fc))
+
 # [6.3.0-alpha.1](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/6.2.0...6.3.0-alpha.1) (2025-07-17)
 
 
