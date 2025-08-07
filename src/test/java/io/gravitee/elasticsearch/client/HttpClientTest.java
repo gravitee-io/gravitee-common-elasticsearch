@@ -21,6 +21,7 @@ import io.gravitee.elasticsearch.client.http.HttpClientConfiguration;
 import io.gravitee.elasticsearch.config.Endpoint;
 import io.gravitee.elasticsearch.model.Health;
 import io.gravitee.elasticsearch.version.ElasticsearchInfo;
+import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.observers.TestObserver;
@@ -168,6 +169,153 @@ public class HttpClientTest {
             .await()
             .assertNoErrors()
             .assertValue(fieldTypes -> fieldTypes.size() == 2 && fieldTypes.stream().allMatch("keyword"::equals));
+    }
+
+    @Test
+    void shouldNotGetDataStream() throws InterruptedException {
+        Maybe<JsonNode> jsonNodeMaybe = client.getDataStream("gravitee_test_data_stream");
+
+        jsonNodeMaybe.isEmpty().test().await().assertComplete().assertNoErrors().assertValue(true);
+    }
+
+    @Test
+    void shouldCreateDataStream() throws InterruptedException {
+        testCreateDataStream("gravitee-event-metrics-1", 9344);
+    }
+
+    @Test
+    void shouldGetDataStream() throws InterruptedException {
+        testCreateDataStream("gravitee-event-metrics-2", 9434);
+
+        Maybe<JsonNode> jsonNodeMaybe = client.getDataStream("gravitee-event-metrics-2");
+
+        jsonNodeMaybe.test().await().assertComplete().assertNoErrors().assertValueCount(1);
+    }
+
+    private void testCreateDataStream(String templateName, int priority) throws InterruptedException {
+        String template =
+            """
+                {
+                  "index_patterns": ["gravitee-event-metrics*"],
+                  "data_stream": {},
+                  "template": {
+                    "settings": {
+                      "index.mode": "time_series",
+                      "index.lifecycle.name": "event-metrics-ilm-policy"
+                    },
+                    "mappings": {
+                      "properties": {
+                        "gw-id": {
+                          "type": "keyword",
+                          "time_series_dimension": true
+                        },
+                        "org-id": {
+                          "type": "keyword",
+                          "time_series_dimension": true
+                        },
+                        "env-id": {
+                          "type": "keyword",
+                          "time_series_dimension": true
+                        },
+                        "api-id": {
+                          "type": "keyword",
+                          "time_series_dimension": true
+                        },
+                        "plan-id": {
+                          "type": "keyword",
+                          "time_series_dimension": true
+                        },
+                        "app-id": {
+                          "type": "keyword",
+                          "time_series_dimension": true
+                        },
+                        "topic": {
+                          "type": "keyword",
+                          "time_series_dimension": true
+                        },
+                        "downstream-publish-messages-total": {
+                          "type": "integer",
+                          "time_series_metric": "counter"
+                        },
+                        "downstream-publish-message-bytes": {
+                          "type": "long",
+                          "time_series_metric": "counter"
+                        },
+                        "upstream-publish-messages-total": {
+                          "type": "integer",
+                          "time_series_metric": "counter"
+                        },
+                        "upstream-publish-message-bytes": {
+                          "type": "long",
+                          "time_series_metric": "counter"
+                        },
+                        "downstream-subscribe-messages-total": {
+                          "type": "integer",
+                          "time_series_metric": "counter"
+                        },
+                        "downstream-subscribe-message-bytes": {
+                          "type": "long",
+                          "time_series_metric": "counter"
+                        },
+                        "upstream-subscribe-messages-total": {
+                          "type": "integer",
+                          "time_series_metric": "counter"
+                        },
+                        "upstream-subscribe-message-bytes": {
+                          "type": "long",
+                          "time_series_metric": "counter"
+                        },
+                        "downstream-active-connections": {
+                          "type": "integer",
+                          "time_series_metric": "gauge"
+                        },
+                        "upstream-active-connections": {
+                          "type": "integer",
+                          "time_series_metric": "gauge"
+                        },
+                        "upstream-authenticated-connections": {
+                          "type": "integer",
+                          "time_series_metric": "gauge"
+                        },
+                        "downstream-authenticated-connections": {
+                          "type": "integer",
+                          "time_series_metric": "gauge"
+                        },
+                        "downstream-authentication-failures-total": {
+                          "type": "integer",
+                          "time_series_metric": "counter"
+                        },
+                        "upstream-authentication-failures-total": {
+                          "type": "integer",
+                          "time_series_metric": "counter"
+                        },
+                        "downstream-authentication-successes-total": {
+                          "type": "integer",
+                          "time_series_metric": "counter"
+                        },
+                        "upstream-authentication-successes-total": {
+                          "type": "integer",
+                          "time_series_metric": "counter"
+                        },
+                        "@timestamp": {
+                          "type": "date"
+                        }
+                      }
+                    }
+                  },
+                  "priority": %d,
+                  "_meta": {
+                    "description": "Template for event metrics time series data stream"
+                  }
+                }""".formatted(
+                    priority
+                );
+
+        Completable indexTemplateCompletable = client.putIndexTemplate(templateName, template);
+        indexTemplateCompletable.test().await().assertComplete().assertNoErrors().assertNoValues();
+
+        Completable completable = client.createDataStream(templateName);
+        completable.test().await().assertComplete().assertNoErrors().assertNoValues();
     }
 
     @Configuration

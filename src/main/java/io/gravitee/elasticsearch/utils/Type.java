@@ -20,15 +20,15 @@ package io.gravitee.elasticsearch.utils;
  * @author GraviteeSource Team
  */
 public enum Type {
-    REQUEST("request"),
-    HEALTH_CHECK("health"),
-    LOG("log"),
-    MONITOR("monitor"),
-    V4_LOG("v4-log"),
-    V4_METRICS("v4-metrics"),
-    V4_MESSAGE_METRICS("v4-message-metrics"),
-    V4_MESSAGE_LOG("v4-message-log"),
-    EVENT_METRICS("event-metrics");
+    REQUEST("request", false),
+    HEALTH_CHECK("health", false),
+    LOG("log", false),
+    MONITOR("monitor", false),
+    V4_LOG("v4-log", false),
+    V4_METRICS("v4-metrics", false),
+    V4_MESSAGE_METRICS("v4-message-metrics", false),
+    V4_MESSAGE_LOG("v4-message-log", false),
+    EVENT_METRICS("event-metrics", true);
 
     private final String type;
 
@@ -43,12 +43,18 @@ public enum Type {
         V4_MESSAGE_METRICS,
         EVENT_METRICS,
     };
+    private final boolean dataStream;
 
-    Type(final String type) {
+    Type(final String type, boolean dataStream) {
         this.type = type;
+        this.dataStream = dataStream;
     }
 
     public String getType() {
         return type;
+    }
+
+    public boolean isDataStream() {
+        return dataStream;
     }
 }
