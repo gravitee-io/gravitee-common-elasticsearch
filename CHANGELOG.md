@@ -1,3 +1,10 @@
+# [6.3.0-alpha.3](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/6.3.0-alpha.2...6.3.0-alpha.3) (2025-08-07)
+
+
+### Features
+
+* add support for Elasticsearch data streams ([0b63b85](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/0b63b85daa7083b20e768ee343b2a551ed41f7e8))
+
 # [6.3.0-alpha.2](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/6.3.0-alpha.1...6.3.0-alpha.2) (2025-07-17)
 
 
