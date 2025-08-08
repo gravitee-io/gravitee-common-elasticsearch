@@ -1,3 +1,10 @@
+# [6.3.0-alpha.4](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/6.3.0-alpha.3...6.3.0-alpha.4) (2025-08-08)
+
+
+### Features
+
+* revert changes in HttpClient (not required) ([02d98ff](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/02d98ffc59d5312b88fde85a8ed948e857f0f282))
+
 # [6.3.0-alpha.3](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/6.3.0-alpha.2...6.3.0-alpha.3) (2025-08-07)
 
 
