@@ -61,8 +61,4 @@ public interface Client {
 
     Maybe<JsonNode> getAlias(String aliasName);
     Completable createIndexWithAlias(String indexName, String template);
-
-    Maybe<JsonNode> getDataStream(String templateName);
-
-    Completable createDataStream(String templateName);
 }

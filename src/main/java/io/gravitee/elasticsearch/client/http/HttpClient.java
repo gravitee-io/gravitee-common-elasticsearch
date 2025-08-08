@@ -408,40 +408,6 @@ public class HttpClient implements Client {
             });
     }
 
-    @Override
-    public Maybe<JsonNode> getDataStream(String templateName) {
-        return nextClient()
-            .getClient()
-            .get(URL_DATA_STREAM + '/' + templateName)
-            .rxSend()
-            .doOnError(throwable -> logger.error("Error: {}", throwable.getMessage()))
-            .flatMapMaybe(response -> {
-                if (response.statusCode() == HttpStatusCode.OK_200) {
-                    return Maybe.just(mapper.readTree(response.bodyAsString()));
-                }
-
-                logger.info("Data stream [{}] not found", templateName);
-                return Maybe.empty();
-            });
-    }
-
-    @Override
-    public Completable createDataStream(String templateName) {
-        return nextClient()
-            .getClient()
-            .put(URL_DATA_STREAM + '/' + templateName)
-            .rxSend()
-            .doOnError(throwable -> logger.error("Unable to put data stream in Elasticsearch: {}", throwable.getMessage()))
-            .flatMapCompletable(response -> {
-                if (response.statusCode() != HttpStatusCode.OK_200) {
-                    logger.error("Unable to create data stream: status[{}] response[{}]", response.statusCode(), response.body());
-                    return Completable.error(new ElasticsearchException("Unable to create data stream in Elasticsearch"));
-                }
-
-                return Completable.complete();
-            });
-    }
-
     /**
      * Perform an HTTP count query
      * @param indexes indexes names. If null count on all indexes
