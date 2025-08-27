@@ -33,11 +33,7 @@ import io.gravitee.elasticsearch.model.Response;
 import io.gravitee.elasticsearch.model.SearchResponse;
 import io.gravitee.elasticsearch.model.bulk.BulkResponse;
 import io.gravitee.elasticsearch.version.ElasticsearchInfo;
-import io.reactivex.rxjava3.core.Completable;
-import io.reactivex.rxjava3.core.Maybe;
-import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.core.Single;
-import io.reactivex.rxjava3.core.SingleSource;
+import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.functions.Function;
 import io.vertx.core.net.ProxyOptions;
 import io.vertx.core.net.ProxyType;
@@ -84,7 +80,6 @@ public class HttpClient implements Client {
     private static String URL_COUNT;
     private static String URL_ALIAS;
     private static String URL_FIELD_MAPPING;
-    private static String URL_DATA_STREAM;
 
     @Autowired
     private Vertx vertx;
@@ -215,7 +210,6 @@ public class HttpClient implements Client {
         URL_COUNT = urlPrefix + "/_count?ignore_unavailable=true";
         URL_ALIAS = urlPrefix + "/_alias";
         URL_FIELD_MAPPING = urlPrefix + "/_mapping/field/";
-        URL_DATA_STREAM = urlPrefix + "/_data_stream";
     }
 
     private List<ElasticsearchClient> clients() {

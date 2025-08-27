@@ -15,11 +15,15 @@
  */
 package io.gravitee.elasticsearch.model;
 
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -30,6 +34,12 @@ public class Aggregation implements Serializable {
 
     /** If the aggregation is a bucketing one */
     private List<JsonNode> buckets;
+
+    /** If the aggregation is a top hits one */
+    private SearchHits hits;
+
+    /** Supports nested aggregations */
+    private final Map<String, Aggregation> aggregations = new HashMap<>();
 
     /** If the aggregation is a metric one */
     private Float value;
@@ -103,5 +113,30 @@ public class Aggregation implements Serializable {
 
     public void setSum(Float sum) {
         this.sum = sum;
+    }
+
+    public SearchHits getHits() {
+        return hits;
+    }
+
+    public void setHits(SearchHits hits) {
+        this.hits = hits;
+    }
+
+    @JsonAnySetter
+    public void setAggregation(String name, Object value) {
+        if (value instanceof Map) {
+            Aggregation agg = Aggregation.fromMap((Map<?, ?>) value);
+            aggregations.put(name, agg);
+        }
+    }
+
+    public static Aggregation fromMap(Map<?, ?> map) {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.convertValue(map, Aggregation.class);
+    }
+
+    public Map<String, Aggregation> getAggregations() {
+        return aggregations;
     }
 }
