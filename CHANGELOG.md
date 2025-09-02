@@ -1,3 +1,10 @@
+# [6.3.0-alpha.5](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/6.3.0-alpha.4...6.3.0-alpha.5) (2025-09-02)
+
+
+### Features
+
+* support sub aggregations in search response ([666fc91](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/666fc91819b82f72db4bbcdb9f0400c3c1a52f84))
+
 # [6.3.0-alpha.4](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/6.3.0-alpha.3...6.3.0-alpha.4) (2025-08-08)
 
 
