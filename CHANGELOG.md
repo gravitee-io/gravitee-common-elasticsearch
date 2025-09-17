@@ -1,3 +1,38 @@
+# [6.3.0-alpha.5](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/6.3.0-alpha.4...6.3.0-alpha.5) (2025-09-02)
+
+
+### Features
+
+* support sub aggregations in search response ([666fc91](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/666fc91819b82f72db4bbcdb9f0400c3c1a52f84))
+
+# [6.3.0-alpha.4](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/6.3.0-alpha.3...6.3.0-alpha.4) (2025-08-08)
+
+
+### Features
+
+* revert changes in HttpClient (not required) ([02d98ff](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/02d98ffc59d5312b88fde85a8ed948e857f0f282))
+
+# [6.3.0-alpha.3](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/6.3.0-alpha.2...6.3.0-alpha.3) (2025-08-07)
+
+
+### Features
+
+* add support for Elasticsearch data streams ([0b63b85](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/0b63b85daa7083b20e768ee343b2a551ed41f7e8))
+
+# [6.3.0-alpha.2](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/6.3.0-alpha.1...6.3.0-alpha.2) (2025-07-17)
+
+
+### Bug Fixes
+
+* **dependencies:** fix dependencies scopes ([abb67b4](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/abb67b4d822665bde4f5acf79d5568d0672497fc))
+
+# [6.3.0-alpha.1](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/6.2.0...6.3.0-alpha.1) (2025-07-17)
+
+
+### Features
+
+* add new EVENT_METRICS type ([4c4ea25](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/4c4ea2563d5ad1744943bdb589b276f5741c0879))
+
 # [6.2.0](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/6.1.0...6.2.0) (2024-12-05)
 
 

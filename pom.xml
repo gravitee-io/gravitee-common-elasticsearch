@@ -28,7 +28,7 @@
 
     <groupId>io.gravitee.elasticsearch</groupId>
     <artifactId>gravitee-common-elasticsearch</artifactId>
-    <version>6.2.0</version>
+    <version>6.3.0-alpha.5</version>
 
     <name>Gravitee.io APIM - Elasticsearch - Common</name>
 
@@ -72,6 +72,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
+            <scope>provided</scope>
         </dependency>
 
         <!-- Spring dependencies -->
@@ -91,14 +92,17 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-core</artifactId>
+            <scope>provided</scope>
         </dependency>
 
         <!-- Freemarker dependencies -->
@@ -106,6 +110,7 @@
             <groupId>org.freemarker</groupId>
             <artifactId>freemarker</artifactId>
             <version>${freemarker.version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- Vert.x dependencies -->
@@ -124,6 +129,7 @@
         <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-web-client</artifactId>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -152,6 +158,7 @@
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
