@@ -44,6 +44,9 @@ public class Aggregation implements Serializable {
     /** If the aggregation is a metric one */
     private Float value;
 
+    /** If the aggregation is a percentile */
+    private Map<String, Float> values;
+
     /** If the aggregation is a stats one */
     private Float count;
 
@@ -138,5 +141,13 @@ public class Aggregation implements Serializable {
 
     public Map<String, Aggregation> getAggregations() {
         return aggregations;
+    }
+
+    public Map<String, Float> getValues() {
+        return values;
+    }
+
+    public void setValues(Map<String, Float> values) {
+        this.values = values;
     }
 }
