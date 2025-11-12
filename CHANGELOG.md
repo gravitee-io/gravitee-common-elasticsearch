@@ -1,3 +1,10 @@
+# [6.4.0](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/6.3.0...6.4.0) (2025-11-12)
+
+
+### Features
+
+* add percentiles to aggregation response model ([89af672](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/89af6722a7fa0a81c8fb4fedf8e8feb494e43d03))
+
 # [6.3.0](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/6.2.0...6.3.0) (2025-09-17)
 
 
