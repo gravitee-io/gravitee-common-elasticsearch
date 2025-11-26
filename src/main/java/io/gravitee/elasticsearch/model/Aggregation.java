@@ -18,6 +18,7 @@ package io.gravitee.elasticsearch.model;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.Serializable;
@@ -61,6 +62,10 @@ public class Aggregation implements Serializable {
 
     /** If the aggregation is a stats one */
     private Float sum;
+
+    /** For composite aggregations: the after_key for pagination */
+    @JsonProperty("after_key")
+    private JsonNode afterKey;
 
     public List<JsonNode> getBuckets() {
         return buckets;
@@ -149,5 +154,13 @@ public class Aggregation implements Serializable {
 
     public void setValues(Map<String, Float> values) {
         this.values = values;
+    }
+
+    public JsonNode getAfterKey() {
+        return afterKey;
+    }
+
+    public void setAfterKey(JsonNode afterKey) {
+        this.afterKey = afterKey;
     }
 }
