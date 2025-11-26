@@ -1,3 +1,10 @@
+# [6.5.0](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/6.4.0...6.5.0) (2025-11-26)
+
+
+### Features
+
+* add after key property to aggregation model ([c79be6b](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/c79be6bd9ec51071577fee1bc005ea2c2351984c))
+
 # [6.4.0](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/6.3.0...6.4.0) (2025-11-12)
 
 
