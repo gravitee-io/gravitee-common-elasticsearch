@@ -61,8 +61,7 @@ public class ILMIndexNameGenerator extends AbstractIndexNameGenerator {
         if (clusters == null || clusters.length == 0) {
             return getIndexPrefix(parameters, type);
         } else {
-            return Stream
-                .of(clusters)
+            return Stream.of(clusters)
                 .map(cluster -> cluster + CLUSTER_SEPARATOR + getIndexPrefix(parameters, type))
                 .collect(Collectors.joining(INDEX_SEPARATOR));
         }
