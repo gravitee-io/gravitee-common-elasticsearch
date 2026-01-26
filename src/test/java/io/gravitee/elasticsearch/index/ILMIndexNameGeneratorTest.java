@@ -47,8 +47,9 @@ public class ILMIndexNameGeneratorTest {
         String[] clusters,
         String expectedIndexName
     ) {
-        assertThat(new ILMIndexNameGenerator(indexName).getIndexName(parameters, Type.REQUEST, 0, 0, clusters))
-            .isEqualTo(expectedIndexName);
+        assertThat(new ILMIndexNameGenerator(indexName).getIndexName(parameters, Type.REQUEST, 0, 0, clusters)).isEqualTo(
+            expectedIndexName
+        );
     }
 
     private static Stream<Arguments> shouldGenerateIndexNameWithPlaceholder() {
@@ -91,8 +92,13 @@ public class ILMIndexNameGeneratorTest {
 
     @Test
     void shouldGenerateIndexName_withClusters() {
-        String indexName = new ILMIndexNameGenerator("gravitee")
-            .getIndexName(parameters, Type.REQUEST, 0, 0, new String[] { "europe", "asia" });
+        String indexName = new ILMIndexNameGenerator("gravitee").getIndexName(
+            parameters,
+            Type.REQUEST,
+            0,
+            0,
+            new String[] { "europe", "asia" }
+        );
         assertThat(indexName).isEqualTo("europe:gravitee-request,asia:gravitee-request");
     }
 }
