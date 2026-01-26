@@ -38,8 +38,9 @@ public class MultiTypeIndexNameGeneratorTest {
         String[] clusters,
         String expectedIndexName
     ) {
-        assertThat(new MultiTypeIndexNameGenerator(indexName).getIndexName(parameters, Type.REQUEST, 0, 0, clusters))
-            .isEqualTo(expectedIndexName);
+        assertThat(new MultiTypeIndexNameGenerator(indexName).getIndexName(parameters, Type.REQUEST, 0, 0, clusters)).isEqualTo(
+            expectedIndexName
+        );
     }
 
     private static Stream<Arguments> shouldGenerateIndexNameWithPlaceholder() {
