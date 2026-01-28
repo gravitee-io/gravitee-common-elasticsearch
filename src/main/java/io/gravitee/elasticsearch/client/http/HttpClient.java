@@ -35,12 +35,12 @@ import io.gravitee.elasticsearch.model.bulk.BulkResponse;
 import io.gravitee.elasticsearch.version.ElasticsearchInfo;
 import io.reactivex.rxjava3.core.*;
 import io.reactivex.rxjava3.functions.Function;
+import io.vertx.core.buffer.Buffer;
 import io.vertx.core.net.ProxyOptions;
 import io.vertx.core.net.ProxyType;
 import io.vertx.ext.web.client.WebClientOptions;
 import io.vertx.ext.web.client.impl.WebClientInternal;
 import io.vertx.rxjava3.core.Vertx;
-import io.vertx.rxjava3.core.buffer.Buffer;
 import io.vertx.rxjava3.ext.web.client.WebClient;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
@@ -287,7 +287,7 @@ public class HttpClient implements Client {
 
     @Override
     public Single<BulkResponse> bulk(final io.vertx.core.buffer.Buffer data, boolean forceRefresh) {
-        Buffer payload = Buffer.newInstance(data);
+        // Compact buffer
         String bulkURL = URL_BULK;
         if (forceRefresh) {
             bulkURL += "?refresh=true";
@@ -299,7 +299,7 @@ public class HttpClient implements Client {
                 .getClient()
                 .post(url)
                 .putHeader(HttpHeaders.CONTENT_TYPE, "application/x-ndjson")
-                .rxSendBuffer(payload)
+                .rxSendBuffer(data)
                 .doOnError(throwable -> logger.error("Unable to send bulk data to Elasticsearch: {}", throwable.getMessage()))
                 .map(response -> {
                     if (response.statusCode() != HttpStatusCode.OK_200) {
