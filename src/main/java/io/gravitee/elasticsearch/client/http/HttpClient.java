@@ -252,7 +252,7 @@ public class HttpClient implements Client {
 
     @Override
     public Single<ElasticsearchInfo> getInfo() throws ElasticsearchException {
-        return getInfo(nextClient());
+        return Single.defer(() -> getInfo(nextClient()));
     }
 
     /**
@@ -263,147 +263,168 @@ public class HttpClient implements Client {
      */
     @Override
     public Single<Health> getClusterHealth() {
-        return nextClient()
-            .getClient()
-            .get(URL_STATE_CLUSTER)
-            .rxSend()
-            .map(response -> mapper.readValue(response.bodyAsString(), Health.class));
+        return Single.defer(() -> {
+            ElasticsearchClient client = nextClient();
+            return client
+                .getClient()
+                .get(URL_STATE_CLUSTER)
+                .rxSend()
+                .map(response -> mapper.readValue(response.bodyAsString(), Health.class));
+        });
     }
 
     @Override
     public Single<List<String>> getFieldTypes(String indexName, String fieldName) {
-        return nextClient()
-            .getClient()
-            .get("/" + indexName + URL_FIELD_MAPPING + fieldName)
-            .rxSend()
-            .map(response -> {
-                JsonNode rootNode = mapper.readTree(response.bodyAsString());
-                return rootNode.findValuesAsText("type");
-            });
+        return Single.defer(() -> {
+            ElasticsearchClient client = nextClient();
+            return client
+                .getClient()
+                .get("/" + indexName + URL_FIELD_MAPPING + fieldName)
+                .rxSend()
+                .map(response -> {
+                    JsonNode rootNode = mapper.readTree(response.bodyAsString());
+                    return rootNode.findValuesAsText("type");
+                });
+        });
     }
 
     @Override
     public Single<BulkResponse> bulk(final io.vertx.core.buffer.Buffer data, boolean forceRefresh) {
-        // Compact buffer
         Buffer payload = Buffer.newInstance(data);
         String bulkURL = URL_BULK;
         if (forceRefresh) {
             bulkURL += "?refresh=true";
         }
-        return nextClient()
-            .getClient()
-            .post(bulkURL)
-            .putHeader(HttpHeaders.CONTENT_TYPE, "application/x-ndjson")
-            .rxSendBuffer(payload)
-            .doOnError(throwable -> logger.error("Unable to send bulk data to Elasticsearch: {}", throwable.getMessage()))
-            .map(response -> {
-                if (response.statusCode() != HttpStatusCode.OK_200) {
-                    logger.error("Unable to send bulk index data: status[{}] response[{}]", response.statusCode(), response.body());
-                    throw new ElasticsearchException("Unable to send bulk data");
-                }
+        final String url = bulkURL;
+        return Single.defer(() -> {
+            ElasticsearchClient client = nextClient();
+            return client
+                .getClient()
+                .post(url)
+                .putHeader(HttpHeaders.CONTENT_TYPE, "application/x-ndjson")
+                .rxSendBuffer(payload)
+                .doOnError(throwable -> logger.error("Unable to send bulk data to Elasticsearch: {}", throwable.getMessage()))
+                .map(response -> {
+                    if (response.statusCode() != HttpStatusCode.OK_200) {
+                        logger.error("Unable to send bulk index data: status[{}] response[{}]", response.statusCode(), response.body());
+                        throw new ElasticsearchException("Unable to send bulk data");
+                    }
 
-                BulkResponse bulkResponse = mapper.readValue(response.bodyAsString(), BulkResponse.class);
-                if (bulkResponse.getErrors()) {
-                    bulkResponse
-                        .getItems()
-                        .stream()
-                        .filter(bulkItemResponse -> bulkItemResponse.getIndex().getError() != null)
-                        .forEach(bulkItemResponse ->
-                            logger.error(
-                                "An error occurs while indexing data into ES: indice[{}] error[{}]",
-                                bulkItemResponse.getIndex().getIndexName(),
-                                bulkItemResponse.getIndex().getError().getReason()
-                            )
-                        );
-                }
+                    BulkResponse bulkResponse = mapper.readValue(response.bodyAsString(), BulkResponse.class);
+                    if (bulkResponse.getErrors()) {
+                        bulkResponse
+                            .getItems()
+                            .stream()
+                            .filter(bulkItemResponse -> bulkItemResponse.getIndex().getError() != null)
+                            .forEach(bulkItemResponse ->
+                                logger.error(
+                                    "An error occurs while indexing data into ES: indice[{}] error[{}]",
+                                    bulkItemResponse.getIndex().getIndexName(),
+                                    bulkItemResponse.getIndex().getError().getReason()
+                                )
+                            );
+                    }
 
-                return bulkResponse;
-            });
+                    return bulkResponse;
+                });
+        });
     }
 
     @Override
     public Completable putTemplate(String templateName, String template) {
-        return nextClient()
-            .getClient()
-            .put(URL_TEMPLATE + '/' + templateName)
-            .putHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-            .rxSendBuffer(Buffer.buffer(template))
-            .doOnError(throwable -> logger.error("Unable to put a template to Elasticsearch: {}", throwable.getMessage()))
-            .flatMapCompletable(response -> {
-                if (response.statusCode() != HttpStatusCode.OK_200) {
-                    logger.error(
-                        "Unable to put template mapping: status[{}] template[{}] response[{}]",
-                        response.statusCode(),
-                        template,
-                        response.body()
-                    );
-                    return Completable.error(new ElasticsearchException("Unable to put template mapping"));
-                }
+        return Completable.defer(() -> {
+            ElasticsearchClient client = nextClient();
+            return client
+                .getClient()
+                .put(URL_TEMPLATE + '/' + templateName)
+                .putHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                .rxSendBuffer(Buffer.buffer(template))
+                .doOnError(throwable -> logger.error("Unable to put a template to Elasticsearch: {}", throwable.getMessage()))
+                .flatMapCompletable(response -> {
+                    if (response.statusCode() != HttpStatusCode.OK_200) {
+                        logger.error(
+                            "Unable to put template mapping: status[{}] template[{}] response[{}]",
+                            response.statusCode(),
+                            template,
+                            response.body()
+                        );
+                        return Completable.error(new ElasticsearchException("Unable to put template mapping"));
+                    }
 
-                return Completable.complete();
-            });
+                    return Completable.complete();
+                });
+        });
     }
 
     @Override
     public Completable putIndexTemplate(String templateName, String template) {
-        return nextClient()
-            .getClient()
-            .put(URL_INDEX_TEMPLATE + '/' + templateName)
-            .putHeader(io.vertx.core.http.HttpHeaders.CONTENT_TYPE.toString(), MediaType.APPLICATION_JSON)
-            .rxSendBuffer(Buffer.buffer(template))
-            .doOnError(throwable -> logger.error("Unable to put an index template to Elasticsearch: {}", throwable.getMessage()))
-            .flatMapCompletable(response -> {
-                if (response.statusCode() != HttpStatusCode.OK_200) {
-                    logger.error(
-                        "Unable to put index template mapping: status[{}] template[{}] response[{}]",
-                        response.statusCode(),
-                        template,
-                        response.body()
-                    );
-                    return Completable.error(new ElasticsearchException("Unable to put index template mapping"));
-                }
+        return Completable.defer(() -> {
+            ElasticsearchClient client = nextClient();
+            return client
+                .getClient()
+                .put(URL_INDEX_TEMPLATE + '/' + templateName)
+                .putHeader(io.vertx.core.http.HttpHeaders.CONTENT_TYPE.toString(), MediaType.APPLICATION_JSON)
+                .rxSendBuffer(Buffer.buffer(template))
+                .doOnError(throwable -> logger.error("Unable to put an index template to Elasticsearch: {}", throwable.getMessage()))
+                .flatMapCompletable(response -> {
+                    if (response.statusCode() != HttpStatusCode.OK_200) {
+                        logger.error(
+                            "Unable to put index template mapping: status[{}] template[{}] response[{}]",
+                            response.statusCode(),
+                            template,
+                            response.body()
+                        );
+                        return Completable.error(new ElasticsearchException("Unable to put index template mapping"));
+                    }
 
-                return Completable.complete();
-            });
+                    return Completable.complete();
+                });
+        });
     }
 
     @Override
     public Maybe<JsonNode> getAlias(String aliasName) {
-        return nextClient()
-            .getClient()
-            .get(URL_ALIAS + '/' + aliasName)
-            .rxSend()
-            .doOnError(throwable -> logger.error("Unable to get a connection to Elasticsearch: {}", throwable.getMessage()))
-            .flatMapMaybe(response -> {
-                if (response.statusCode() == HttpStatusCode.OK_200) {
-                    return Maybe.just(mapper.readTree(response.bodyAsString()));
-                }
+        return Maybe.defer(() -> {
+            ElasticsearchClient client = nextClient();
+            return client
+                .getClient()
+                .get(URL_ALIAS + '/' + aliasName)
+                .rxSend()
+                .doOnError(throwable -> logger.error("Unable to get a connection to Elasticsearch: {}", throwable.getMessage()))
+                .flatMapMaybe(response -> {
+                    if (response.statusCode() == HttpStatusCode.OK_200) {
+                        return Maybe.just(mapper.readTree(response.bodyAsString()));
+                    }
 
-                logger.info("Alias [{}] not found", aliasName);
-                return Maybe.empty();
-            });
+                    logger.info("Alias [{}] not found", aliasName);
+                    return Maybe.empty();
+                });
+        });
     }
 
     @Override
     public Completable createIndexWithAlias(String indexName, String template) {
-        return nextClient()
-            .getClient()
-            .put(URL_ROOT + indexName)
-            .putHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-            .rxSendBuffer(Buffer.buffer(template))
-            .flatMapCompletable(response -> {
-                if (response.statusCode() != HttpStatusCode.OK_200) {
-                    logger.error(
-                        "Unable to create index and alias: status[{}] template[{}] response[{}]",
-                        response.statusCode(),
-                        template,
-                        response.body()
-                    );
-                    return Completable.error(new ElasticsearchException("Unable to create index and alias"));
-                }
+        return Completable.defer(() -> {
+            ElasticsearchClient client = nextClient();
+            return client
+                .getClient()
+                .put(URL_ROOT + indexName)
+                .putHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                .rxSendBuffer(Buffer.buffer(template))
+                .flatMapCompletable(response -> {
+                    if (response.statusCode() != HttpStatusCode.OK_200) {
+                        logger.error(
+                            "Unable to create index and alias: status[{}] template[{}] response[{}]",
+                            response.statusCode(),
+                            template,
+                            response.body()
+                        );
+                        return Completable.error(new ElasticsearchException("Unable to create index and alias"));
+                    }
 
-                return Completable.complete();
-            });
+                    return Completable.complete();
+                });
+        });
     }
 
     /**
@@ -422,25 +443,29 @@ public class HttpClient implements Client {
         }
 
         url.append(URL_COUNT);
-        return nextClient()
-            .getClient()
-            .post(url.toString())
-            .putHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-            .rxSendBuffer(Buffer.buffer(query))
-            .map(response -> {
-                if (response.statusCode() != HttpStatusCode.OK_200) {
-                    logger.error(
-                        "Unable to count: url[{}] status[{}] query[{}] response[{}]",
-                        url.toString(),
-                        response.statusCode(),
-                        query,
-                        response.body()
-                    );
-                    throw new ElasticsearchException("Unable to count");
-                }
+        String countUrl = url.toString();
+        return Single.defer(() -> {
+            ElasticsearchClient client = nextClient();
+            return client
+                .getClient()
+                .post(countUrl)
+                .putHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                .rxSendBuffer(Buffer.buffer(query))
+                .map(response -> {
+                    if (response.statusCode() != HttpStatusCode.OK_200) {
+                        logger.error(
+                            "Unable to count: url[{}] status[{}] query[{}] response[{}]",
+                            countUrl,
+                            response.statusCode(),
+                            query,
+                            response.body()
+                        );
+                        throw new ElasticsearchException("Unable to count");
+                    }
 
-                return mapper.readValue(response.bodyAsString(), CountResponse.class);
-            });
+                    return mapper.readValue(response.bodyAsString(), CountResponse.class);
+                });
+        });
     }
 
     /**
@@ -459,25 +484,29 @@ public class HttpClient implements Client {
         }
 
         url.append(URL_SEARCH);
-        return nextClient()
-            .getClient()
-            .post(url.toString())
-            .putHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-            .rxSendBuffer(Buffer.buffer(query))
-            .map(response -> {
-                if (response.statusCode() != HttpStatusCode.OK_200) {
-                    logger.error(
-                        "Unable to search: url[{}] status[{}] query[{}] response[{}]",
-                        url.toString(),
-                        response.statusCode(),
-                        query,
-                        response.body()
-                    );
-                    throw new ElasticsearchException("Unable to search");
-                }
+        String searchUrl = url.toString();
+        return Single.defer(() -> {
+            ElasticsearchClient client = nextClient();
+            return client
+                .getClient()
+                .post(searchUrl)
+                .putHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                .rxSendBuffer(Buffer.buffer(query))
+                .map(response -> {
+                    if (response.statusCode() != HttpStatusCode.OK_200) {
+                        logger.error(
+                            "Unable to search: url[{}] status[{}] query[{}] response[{}]",
+                            searchUrl,
+                            response.statusCode(),
+                            query,
+                            response.body()
+                        );
+                        throw new ElasticsearchException("Unable to search");
+                    }
 
-                return mapper.readValue(response.bodyAsString(), SearchResponse.class);
-            });
+                    return mapper.readValue(response.bodyAsString(), SearchResponse.class);
+                });
+        });
     }
 
     /**
@@ -487,62 +516,68 @@ public class HttpClient implements Client {
      * @return elasticsearch response
      */
     public Single<Response> count(final String url, final String query) {
-        return nextClient()
-            .getClient()
-            .post(url)
-            .putHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-            .rxSendBuffer(Buffer.buffer(query))
-            .map(response -> {
-                if (response.statusCode() != HttpStatusCode.OK_200) {
-                    logger.error(
-                        "Unable to count: url[{}] status[{}] query[{}] response[{}]",
-                        url,
-                        response.statusCode(),
-                        query,
-                        response.body()
-                    );
-                    throw new ElasticsearchException("Unable to count");
-                }
+        return Single.defer(() -> {
+            ElasticsearchClient client = nextClient();
+            return client
+                .getClient()
+                .post(url)
+                .putHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                .rxSendBuffer(Buffer.buffer(query))
+                .map(response -> {
+                    if (response.statusCode() != HttpStatusCode.OK_200) {
+                        logger.error(
+                            "Unable to count: url[{}] status[{}] query[{}] response[{}]",
+                            url,
+                            response.statusCode(),
+                            query,
+                            response.body()
+                        );
+                        throw new ElasticsearchException("Unable to count");
+                    }
 
-                return mapper.readValue(response.bodyAsString(), CountResponse.class);
-            });
+                    return mapper.readValue(response.bodyAsString(), CountResponse.class);
+                });
+        });
     }
 
     @Override
     public Completable putPipeline(String pipelineName, String pipeline) {
-        return nextClient()
-            .getClient()
-            .put(URL_INGEST + '/' + pipelineName)
-            .putHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-            .rxSendBuffer(Buffer.buffer(pipeline))
-            .flatMapCompletable(response -> {
-                switch (response.statusCode()) {
-                    case HttpStatusCode.OK_200:
-                        return Completable.complete();
-                    case HttpStatusCode.BAD_REQUEST_400:
-                        logger.warn("Unable to create ES pipeline: {}", pipelineName);
-                        break;
-                    default:
-                        logger.error(
-                            "Unable to put pipeline: status[{}] pipeline[{}] response[{}]",
-                            response.statusCode(),
-                            pipeline,
-                            response.body()
-                        );
-                        break;
-                }
+        return Completable.defer(() -> {
+            ElasticsearchClient client = nextClient();
+            return client
+                .getClient()
+                .put(URL_INGEST + '/' + pipelineName)
+                .putHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                .rxSendBuffer(Buffer.buffer(pipeline))
+                .flatMapCompletable(response -> {
+                    switch (response.statusCode()) {
+                        case HttpStatusCode.OK_200:
+                            return Completable.complete();
+                        case HttpStatusCode.BAD_REQUEST_400:
+                            logger.warn("Unable to create ES pipeline: {}", pipelineName);
+                            break;
+                        default:
+                            logger.error(
+                                "Unable to put pipeline: status[{}] pipeline[{}] response[{}]",
+                                response.statusCode(),
+                                pipeline,
+                                response.body()
+                            );
+                            break;
+                    }
 
-                return Completable.error(
-                    new ElasticsearchException(
-                        format(
-                            "Unable to create ES pipeline '%s': status[%s] response[%s]",
-                            pipelineName,
-                            response.statusCode(),
-                            response.body()
+                    return Completable.error(
+                        new ElasticsearchException(
+                            format(
+                                "Unable to create ES pipeline '%s': status[%s] response[%s]",
+                                pipelineName,
+                                response.statusCode(),
+                                response.body()
+                            )
                         )
-                    )
-                );
-            });
+                    );
+                });
+        });
     }
 
     /**
