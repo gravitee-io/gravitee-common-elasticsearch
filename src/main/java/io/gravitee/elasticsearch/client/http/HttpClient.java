@@ -167,31 +167,32 @@ public class HttpClient implements Client {
 
                     // Read configuration to authenticate calls to Elasticsearch (basic authentication only)
                     if (this.configuration.getUsername() != null) {
-                        this.authorizationHeader =
-                            this.initEncodedAuthorization(this.configuration.getUsername(), this.configuration.getPassword());
+                        this.authorizationHeader = this.initEncodedAuthorization(
+                            this.configuration.getUsername(),
+                            this.configuration.getPassword()
+                        );
                     }
 
                     ((WebClientInternal) httpClient.getDelegate()).addInterceptor(context -> {
-                            context
-                                .request()
-                                .timeout(configuration.getRequestTimeout())
-                                .putHeader(HttpHeaders.ACCEPT, CONTENT_TYPE)
-                                .putHeader(HttpHeaders.ACCEPT_CHARSET, StandardCharsets.UTF_8.name());
+                        context
+                            .request()
+                            .timeout(configuration.getRequestTimeout())
+                            .putHeader(HttpHeaders.ACCEPT, CONTENT_TYPE)
+                            .putHeader(HttpHeaders.ACCEPT_CHARSET, StandardCharsets.UTF_8.name());
 
-                            // Basic authentication
-                            if (authorizationHeader != null) {
-                                context.request().putHeader(HttpHeaders.AUTHORIZATION, authorizationHeader);
-                            }
+                        // Basic authentication
+                        if (authorizationHeader != null) {
+                            context.request().putHeader(HttpHeaders.AUTHORIZATION, authorizationHeader);
+                        }
 
-                            context.next();
-                        });
+                        context.next();
+                    });
 
                     final ElasticsearchClient client = new ElasticsearchClient(httpClient);
                     httpClients.add(client);
 
                     // Health check
-                    Observable
-                        .interval(5, TimeUnit.SECONDS)
+                    Observable.interval(5, TimeUnit.SECONDS)
                         .flatMapSingle(
                             (Function<Long, SingleSource<ElasticsearchInfo>>) aLong -> getInfo(client).onErrorReturnItem(DUMMY_INFO)
                         )
@@ -242,10 +243,10 @@ public class HttpClient implements Client {
 
                 throw new ElasticsearchException(
                     "Unable to retrieve Elasticsearch information: status[" +
-                    response.statusCode() +
-                    "] payload: [" +
-                    response.bodyAsString() +
-                    "]"
+                        response.statusCode() +
+                        "] payload: [" +
+                        response.bodyAsString() +
+                        "]"
                 );
             });
     }
