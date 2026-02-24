@@ -1,3 +1,10 @@
+## [6.2.1](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/6.2.0...6.2.1) (2026-02-24)
+
+
+### Bug Fixes
+
+* defer client selection so retries re-check ES availability ([4a2e941](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/4a2e9419604512cbae4a23d8c933ae104f10e083))
+
 # [6.2.0](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/6.1.0...6.2.0) (2024-12-05)
 
 
