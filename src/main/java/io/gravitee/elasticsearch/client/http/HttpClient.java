@@ -241,7 +241,8 @@ public class HttpClient implements Client {
                     response.statusCode() +
                     "] payload: [" +
                     response.bodyAsString() +
-                    "]"
+                    "]",
+                    response.statusCode()
                 );
             });
     }

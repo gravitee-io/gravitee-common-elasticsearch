@@ -23,6 +23,8 @@ public class ElasticsearchException extends RuntimeException {
 
     private static final long serialVersionUID = -6926167778154953100L;
 
+    private Integer statusCode;
+
     public ElasticsearchException() {
         super();
     }
@@ -31,11 +33,20 @@ public class ElasticsearchException extends RuntimeException {
         super(message);
     }
 
+    public ElasticsearchException(String message, int statusCode) {
+        super(message);
+        this.statusCode = statusCode;
+    }
+
     public ElasticsearchException(String message, Throwable cause) {
         super(message, cause);
     }
 
     public ElasticsearchException(Throwable cause) {
         super(cause);
+    }
+
+    public Integer getStatusCode() {
+        return statusCode;
     }
 }
