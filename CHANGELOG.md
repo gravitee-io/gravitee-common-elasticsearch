@@ -1,3 +1,10 @@
+## [6.2.2](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/6.2.1...6.2.2) (2026-03-25)
+
+
+### Bug Fixes
+
+* **client:** add statusCode to ElasticsearchException ([9270aed](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/9270aed3380b0bc0f8526c2cebdcf66f6dcc55e1))
+
 ## [6.2.1](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/6.2.0...6.2.1) (2026-02-24)
 
 
