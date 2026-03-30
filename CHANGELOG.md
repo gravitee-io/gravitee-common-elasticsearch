@@ -1,3 +1,20 @@
+# [7.0.0-alpha.1](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/6.6.0...7.0.0-alpha.1) (2026-03-30)
+
+
+### Bug Fixes
+
+* **deps:** update gravitee-orb ([f019f0c](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/f019f0cfe864386816bbefbddda0d89cf1baa1b5))
+
+
+### Features
+
+* upgrade to Vertx 5 ([a394ab7](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/a394ab76c20dd6610458dbfc0a9f1539f92d5c77))
+
+
+### BREAKING CHANGES
+
+* upgrade to Vertx 5
+
 # [6.6.0](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/6.5.1...6.6.0) (2026-03-23)
 
 
