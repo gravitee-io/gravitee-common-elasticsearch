@@ -91,7 +91,8 @@ public final class DateUtils {
             // if end date is the last day of the month then add the monthly indices
             if (stopYearMonth.atEndOfMonth().isEqual(stop)) {
                 indices.add(ES_MONTHLY_INDICE.format(stopYearMonth));
-            } else { // loop on daily indices until the end date of the last month
+            } else {
+                // loop on daily indices until the end date of the last month
                 LocalDate day = stopYearMonth.atDay(1);
                 while (day.isBefore(stop) || day.isEqual(stop)) {
                     indices.add(ES_DAILY_INDICE.format(day));

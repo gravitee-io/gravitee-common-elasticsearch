@@ -51,62 +51,60 @@ public class HttpClientOpensearchTest {
 
     private static final String OPENSEARCH_DEFAULT_VERSION = "2.11.0";
     private static final String CLUSTER_NAME = "gravitee_test";
-    private static final String TEMPLATE =
-        """
-        {
-          "index_patterns": ["te*", "bar*"],
-          "template": {
-            "settings": {
-              "number_of_shards": 1
-            },
-            "mappings": {
-              "_source": {
-                "enabled": true
-              },
-              "properties": {
-                "host_name": {
-                  "type": "keyword"
+    private static final String TEMPLATE = """
+            {
+              "index_patterns": ["te*", "bar*"],
+              "template": {
+                "settings": {
+                  "number_of_shards": 1
                 },
-                "created_at": {
-                  "type": "date",
-                  "format": "EEE MMM dd HH:mm:ss Z yyyy"
-                }
-              }
-            },
-            "aliases": {
-              "mydata": { }
-            }
-          },
-          "priority": 500
-        }
-    """;
-    private static final String POLICY =
-        """
-        {
-          "policy": {
-            "policy_id": "%s",
-            "description": "Policy to manage rollover for %s indices",
-            "default_state": "rollover_state",
-            "states": [
-              {
-                "name": "rollover_state",
-                "actions": [
-                  {
-                    "rollover": {
-                      "min_size": "50gb",
-                      "min_index_age": "7d"
+                "mappings": {
+                  "_source": {
+                    "enabled": true
+                  },
+                  "properties": {
+                    "host_name": {
+                      "type": "keyword"
+                    },
+                    "created_at": {
+                      "type": "date",
+                      "format": "EEE MMM dd HH:mm:ss Z yyyy"
                     }
                   }
-                ],
-                "transitions": []
-              }
-            ],
-            "ism_template": {
-              "index_patterns": ["%s"]
+                },
+                "aliases": {
+                  "mydata": { }
+                }
+              },
+              "priority": 500
             }
-          }
-        }
-    """;
+        """;
+    private static final String POLICY = """
+            {
+              "policy": {
+                "policy_id": "%s",
+                "description": "Policy to manage rollover for %s indices",
+                "default_state": "rollover_state",
+                "states": [
+                  {
+                    "name": "rollover_state",
+                    "actions": [
+                      {
+                        "rollover": {
+                          "min_size": "50gb",
+                          "min_index_age": "7d"
+                        }
+                      }
+                    ],
+                    "transitions": []
+                  }
+                ],
+                "ism_template": {
+                  "index_patterns": ["%s"]
+                }
+              }
+            }
+        """;
 
     @Autowired
     private Client client;
