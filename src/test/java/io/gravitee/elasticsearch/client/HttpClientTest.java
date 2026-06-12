@@ -15,6 +15,8 @@
  */
 package io.gravitee.elasticsearch.client;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import io.gravitee.elasticsearch.client.http.HttpClient;
 import io.gravitee.elasticsearch.client.http.HttpClientConfiguration;
@@ -25,7 +27,11 @@ import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.observers.TestObserver;
 import io.vertx.rxjava3.core.Vertx;
+import java.net.URI;
 import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -166,6 +172,50 @@ public class HttpClientTest {
             .await()
             .assertNoErrors()
             .assertValue(fieldTypes -> fieldTypes.size() == 2 && fieldTypes.stream().allMatch("keyword"::equals));
+    }
+
+    @Test
+    void uri_get_host_returns_null_for_underscore_hostname() {
+        URI uri = URI.create("http://elasticsearch_primary:9200");
+        assertThat(uri.getHost()).isNull();
+        assertThat(uri.getAuthority()).isEqualTo("elasticsearch_primary:9200");
+    }
+
+    @Nested
+    @ContextConfiguration(classes = { HttpClientTest.UnderscoreHostTests.Config.class })
+    class UnderscoreHostTests {
+
+        @Autowired
+        private Client client;
+
+        @Test
+        void initialize_with_underscore_hostname_does_not_throw_npe() throws InterruptedException {
+            TestObserver<ElasticsearchInfo> observer = client.getInfo().timeout(5, TimeUnit.SECONDS).test();
+            observer.await();
+            observer.assertError(e -> !(e instanceof NullPointerException));
+        }
+
+        @Configuration
+        static class Config {
+
+            @Bean
+            public Vertx vertx() {
+                return Vertx.vertx();
+            }
+
+            @Bean
+            public Client client(HttpClientConfiguration clientConfiguration) {
+                return new HttpClient(clientConfiguration);
+            }
+
+            @Bean
+            public HttpClientConfiguration configuration() {
+                HttpClientConfiguration cfg = new HttpClientConfiguration();
+                cfg.setEndpoints(List.of(new Endpoint("http://elasticsearch_primary:9200")));
+                cfg.setRequestTimeout(3_000L);
+                return cfg;
+            }
+        }
     }
 
     @Configuration
