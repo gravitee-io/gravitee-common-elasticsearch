@@ -125,14 +125,26 @@ public class HttpClient implements Client {
                 initializePaths(URI.create(endpoints.get(0).getUrl()));
                 endpoints.forEach(endpoint -> {
                     final URI elasticEdpt = URI.create(endpoint.getUrl());
+                    String host = elasticEdpt.getHost();
+                    int port = elasticEdpt.getPort();
+                    if (host == null && elasticEdpt.getAuthority() != null) {
+                        String authority = elasticEdpt.getAuthority();
+                        int colonIdx = authority.lastIndexOf(':');
+                        if (colonIdx > 0) {
+                            host = authority.substring(0, colonIdx);
+                            try {
+                                port = Integer.parseInt(authority.substring(colonIdx + 1));
+                            } catch (NumberFormatException e) {
+                                logger.warn("Malformed port in Elasticsearch endpoint URL '{}'; using scheme default", endpoint.getUrl());
+                            }
+                        } else {
+                            host = authority;
+                        }
+                    }
 
-                    WebClientOptions options = new WebClientOptions()
-                        .setDefaultHost(elasticEdpt.getHost())
-                        .setDefaultPort(
-                            elasticEdpt.getPort() != -1
-                                ? elasticEdpt.getPort()
-                                : (HTTPS_SCHEME.equalsIgnoreCase(elasticEdpt.getScheme()) ? 443 : 80)
-                        );
+                    int schemeDefaultPort = HTTPS_SCHEME.equalsIgnoreCase(elasticEdpt.getScheme()) ? 443 : 80;
+                    int defaultPort = port != -1 ? port : schemeDefaultPort;
+                    WebClientOptions options = new WebClientOptions().setDefaultHost(host).setDefaultPort(defaultPort);
 
                     if (HTTPS_SCHEME.equalsIgnoreCase(elasticEdpt.getScheme())) {
                         options.setSsl(true).setTrustAll(true);
