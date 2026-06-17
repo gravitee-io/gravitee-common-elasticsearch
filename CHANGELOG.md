@@ -1,3 +1,10 @@
+## [6.6.1](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/6.6.0...6.6.1) (2026-06-17)
+
+
+### Bug Fixes
+
+* **client:** resolve host from URI authority for underscore hostnames ([fb50a29](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/fb50a295647adbc0479d4ef3bf6c6f447d34827d))
+
 # [6.6.0](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/6.5.1...6.6.0) (2026-03-23)
 
 
