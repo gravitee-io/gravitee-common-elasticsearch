@@ -1,3 +1,10 @@
+# [7.0.0-alpha.2](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/7.0.0-alpha.1...7.0.0-alpha.2) (2026-06-17)
+
+
+### Bug Fixes
+
+* **client:** resolve host from URI authority for underscore hostnames ([44692b6](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/44692b6e9ea81e568abd44aa59a385014fff828d))
+
 # [7.0.0-alpha.1](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/6.6.0...7.0.0-alpha.1) (2026-03-30)
 
 
