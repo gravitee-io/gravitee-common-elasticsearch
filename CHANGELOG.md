@@ -1,3 +1,10 @@
+## [7.0.1](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/7.0.0...7.0.1) (2026-08-14)
+
+
+### Bug Fixes
+
+* **model:** keep aggregation numeric results exact above float precision ([#248](https://github.com/gravitee-io/gravitee-common-elasticsearch/issues/248)) ([2c66ce7](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/2c66ce7c8c318db272d57f369c90860ccc13b5b5))
+
 # [7.0.0](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/6.6.1...7.0.0) (2026-06-18)
 
 
