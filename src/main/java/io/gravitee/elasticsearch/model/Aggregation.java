@@ -42,26 +42,32 @@ public class Aggregation implements Serializable {
     /** Supports nested aggregations */
     private final Map<String, Aggregation> aggregations = new HashMap<>();
 
+    // Numeric results below are held as doubles on purpose. A float only represents integers
+    // exactly below 2^24 (16 777 216), so a counter such as a value_count over a busy index gets
+    // silently snapped to the nearest representable value — enough to make a flat total disagree
+    // with the sum of the per-bucket totals of the same query. A double is exact up to 2^53,
+    // which covers any realistic document count.
+
     /** If the aggregation is a metric one */
-    private Float value;
+    private Double value;
 
     /** If the aggregation is a percentile */
-    private Map<String, Float> values;
+    private Map<String, Double> values;
 
     /** If the aggregation is a stats one */
-    private Float count;
+    private Double count;
 
     /** If the aggregation is a stats one */
-    private Float min;
+    private Double min;
 
     /** If the aggregation is a stats one */
-    private Float max;
+    private Double max;
 
     /** If the aggregation is a stats one */
-    private Float avg;
+    private Double avg;
 
     /** If the aggregation is a stats one */
-    private Float sum;
+    private Double sum;
 
     /** For composite aggregations: the after_key for pagination */
     @JsonProperty("after_key")
@@ -75,51 +81,51 @@ public class Aggregation implements Serializable {
         this.buckets = buckets;
     }
 
-    public Float getValue() {
+    public Double getValue() {
         return value;
     }
 
-    public void setValue(Float value) {
+    public void setValue(Double value) {
         this.value = value;
     }
 
-    public Float getCount() {
+    public Double getCount() {
         return count;
     }
 
-    public void setCount(Float count) {
+    public void setCount(Double count) {
         this.count = count;
     }
 
-    public Float getMin() {
+    public Double getMin() {
         return min;
     }
 
-    public void setMin(Float min) {
+    public void setMin(Double min) {
         this.min = min;
     }
 
-    public Float getMax() {
+    public Double getMax() {
         return max;
     }
 
-    public void setMax(Float max) {
+    public void setMax(Double max) {
         this.max = max;
     }
 
-    public Float getAvg() {
+    public Double getAvg() {
         return avg;
     }
 
-    public void setAvg(Float avg) {
+    public void setAvg(Double avg) {
         this.avg = avg;
     }
 
-    public Float getSum() {
+    public Double getSum() {
         return sum;
     }
 
-    public void setSum(Float sum) {
+    public void setSum(Double sum) {
         this.sum = sum;
     }
 
@@ -148,11 +154,11 @@ public class Aggregation implements Serializable {
         return aggregations;
     }
 
-    public Map<String, Float> getValues() {
+    public Map<String, Double> getValues() {
         return values;
     }
 
-    public void setValues(Map<String, Float> values) {
+    public void setValues(Map<String, Double> values) {
         this.values = values;
     }
 
