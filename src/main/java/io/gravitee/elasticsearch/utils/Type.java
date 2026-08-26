@@ -28,7 +28,8 @@ public enum Type {
     V4_METRICS("v4-metrics", false),
     V4_MESSAGE_METRICS("v4-message-metrics", false),
     V4_MESSAGE_LOG("v4-message-log", false),
-    EVENT_METRICS("event-metrics", true);
+    EVENT_METRICS("event-metrics", true),
+    AUTHZ_DECISIONS("authz-decisions", true);
 
     private final String type;
 
@@ -42,6 +43,7 @@ public enum Type {
         V4_MESSAGE_LOG,
         V4_MESSAGE_METRICS,
         EVENT_METRICS,
+        AUTHZ_DECISIONS,
     };
     private final boolean dataStream;
 
