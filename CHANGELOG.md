@@ -1,3 +1,10 @@
+# [7.1.0](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/7.0.1...7.1.0) (2026-08-26)
+
+
+### Features
+
+* **index:** add the authz-decisions data stream type ([597667c](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/597667c2303db525497df500c678b7330de59233))
+
 ## [7.0.1](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/7.0.0...7.0.1) (2026-08-14)
 
 
