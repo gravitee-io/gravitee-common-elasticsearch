@@ -33,7 +33,7 @@
     <name>Gravitee.io APIM - Elasticsearch - Common</name>
 
     <properties>
-        <gravitee-bom.version>9.0.5</gravitee-bom.version>
+        <gravitee-bom.version>9.0.6</gravitee-bom.version>
         <gravitee-common.version>5.2.0</gravitee-common.version>
         <gravitee-reporter-api.version>2.8.0</gravitee-reporter-api.version>
         <freemarker.version>2.3.35</freemarker.version>
