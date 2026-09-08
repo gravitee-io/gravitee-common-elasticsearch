@@ -1,3 +1,10 @@
+# [7.2.0-beta.1](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/7.1.0...7.2.0-beta.1) (2026-09-08)
+
+
+### Features
+
+* **index:** give decisions a data stream of their own ([4ac7118](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/4ac711888b158b24c255857d69b77a6553861455))
+
 # [7.1.0](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/7.0.1...7.1.0) (2026-08-26)
 
 
