@@ -1,3 +1,10 @@
+# [7.2.0](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/7.1.0...7.2.0) (2026-09-24)
+
+
+### Features
+
+* **index:** replace the authz-decisions data stream with decisions ([db5166b](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/db5166be4b30356074a66f99c4d3b8cf409c9d45))
+
 # [7.1.0](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/7.0.1...7.1.0) (2026-08-26)
 
 
