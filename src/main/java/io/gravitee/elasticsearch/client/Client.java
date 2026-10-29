@@ -27,6 +27,8 @@ import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Single;
 import io.vertx.core.buffer.Buffer;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author David BRASSELY (david.brassely at graviteesource.com)
@@ -36,6 +38,22 @@ public interface Client {
     Single<ElasticsearchInfo> getInfo() throws ElasticsearchException;
     Single<Health> getClusterHealth();
     Single<List<String>> getFieldTypes(String indexName, String fieldName);
+
+    /**
+     * The field capabilities of the given indexes ({@code _field_caps}): each mapped field matching the given
+     * fields, wildcards allowed, with the types it has across the indexes (more than one when they disagree).
+     * The answer may include parent objects, with the type {@code object}. Unavailable indexes are ignored.
+     *
+     * <p>An implementation without support keeps this default, which fails with an
+     * {@link UnsupportedOperationException}: callers treat the failure as field capabilities being unavailable.
+     *
+     * @param indexes indexes names separated by comma, wildcards allowed
+     * @param fields field names separated by comma, wildcards allowed
+     * @return the types of each matching field, by field name
+     */
+    default Single<Map<String, Set<String>>> getFieldCapabilities(String indexes, String fields) {
+        return Single.error(new UnsupportedOperationException("field capabilities are not supported by this client"));
+    }
 
     default Single<BulkResponse> bulk(List<Buffer> data) {
         return bulk(data, false);
