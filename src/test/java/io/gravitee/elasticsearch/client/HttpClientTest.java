@@ -30,6 +30,8 @@ import io.vertx.rxjava3.core.Vertx;
 import java.net.URI;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -175,6 +177,86 @@ public class HttpClientTest {
     }
 
     @Test
+    public void shouldGetFieldCapabilitiesByFieldName() throws InterruptedException {
+        String template1 = """
+            {
+              "mappings": {
+                "properties": {
+                  "api-id": { "type": "keyword" },
+                  "additional-metrics": {
+                    "properties": {
+                      "long_failover_count": { "type": "long" },
+                      "keyword_mcp-proxy_tools/call": { "type": "keyword" },
+                      "double_score": { "type": "double" },
+                      "long_a": { "properties": { "b": { "type": "long" } } }
+                    }
+                  }
+                }
+              },
+              "aliases": {}
+            }
+            """;
+        String template2 = """
+            {
+              "mappings": {
+                "properties": {
+                  "additional-metrics": {
+                    "properties": {
+                      "double_score": { "type": "float" }
+                    }
+                  }
+                }
+              },
+              "aliases": {}
+            }
+            """;
+        client.createIndexWithAlias("gravitee_field_caps_test_1", template1).test().await().assertNoErrors().assertComplete();
+        client.createIndexWithAlias("gravitee_field_caps_test_2", template2).test().await().assertNoErrors().assertComplete();
+
+        var typesByField = client.getFieldCapabilities("gravitee_field_caps_test_*", "additional-metrics.*").blockingGet();
+
+        assertThat(typesByField).containsAllEntriesOf(
+            Map.of(
+                "additional-metrics.long_failover_count",
+                Set.of("long"),
+                "additional-metrics.keyword_mcp-proxy_tools/call",
+                Set.of("keyword"),
+                "additional-metrics.double_score",
+                Set.of("double", "float"),
+                "additional-metrics.long_a.b",
+                Set.of("long")
+            )
+        );
+    }
+
+    @Test
+    public void shouldIgnoreAnAbsentIndexAmongTheGivenOnes() throws InterruptedException {
+        String template = """
+            {
+              "mappings": { "properties": { "additional-metrics": { "properties": { "long_present": { "type": "long" } } } } },
+              "aliases": {}
+            }
+            """;
+        client.createIndexWithAlias("gravitee_field_caps_present", template).test().await().assertNoErrors().assertComplete();
+
+        var typesByField = client
+            .getFieldCapabilities("gravitee_field_caps_absent,gravitee_field_caps_present", "additional-metrics.*")
+            .blockingGet();
+
+        assertThat(typesByField).containsEntry("additional-metrics.long_present", Set.of("long"));
+    }
+
+    @Test
+    public void shouldGetNoFieldCapabilitiesWhenNoIndexMatches() throws InterruptedException {
+        client
+            .getFieldCapabilities("gravitee_field_caps_none_*", "additional-metrics.*")
+            .test()
+            .await()
+            .assertNoErrors()
+            .assertValue(Map.of());
+    }
+
+    @Test
     void uri_get_host_returns_null_for_underscore_hostname() {
         URI uri = URI.create("http://elasticsearch_primary:9200");
         assertThat(uri.getHost()).isNull();
@@ -251,7 +333,7 @@ public class HttpClientTest {
                 "docker.elastic.co/elasticsearch/elasticsearch:" + elasticsearchVersion
             );
             elasticsearchContainer.withEnv("cluster.name", CLUSTER_NAME);
-            if (elasticsearchVersion.startsWith("8")) {
+            if (Integer.parseInt(elasticsearchVersion.split("\\.")[0]) >= 8) {
                 elasticsearchContainer.withEnv("xpack.security.enabled", "false");
             }
             elasticsearchContainer.start();

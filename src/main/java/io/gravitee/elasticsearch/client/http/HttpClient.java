@@ -43,10 +43,15 @@ import io.vertx.ext.web.client.impl.WebClientInternal;
 import io.vertx.rxjava3.core.Vertx;
 import io.vertx.rxjava3.ext.web.client.WebClient;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.PostConstruct;
@@ -80,6 +85,7 @@ public class HttpClient implements Client {
     private static String URL_COUNT;
     private static String URL_ALIAS;
     private static String URL_FIELD_MAPPING;
+    private String urlFieldCaps;
 
     @Autowired
     private Vertx vertx;
@@ -223,6 +229,7 @@ public class HttpClient implements Client {
         URL_COUNT = urlPrefix + "/_count?ignore_unavailable=true";
         URL_ALIAS = urlPrefix + "/_alias";
         URL_FIELD_MAPPING = urlPrefix + "/_mapping/field/";
+        urlFieldCaps = urlPrefix + "/_field_caps?ignore_unavailable=true&fields=";
     }
 
     private List<ElasticsearchClient> clients() {
@@ -296,6 +303,46 @@ public class HttpClient implements Client {
                     return rootNode.findValuesAsText("type");
                 });
         });
+    }
+
+    @Override
+    public Single<Map<String, Set<String>>> getFieldCapabilities(String indexes, String fields) {
+        final String url = "/" + indexes + urlFieldCaps + URLEncoder.encode(fields, StandardCharsets.UTF_8);
+        return Single.defer(() -> {
+            ElasticsearchClient client = nextClient();
+            return client
+                .getClient()
+                .get(url)
+                .rxSend()
+                .map(response -> {
+                    if (response.statusCode() != HttpStatusCode.OK_200) {
+                        logger.error(
+                            "Unable to get field capabilities: url[{}] status[{}] response[{}]",
+                            url,
+                            response.statusCode(),
+                            response.body()
+                        );
+                        throw new ElasticsearchException("Unable to get field capabilities", response.statusCode());
+                    }
+                    return typesByField(mapper.readTree(response.bodyAsString()));
+                });
+        });
+    }
+
+    private static Map<String, Set<String>> typesByField(JsonNode fieldCaps) {
+        final JsonNode fields = fieldCaps.path("fields");
+        if (!fields.isObject()) {
+            throw new ElasticsearchException("Unexpected field capabilities body");
+        }
+        final Map<String, Set<String>> typesByField = new LinkedHashMap<>();
+        fields
+            .fieldNames()
+            .forEachRemaining(field -> {
+                final Set<String> types = new LinkedHashSet<>();
+                fields.get(field).fieldNames().forEachRemaining(types::add);
+                typesByField.put(field, types);
+            });
+        return typesByField;
     }
 
     @Override
