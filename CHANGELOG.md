@@ -1,3 +1,10 @@
+# [7.3.0](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/7.2.0...7.3.0) (2026-10-30)
+
+
+### Features
+
+* **client:** expose field capabilities ([695234b](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/695234b0546d839c22566095d4c788ee96a1db2a))
+
 # [7.2.0](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/7.1.0...7.2.0) (2026-09-24)
 
 
