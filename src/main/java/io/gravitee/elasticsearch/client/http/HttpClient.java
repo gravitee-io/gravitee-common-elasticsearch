@@ -411,7 +411,8 @@ public class HttpClient implements Client {
                                     templateName,
                                     response.statusCode(),
                                     response.body()
-                                )
+                                ),
+                                response.statusCode()
                             )
                         );
                     }
@@ -446,7 +447,8 @@ public class HttpClient implements Client {
                                     templateName,
                                     response.statusCode(),
                                     response.body()
-                                )
+                                ),
+                                response.statusCode()
                             )
                         );
                     }
@@ -500,7 +502,8 @@ public class HttpClient implements Client {
                                     indexName,
                                     response.statusCode(),
                                     response.body()
-                                )
+                                ),
+                                response.statusCode()
                             )
                         );
                     }
