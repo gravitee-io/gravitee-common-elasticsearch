@@ -404,7 +404,16 @@ public class HttpClient implements Client {
                             template,
                             response.body()
                         );
-                        return Completable.error(new ElasticsearchException("Unable to put template mapping"));
+                        return Completable.error(
+                            new ElasticsearchException(
+                                format(
+                                    "Unable to put template mapping '%s': status[%s] response[%s]",
+                                    templateName,
+                                    response.statusCode(),
+                                    response.body()
+                                )
+                            )
+                        );
                     }
 
                     return Completable.complete();
@@ -430,7 +439,16 @@ public class HttpClient implements Client {
                             template,
                             response.body()
                         );
-                        return Completable.error(new ElasticsearchException("Unable to put index template mapping"));
+                        return Completable.error(
+                            new ElasticsearchException(
+                                format(
+                                    "Unable to put index template mapping '%s': status[%s] response[%s]",
+                                    templateName,
+                                    response.statusCode(),
+                                    response.body()
+                                )
+                            )
+                        );
                     }
 
                     return Completable.complete();
@@ -475,7 +493,16 @@ public class HttpClient implements Client {
                             template,
                             response.body()
                         );
-                        return Completable.error(new ElasticsearchException("Unable to create index and alias"));
+                        return Completable.error(
+                            new ElasticsearchException(
+                                format(
+                                    "Unable to create index and alias '%s': status[%s] response[%s]",
+                                    indexName,
+                                    response.statusCode(),
+                                    response.body()
+                                )
+                            )
+                        );
                     }
 
                     return Completable.complete();

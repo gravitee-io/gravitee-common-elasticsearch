@@ -152,6 +152,59 @@ public class HttpClientTest {
     }
 
     @Test
+    void put_index_template_error_carries_the_elasticsearch_response() throws InterruptedException {
+        String template = """
+            { "index_patterns": ["rejected_index_template*"], "template": { "settings": { "number_of_shards": 0 } } }
+            """;
+
+        client
+            .putIndexTemplate("gravitee_rejected_index_template", template)
+            .test()
+            .await()
+            .assertError(
+                error ->
+                    error.getMessage().contains("'gravitee_rejected_index_template'") &&
+                    error.getMessage().contains("status[400]") &&
+                    error.getMessage().contains("number_of_shards")
+            );
+    }
+
+    @Test
+    void put_template_error_carries_the_elasticsearch_response() throws InterruptedException {
+        String template = """
+            { "index_patterns": ["rejected_template*"], "settings": { "number_of_shards": 0 } }
+            """;
+
+        client
+            .putTemplate("gravitee_rejected_template", template)
+            .test()
+            .await()
+            .assertError(
+                error ->
+                    error.getMessage().contains("'gravitee_rejected_template'") &&
+                    error.getMessage().contains("status[400]") &&
+                    error.getMessage().contains("number_of_shards")
+            );
+    }
+
+    @Test
+    void create_index_with_alias_error_carries_the_elasticsearch_response() throws InterruptedException {
+        String template = "{\"aliases\":{\"gravitee_existing_alias\":{\"is_write_index\": true}}}";
+        client.createIndexWithAlias("gravitee_existing_index", template).test().await().assertNoErrors();
+
+        client
+            .createIndexWithAlias("gravitee_existing_index", template)
+            .test()
+            .await()
+            .assertError(
+                error ->
+                    error.getMessage().contains("'gravitee_existing_index'") &&
+                    error.getMessage().contains("status[400]") &&
+                    error.getMessage().contains("resource_already_exists_exception")
+            );
+    }
+
+    @Test
     public void shouldGetFieldTypes() throws InterruptedException {
         String template = """
             {
