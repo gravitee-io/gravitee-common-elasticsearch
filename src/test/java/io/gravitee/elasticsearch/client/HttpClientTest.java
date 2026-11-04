@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import io.gravitee.elasticsearch.client.http.HttpClient;
 import io.gravitee.elasticsearch.client.http.HttpClientConfiguration;
 import io.gravitee.elasticsearch.config.Endpoint;
+import io.gravitee.elasticsearch.exception.ElasticsearchException;
 import io.gravitee.elasticsearch.model.Health;
 import io.gravitee.elasticsearch.version.ElasticsearchInfo;
 import io.reactivex.rxjava3.core.Maybe;
@@ -162,6 +163,8 @@ public class HttpClientTest {
             .test()
             .await()
             .assertError(error ->
+                error instanceof ElasticsearchException elasticsearchException &&
+                Integer.valueOf(400).equals(elasticsearchException.getStatusCode()) &&
                 error.getMessage().contains("'gravitee_rejected_index_template'") &&
                 error.getMessage().contains("status[400]") &&
                 error.getMessage().contains("number_of_shards")
@@ -179,6 +182,8 @@ public class HttpClientTest {
             .test()
             .await()
             .assertError(error ->
+                error instanceof ElasticsearchException elasticsearchException &&
+                Integer.valueOf(400).equals(elasticsearchException.getStatusCode()) &&
                 error.getMessage().contains("'gravitee_rejected_template'") &&
                 error.getMessage().contains("status[400]") &&
                 error.getMessage().contains("number_of_shards")
@@ -195,6 +200,8 @@ public class HttpClientTest {
             .test()
             .await()
             .assertError(error ->
+                error instanceof ElasticsearchException elasticsearchException &&
+                Integer.valueOf(400).equals(elasticsearchException.getStatusCode()) &&
                 error.getMessage().contains("'gravitee_existing_index'") &&
                 error.getMessage().contains("status[400]") &&
                 error.getMessage().contains("resource_already_exists_exception")
