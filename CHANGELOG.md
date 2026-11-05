@@ -1,3 +1,11 @@
+## [7.3.1](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/7.3.0...7.3.1) (2026-11-05)
+
+
+### Bug Fixes
+
+* **client:** expose the elasticsearch status code on template and index creation errors ([746b9dd](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/746b9dd0d72738d9ce595920bf5a2742bf9b9691))
+* **client:** include the elasticsearch response in template and index creation errors ([840901b](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/840901b65c06402e068c9c139219597e259616bd))
+
 # [7.3.0](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/7.2.0...7.3.0) (2026-10-30)
 
 
