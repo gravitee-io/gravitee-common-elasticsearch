@@ -78,9 +78,21 @@ public class Version {
 
     public int getMajorVersion() {
         if (majorVersion == -1) {
-            majorVersion = Integer.valueOf(getNumber().substring(0, 1));
+            majorVersion = parseMajorVersion(getNumber());
         }
         return majorVersion;
+    }
+
+    /**
+     * Read the major version from the leading numeric segment of the version number: {@code 10.0.0} gives 10,
+     * {@code 8.11.0-SNAPSHOT} gives 8.
+     */
+    private static int parseMajorVersion(final String number) {
+        int end = 0;
+        while (end < number.length() && Character.isDigit(number.charAt(end))) {
+            end++;
+        }
+        return Integer.parseInt(number.substring(0, end));
     }
 
     public boolean isOpenSearch() {
