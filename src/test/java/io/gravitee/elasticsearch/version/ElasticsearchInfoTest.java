@@ -21,6 +21,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 /**
  * Reads {@code GET /} responses as returned by Elasticsearch and OpenSearch.
@@ -129,6 +131,43 @@ class ElasticsearchInfoTest {
             String json = mapper.writeValueAsString(info);
 
             assertThat(json).contains("\"build_flavor\":\"serverless\"").doesNotContain("buildFlavor");
+        }
+    }
+
+    @Nested
+    class MajorVersion {
+
+        @ParameterizedTest(name = "{0} {1} -> {2}")
+        @CsvSource(
+            {
+                "elasticsearch, 7.17.28, 7",
+                "elasticsearch, 8.17.2, 8",
+                "elasticsearch, 8.11.0-SNAPSHOT, 8",
+                "elasticsearch, 9.1.0, 9",
+                "elasticsearch, 10.0.0, 10",
+                "elasticsearch, 10.0.0-beta1, 10",
+                "opensearch, 1.3.20, 1",
+                "opensearch, 2.19.1, 2",
+                "opensearch, 3.0.0, 3",
+            }
+        )
+        void is_the_full_numeric_segment_before_the_first_dot(String distribution, String number, int expectedMajor)
+            throws JsonProcessingException {
+            String distributionField = "opensearch".equals(distribution) ? "\"distribution\": \"opensearch\", " : "";
+            ElasticsearchInfo info = read("{ \"version\": { " + distributionField + "\"number\": \"" + number + "\" } }");
+
+            assertThat(info.getVersion().getMajorVersion()).isEqualTo(expectedMajor);
+            assertThat(info.getVersion().isOpenSearch()).isEqualTo("opensearch".equals(distribution));
+        }
+
+        @Test
+        void keeps_elasticsearch_10_on_the_recent_code_paths() throws JsonProcessingException {
+            Version version = read("{ \"version\": { \"number\": \"10.0.0\" } }").getVersion();
+
+            assertThat(version.canUseTypeRequests()).isFalse();
+            assertThat(version.canUseMultiTypeIndex()).isFalse();
+            assertThat(version.canUseIlmManagedIndex()).isTrue();
+            assertThat(version.canUseDateHistogramFixedInterval()).isTrue();
         }
     }
 
