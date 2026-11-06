@@ -59,6 +59,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.util.StringUtils;
 
 /**
  * @author David BRASSELY (david.brassely at graviteesource.com)
@@ -125,6 +126,9 @@ public class HttpClient implements Client {
     @PostConstruct
     public void initialize() {
         if (enabled) {
+            // Read configuration to authenticate calls to Elasticsearch (API key or basic authentication)
+            this.authorizationHeader = resolveAuthorizationHeader();
+
             final List<Endpoint> endpoints = configuration.getEndpoints();
             if (!endpoints.isEmpty()) {
                 httpClients = new ArrayList<>(endpoints.size());
@@ -179,14 +183,6 @@ public class HttpClient implements Client {
 
                     final WebClient httpClient = WebClient.create(vertx, options);
 
-                    // Read configuration to authenticate calls to Elasticsearch (basic authentication only)
-                    if (this.configuration.getUsername() != null) {
-                        this.authorizationHeader = this.initEncodedAuthorization(
-                            this.configuration.getUsername(),
-                            this.configuration.getPassword()
-                        );
-                    }
-
                     ((WebClientInternal) httpClient.getDelegate()).addInterceptor(context -> {
                         context
                             .request()
@@ -194,7 +190,7 @@ public class HttpClient implements Client {
                             .putHeader(HttpHeaders.ACCEPT, CONTENT_TYPE)
                             .putHeader(HttpHeaders.ACCEPT_CHARSET, StandardCharsets.UTF_8.name());
 
-                        // Basic authentication
+                        // API key or basic authentication
                         if (authorizationHeader != null) {
                             context.request().putHeader(HttpHeaders.AUTHORIZATION, authorizationHeader);
                         }
@@ -664,6 +660,34 @@ public class HttpClient implements Client {
                     );
                 });
         });
+    }
+
+    /**
+     * Resolve the Authorization header from the configuration: an API key, basic credentials, or nothing.
+     *
+     * @return the Authorization header value, or {@code null} when no authentication is configured
+     * @throws IllegalArgumentException when both an API key and basic credentials are configured
+     */
+    private String resolveAuthorizationHeader() {
+        final String apiKey = configuration.getApiKey();
+        final boolean apiKeyConfigured = StringUtils.hasText(apiKey);
+
+        if (apiKeyConfigured) {
+            if (StringUtils.hasText(configuration.getUsername()) || StringUtils.hasText(configuration.getPassword())) {
+                throw new IllegalArgumentException(
+                    "Elasticsearch authentication is ambiguous: both an API key (apiKey) and basic credentials " +
+                        "(username/password) are configured. Configure only one of them."
+                );
+            }
+            return "ApiKey " + apiKey.trim();
+        }
+
+        // Basic authentication, unchanged: enabled as soon as a username is set
+        if (configuration.getUsername() != null) {
+            return initEncodedAuthorization(configuration.getUsername(), configuration.getPassword());
+        }
+
+        return null;
     }
 
     /**

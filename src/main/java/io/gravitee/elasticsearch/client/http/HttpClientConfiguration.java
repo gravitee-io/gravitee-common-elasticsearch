@@ -33,6 +33,12 @@ public class HttpClientConfiguration {
     private String username;
     private String password;
 
+    /**
+     * Elasticsearch API key, in its encoded form (base64 of {@code id:api_key}) as returned by the create API key API.
+     * Sent as {@code Authorization: ApiKey <apiKey>}. Cannot be combined with {@link #username} and {@link #password}.
+     */
+    private String apiKey;
+
     private ClientSslConfiguration sslConfig;
 
     private long requestTimeout = 10000;
@@ -73,6 +79,14 @@ public class HttpClientConfiguration {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getApiKey() {
+        return apiKey;
+    }
+
+    public void setApiKey(String apiKey) {
+        this.apiKey = apiKey;
     }
 
     public long getRequestTimeout() {
