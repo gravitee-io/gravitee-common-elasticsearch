@@ -36,6 +36,13 @@ public class Version {
 
     private String distribution;
 
+    /**
+     * Build flavor reported by Elasticsearch ({@code default}, {@code oss}, {@code serverless}, ...).
+     * Absent from some responses, OpenSearch in particular.
+     */
+    @JsonProperty("build_flavor")
+    private String buildFlavor;
+
     private int majorVersion = -1;
 
     public String getNumber() {
@@ -56,6 +63,17 @@ public class Version {
 
     public void setDistribution(String distribution) {
         this.distribution = distribution;
+    }
+
+    /**
+     * @return the build flavor reported by Elasticsearch, or {@code null} when the response does not carry one
+     */
+    public String getBuildFlavor() {
+        return buildFlavor;
+    }
+
+    public void setBuildFlavor(String buildFlavor) {
+        this.buildFlavor = buildFlavor;
     }
 
     public int getMajorVersion() {

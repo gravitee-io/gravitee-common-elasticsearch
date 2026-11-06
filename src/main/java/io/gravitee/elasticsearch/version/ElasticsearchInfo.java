@@ -15,9 +15,11 @@
  */
 package io.gravitee.elasticsearch.version;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.Optional;
 
 /**
  * @author David BRASSELY (david.brassely at graviteesource.com)
@@ -69,6 +71,14 @@ public class ElasticsearchInfo {
 
     public void setVersion(Version version) {
         this.version = version;
+    }
+
+    /**
+     * @return the build flavor reported alongside the version ({@code version.build_flavor}), empty when absent
+     */
+    @JsonIgnore
+    public Optional<String> getBuildFlavor() {
+        return Optional.ofNullable(version).map(Version::getBuildFlavor);
     }
 
     public Error getError() {
