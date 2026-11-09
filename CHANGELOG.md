@@ -1,3 +1,16 @@
+# [7.4.0](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/7.3.1...7.4.0) (2026-11-09)
+
+
+### Bug Fixes
+
+* **version:** read the full major version number ([dd6d3d5](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/dd6d3d57d8087775d52c2c9ea18ec8167515e2f7))
+
+
+### Features
+
+* **client:** support api key authentication ([8e5ea1e](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/8e5ea1e2edf10f252cdc7f48e43e85a093d2ed2e))
+* **version:** expose the build flavor ([c5c653b](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/c5c653b3f84b447efb29cb833d87ef5f6f3ade77))
+
 ## [7.3.1](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/7.3.0...7.3.1) (2026-11-05)
 
 
