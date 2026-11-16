@@ -1,3 +1,10 @@
+# [7.5.0](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/7.4.1...7.5.0) (2026-11-16)
+
+
+### Features
+
+* **version:** expose the minor version and the data stream capabilities ([74d8b37](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/74d8b3756ad5fab4d6315899f69725907592d675))
+
 ## [7.4.1](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/7.4.0...7.4.1) (2026-11-16)
 
 
