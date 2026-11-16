@@ -45,6 +45,8 @@ public class Version {
 
     private int majorVersion = -1;
 
+    private int minorVersion = -1;
+
     public String getNumber() {
         return number;
     }
@@ -78,21 +80,36 @@ public class Version {
 
     public int getMajorVersion() {
         if (majorVersion == -1) {
-            majorVersion = parseMajorVersion(getNumber());
+            majorVersion = parseLeadingNumber(getNumber());
         }
         return majorVersion;
     }
 
     /**
-     * Read the major version from the leading numeric segment of the version number: {@code 10.0.0} gives 10,
-     * {@code 8.11.0-SNAPSHOT} gives 8.
+     * @return the numeric segment after the first dot: {@code 8.14.0} gives 14, {@code 10.0.0-beta1} gives 0
+     * @throws IllegalStateException when the version number has no minor segment
      */
-    private static int parseMajorVersion(final String number) {
+    public int getMinorVersion() {
+        if (minorVersion == -1) {
+            final String number = getNumber();
+            final int dot = number.indexOf('.');
+            if (dot == -1) {
+                throw new IllegalStateException("Elasticsearch version number has no minor segment: " + number);
+            }
+            minorVersion = parseLeadingNumber(number.substring(dot + 1));
+        }
+        return minorVersion;
+    }
+
+    /**
+     * Read the leading digits of a version segment: {@code 10.0.0} gives 10, {@code 8.11.0-SNAPSHOT} gives 8.
+     */
+    private static int parseLeadingNumber(final String segment) {
         int end = 0;
-        while (end < number.length() && Character.isDigit(number.charAt(end))) {
+        while (end < segment.length() && Character.isDigit(segment.charAt(end))) {
             end++;
         }
-        return Integer.parseInt(number.substring(0, end));
+        return Integer.parseInt(segment.substring(0, end));
     }
 
     public boolean isOpenSearch() {
@@ -117,5 +134,19 @@ public class Version {
     public boolean canUseDateHistogramFixedInterval() {
         // in ES version 7, time interval in dateHistogram aggregation is deprecated and removed in ES 8. Instead, we have to use fixed_interval
         return !isOpenSearch() && getMajorVersion() >= 7;
+    }
+
+    public boolean canUseDataStreams() {
+        // data streams came with Elasticsearch 7.9, and with every OpenSearch version
+        return isOpenSearch() || isAtLeast(7, 9);
+    }
+
+    public boolean canUseDataStreamLifecycle() {
+        // the data stream lifecycle (data_retention) is generally available from Elasticsearch 8.14; OpenSearch has none
+        return !isOpenSearch() && isAtLeast(8, 14);
+    }
+
+    private boolean isAtLeast(final int major, final int minor) {
+        return getMajorVersion() > major || (getMajorVersion() == major && getMinorVersion() >= minor);
     }
 }
