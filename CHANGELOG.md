@@ -1,3 +1,10 @@
+## [7.4.1](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/7.4.0...7.4.1) (2026-11-16)
+
+
+### Bug Fixes
+
+* **bulk:** read the outcome of create items ([241663b](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/241663bb98d73b326569f8a615599bae67c81f51))
+
 # [7.4.0](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/7.3.1...7.4.0) (2026-11-09)
 
 
