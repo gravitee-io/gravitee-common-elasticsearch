@@ -16,6 +16,7 @@
 package io.gravitee.elasticsearch.version;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -168,6 +169,68 @@ class ElasticsearchInfoTest {
             assertThat(version.canUseMultiTypeIndex()).isFalse();
             assertThat(version.canUseIlmManagedIndex()).isTrue();
             assertThat(version.canUseDateHistogramFixedInterval()).isTrue();
+        }
+    }
+
+    @Nested
+    class MinorVersion {
+
+        @ParameterizedTest(name = "{0} -> {1}")
+        @CsvSource({ "7.9.3, 9", "7.17.28, 17", "8.14.0, 14", "8.11.0-SNAPSHOT, 11", "9.1.0, 1", "10.0.0-beta1, 0" })
+        void is_the_numeric_segment_after_the_first_dot(String number, int expectedMinor) throws JsonProcessingException {
+            Version version = read("{ \"version\": { \"number\": \"" + number + "\" } }").getVersion();
+
+            assertThat(version.getMinorVersion()).isEqualTo(expectedMinor);
+        }
+
+        @Test
+        void fails_when_the_version_number_has_no_minor_segment() throws JsonProcessingException {
+            Version version = read("{ \"version\": { \"number\": \"8\" } }").getVersion();
+
+            assertThatThrownBy(version::getMinorVersion).isInstanceOf(IllegalStateException.class).hasMessageContaining("8");
+        }
+    }
+
+    @Nested
+    class DataStreams {
+
+        @ParameterizedTest(name = "{0} {1} -> {2}")
+        @CsvSource(
+            {
+                "elasticsearch, 7.8.1, false",
+                "elasticsearch, 7.9.0, true",
+                "elasticsearch, 7.17.28, true",
+                "elasticsearch, 8.0.0, true",
+                "elasticsearch, 9.1.0, true",
+                "opensearch, 1.3.20, true",
+                "opensearch, 2.19.1, true",
+            }
+        )
+        void are_available_from_elasticsearch_7_9_and_on_every_opensearch(String distribution, String number, boolean expected)
+            throws JsonProcessingException {
+            assertThat(version(distribution, number).canUseDataStreams()).isEqualTo(expected);
+        }
+
+        @ParameterizedTest(name = "{0} {1} -> {2}")
+        @CsvSource(
+            {
+                "elasticsearch, 7.17.28, false",
+                "elasticsearch, 8.13.4, false",
+                "elasticsearch, 8.14.0, true",
+                "elasticsearch, 8.19.2, true",
+                "elasticsearch, 9.0.0, true",
+                "opensearch, 2.19.1, false",
+                "opensearch, 3.0.0, false",
+            }
+        )
+        void have_a_lifecycle_with_data_retention_from_elasticsearch_8_14(String distribution, String number, boolean expected)
+            throws JsonProcessingException {
+            assertThat(version(distribution, number).canUseDataStreamLifecycle()).isEqualTo(expected);
+        }
+
+        private Version version(String distribution, String number) throws JsonProcessingException {
+            String distributionField = "opensearch".equals(distribution) ? "\"distribution\": \"opensearch\", " : "";
+            return read("{ \"version\": { " + distributionField + "\"number\": \"" + number + "\" } }").getVersion();
         }
     }
 
