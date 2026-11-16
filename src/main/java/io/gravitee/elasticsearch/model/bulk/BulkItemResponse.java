@@ -35,7 +35,7 @@ public class BulkItemResponse implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * Response on an index, update or delete operation.
+     * Response on an index, create, update or delete operation.
      */
     private Index index;
 
@@ -46,6 +46,15 @@ public class BulkItemResponse implements Serializable {
     @JsonSetter("index")
     public void setIndex(final Index index) {
         this.index = index;
+    }
+
+    /**
+     * Response on a create operation.
+     * @param index es response
+     */
+    @JsonSetter("create")
+    public void setCreate(final Index index) {
+        setIndex(index);
     }
 
     /**
