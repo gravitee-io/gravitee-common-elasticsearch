@@ -27,6 +27,7 @@ import io.gravitee.elasticsearch.version.ElasticsearchInfo;
 import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.observers.TestObserver;
+import io.vertx.core.buffer.Buffer;
 import io.vertx.rxjava3.core.Vertx;
 import java.net.URI;
 import java.util.Collections;
@@ -232,6 +233,28 @@ public class HttpClientTest {
             .await()
             .assertNoErrors()
             .assertValue(fieldTypes -> fieldTypes.size() == 2 && fieldTypes.stream().allMatch("keyword"::equals));
+    }
+
+    @Test
+    void should_read_the_outcome_of_each_item_of_a_bulk() {
+        var bulk = Buffer.buffer(
+            """
+            { "index": { "_index": "gravitee_bulk_items", "_id": "1" } }
+            { "field": "indexed" }
+            { "create": { "_index": "gravitee_bulk_items", "_id": "2" } }
+            { "field": "first" }
+            { "create": { "_index": "gravitee_bulk_items", "_id": "2" } }
+            { "field": "second" }
+            """
+        );
+
+        var response = client.bulk(bulk).blockingGet();
+
+        assertThat(response.getErrors()).isTrue();
+        assertThat(response.getItems())
+            .extracting(item -> item.getIndex().getStatus())
+            .containsExactly(201, 201, 409);
+        assertThat(response.getItems().get(2).getIndex().getError().getType()).isEqualTo("version_conflict_engine_exception");
     }
 
     @Test
