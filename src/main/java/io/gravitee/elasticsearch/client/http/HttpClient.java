@@ -85,6 +85,7 @@ public class HttpClient implements Client {
     private static String URL_SEARCH;
     private static String URL_COUNT;
     private static String URL_ALIAS;
+    private static String URL_DATA_STREAM;
     private static String URL_FIELD_MAPPING;
     private String urlFieldCaps;
 
@@ -224,6 +225,7 @@ public class HttpClient implements Client {
         URL_SEARCH = urlPrefix + "/_search?ignore_unavailable=true";
         URL_COUNT = urlPrefix + "/_count?ignore_unavailable=true";
         URL_ALIAS = urlPrefix + "/_alias";
+        URL_DATA_STREAM = urlPrefix + "/_data_stream";
         URL_FIELD_MAPPING = urlPrefix + "/_mapping/field/";
         urlFieldCaps = urlPrefix + "/_field_caps?ignore_unavailable=true&fields=";
     }
@@ -452,6 +454,78 @@ public class HttpClient implements Client {
                     return Completable.complete();
                 });
         });
+    }
+
+    @Override
+    public Maybe<JsonNode> getIndexTemplate(String templateName) {
+        return getOrEmptyWhenNotFound(URL_INDEX_TEMPLATE + '/' + templateName, "index template", templateName).map(body ->
+            body.path("index_templates").path(0).path("index_template")
+        );
+    }
+
+    @Override
+    public Maybe<JsonNode> getDataStreamLifecycle(String dataStreamName) {
+        return getOrEmptyWhenNotFound(URL_DATA_STREAM + '/' + dataStreamName + "/_lifecycle", "data stream lifecycle", dataStreamName).map(
+            body -> body.path("data_streams").path(0).path("lifecycle")
+        );
+    }
+
+    @Override
+    public Completable putDataStreamLifecycle(String dataStreamName, String lifecycle) {
+        return Completable.defer(() ->
+            nextClient()
+                .getClient()
+                .put(URL_DATA_STREAM + '/' + dataStreamName + "/_lifecycle")
+                .putHeader(io.vertx.core.http.HttpHeaders.CONTENT_TYPE.toString(), MediaType.APPLICATION_JSON)
+                .rxSendBuffer(Buffer.buffer(lifecycle))
+                .doOnError(throwable -> logger.error("Unable to put a data stream lifecycle to Elasticsearch: {}", throwable.getMessage()))
+                .flatMapCompletable(response -> {
+                    if (response.statusCode() != HttpStatusCode.OK_200) {
+                        return Completable.error(
+                            new ElasticsearchException(
+                                format(
+                                    "Unable to put the data stream lifecycle '%s': status[%s] response[%s]",
+                                    dataStreamName,
+                                    response.statusCode(),
+                                    response.bodyAsString()
+                                ),
+                                response.statusCode()
+                            )
+                        );
+                    }
+                    return Completable.complete();
+                })
+        );
+    }
+
+    private Maybe<JsonNode> getOrEmptyWhenNotFound(String url, String resource, String name) {
+        return Maybe.defer(() ->
+            nextClient()
+                .getClient()
+                .get(url)
+                .rxSend()
+                .doOnError(throwable -> logger.error("Unable to get a connection to Elasticsearch: {}", throwable.getMessage()))
+                .flatMapMaybe(response -> {
+                    if (response.statusCode() == HttpStatusCode.OK_200) {
+                        return Maybe.just(mapper.readTree(response.bodyAsString()));
+                    }
+                    if (response.statusCode() == HttpStatusCode.NOT_FOUND_404) {
+                        return Maybe.empty();
+                    }
+                    return Maybe.error(
+                        new ElasticsearchException(
+                            format(
+                                "Unable to get the %s '%s': status[%s] response[%s]",
+                                resource,
+                                name,
+                                response.statusCode(),
+                                response.bodyAsString()
+                            ),
+                            response.statusCode()
+                        )
+                    );
+                })
+        );
     }
 
     @Override
