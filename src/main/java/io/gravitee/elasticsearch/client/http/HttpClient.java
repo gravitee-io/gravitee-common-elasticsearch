@@ -541,9 +541,21 @@ public class HttpClient implements Client {
                     if (response.statusCode() == HttpStatusCode.OK_200) {
                         return Maybe.just(mapper.readTree(response.bodyAsString()));
                     }
-
-                    logger.info("Alias [{}] not found", aliasName);
-                    return Maybe.empty();
+                    if (response.statusCode() == HttpStatusCode.NOT_FOUND_404) {
+                        logger.debug("Alias [{}] not found", aliasName);
+                        return Maybe.empty();
+                    }
+                    return Maybe.error(
+                        new ElasticsearchException(
+                            format(
+                                "Unable to get the alias '%s': status[%s] response[%s]",
+                                aliasName,
+                                response.statusCode(),
+                                response.bodyAsString()
+                            ),
+                            response.statusCode()
+                        )
+                    );
                 });
         });
     }
