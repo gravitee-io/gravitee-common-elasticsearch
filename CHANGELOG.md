@@ -1,3 +1,16 @@
+# [7.6.0](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/7.5.0...7.6.0) (2026-11-19)
+
+
+### Bug Fixes
+
+* **alias:** fail on an alias lookup elasticsearch cannot answer ([caa2d80](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/caa2d8053c1de36a36c6170abd02ce9a4f002d20))
+* **client:** get no lifecycle for a data stream that has none ([518743d](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/518743d6fe8fb2ffa36daefba5a69892dff532f4))
+
+
+### Features
+
+* **client:** read index templates and data stream lifecycles ([69563f7](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/69563f74bbf7b89fb63df498bb23e84b4ee6e68a))
+
 # [7.5.0](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/7.4.1...7.5.0) (2026-11-16)
 
 
