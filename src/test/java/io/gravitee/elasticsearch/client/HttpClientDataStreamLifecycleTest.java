@@ -51,6 +51,9 @@ class HttpClientDataStreamLifecycleTest {
           "_meta": { "managed_by": "gravitee-apim", "apim_version": "4.14.0" }
         }
         """;
+    private static final String TEMPLATE_WITHOUT_LIFECYCLE = """
+        { "index_patterns": ["%s"], "data_stream": {}, "priority": 500 }
+        """;
 
     @Autowired
     private Client client;
@@ -74,6 +77,19 @@ class HttpClientDataStreamLifecycleTest {
     @Test
     void should_get_nothing_for_the_lifecycle_of_a_data_stream_that_does_not_exist() throws InterruptedException {
         client.getDataStreamLifecycle("gravitee-missing-stream").test().await().assertNoErrors().assertComplete().assertNoValues();
+    }
+
+    @Test
+    void should_get_nothing_for_the_lifecycle_of_a_data_stream_that_has_none() throws InterruptedException {
+        createDataStream("gravitee-stream-without-lifecycle", TEMPLATE_WITHOUT_LIFECYCLE);
+
+        client
+            .getDataStreamLifecycle("gravitee-stream-without-lifecycle")
+            .test()
+            .await()
+            .assertNoErrors()
+            .assertComplete()
+            .assertNoValues();
     }
 
     @Test
@@ -105,7 +121,11 @@ class HttpClientDataStreamLifecycleTest {
     }
 
     private void createDataStream(String name) throws InterruptedException {
-        client.putIndexTemplate(name, TEMPLATE.formatted(name)).test().await().assertComplete();
+        createDataStream(name, TEMPLATE);
+    }
+
+    private void createDataStream(String name, String template) throws InterruptedException {
+        client.putIndexTemplate(name, template.formatted(name)).test().await().assertComplete();
         client
             .bulk(Buffer.buffer("{\"create\":{\"_index\":\"" + name + "\"}}\n{\"@timestamp\":\"2026-11-18T10:00:00Z\"}\n"))
             .test()
