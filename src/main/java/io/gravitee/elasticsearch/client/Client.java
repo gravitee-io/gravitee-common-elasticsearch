@@ -74,6 +74,46 @@ public interface Client {
     Completable putTemplate(String templateName, String template);
     Completable putIndexTemplate(String templateName, String template);
     Completable putPipeline(String templateName, String template);
+
+    /**
+     * The definition of a composable index template ({@code GET _index_template/<name>}): its index patterns, its
+     * {@code template} and its {@code _meta}.
+     *
+     * <p>An implementation without support keeps this default, which fails with an {@link UnsupportedOperationException}.
+     *
+     * @param templateName the exact name of the template, without wildcards
+     * @return the definition of the template, or empty when it does not exist
+     */
+    default Maybe<JsonNode> getIndexTemplate(String templateName) {
+        return Maybe.error(new UnsupportedOperationException("index templates are not readable with this client"));
+    }
+
+    /**
+     * The lifecycle of a data stream ({@code GET _data_stream/<name>/_lifecycle}), such as
+     * {@code {"enabled": true, "data_retention": "45d"}}. Needs Elasticsearch 8.14 or later.
+     *
+     * <p>An implementation without support keeps this default, which fails with an {@link UnsupportedOperationException}.
+     *
+     * @param dataStreamName the exact name of the data stream, without wildcards
+     * @return the lifecycle of the data stream, or empty when the data stream does not exist
+     */
+    default Maybe<JsonNode> getDataStreamLifecycle(String dataStreamName) {
+        return Maybe.error(new UnsupportedOperationException("data stream lifecycles are not readable with this client"));
+    }
+
+    /**
+     * Replaces the lifecycle of an existing data stream ({@code PUT _data_stream/<name>/_lifecycle}). Needs Elasticsearch 8.14
+     * or later.
+     *
+     * <p>An implementation without support keeps this default, which fails with an {@link UnsupportedOperationException}.
+     *
+     * @param dataStreamName the exact name of the data stream, without wildcards
+     * @param lifecycle the lifecycle, such as {@code {"data_retention": "45d"}}
+     */
+    default Completable putDataStreamLifecycle(String dataStreamName, String lifecycle) {
+        return Completable.error(new UnsupportedOperationException("data stream lifecycles are not writable with this client"));
+    }
+
     Single<SearchResponse> search(String indexes, String type, String query);
     Single<CountResponse> count(String indexes, String type, String query);
 
