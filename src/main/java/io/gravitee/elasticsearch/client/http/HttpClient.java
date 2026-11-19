@@ -465,9 +465,9 @@ public class HttpClient implements Client {
 
     @Override
     public Maybe<JsonNode> getDataStreamLifecycle(String dataStreamName) {
-        return getOrEmptyWhenNotFound(URL_DATA_STREAM + '/' + dataStreamName + "/_lifecycle", "data stream lifecycle", dataStreamName).map(
-            body -> body.path("data_streams").path(0).path("lifecycle")
-        );
+        return getOrEmptyWhenNotFound(URL_DATA_STREAM + '/' + dataStreamName + "/_lifecycle", "data stream lifecycle", dataStreamName)
+            .map(body -> body.path("data_streams").path(0).path("lifecycle"))
+            .filter(lifecycle -> !lifecycle.isMissingNode());
     }
 
     @Override

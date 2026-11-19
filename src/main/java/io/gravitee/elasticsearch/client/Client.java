@@ -95,7 +95,8 @@ public interface Client {
      * <p>An implementation without support keeps this default, which fails with an {@link UnsupportedOperationException}.
      *
      * @param dataStreamName the exact name of the data stream, without wildcards
-     * @return the lifecycle of the data stream, or empty when the data stream does not exist
+     * @return the lifecycle of the data stream, or empty when the data stream does not exist or has no lifecycle (managed by
+     * ILM, or created from a template without {@code template.lifecycle})
      */
     default Maybe<JsonNode> getDataStreamLifecycle(String dataStreamName) {
         return Maybe.error(new UnsupportedOperationException("data stream lifecycles are not readable with this client"));
