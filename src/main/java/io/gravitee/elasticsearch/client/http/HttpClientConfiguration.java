@@ -41,6 +41,18 @@ public class HttpClientConfiguration {
 
     private ClientSslConfiguration sslConfig;
 
+    /**
+     * Whether the client accepts any certificate from an {@code https} endpoint, without checking who signed it or the host
+     * it was issued for. Kept {@code true} by default for compatibility; set it to {@code false} to verify certificates
+     * against {@link #trustStoreConfig}, or the JVM default truststore when none is set.
+     */
+    private boolean trustAll = true;
+
+    /**
+     * Certificates trusted when {@link #trustAll} is {@code false}.
+     */
+    private HttpClientTrustStoreConfiguration trustStoreConfig;
+
     private long requestTimeout = 10000;
 
     private String proxyType;
@@ -103,6 +115,22 @@ public class HttpClientConfiguration {
 
     public void setSslConfig(ClientSslConfiguration sslConfig) {
         this.sslConfig = sslConfig;
+    }
+
+    public boolean isTrustAll() {
+        return trustAll;
+    }
+
+    public void setTrustAll(boolean trustAll) {
+        this.trustAll = trustAll;
+    }
+
+    public HttpClientTrustStoreConfiguration getTrustStoreConfig() {
+        return trustStoreConfig;
+    }
+
+    public void setTrustStoreConfig(HttpClientTrustStoreConfiguration trustStoreConfig) {
+        this.trustStoreConfig = trustStoreConfig;
     }
 
     public String getProxyType() {

@@ -38,6 +38,7 @@ import io.reactivex.rxjava3.functions.Function;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.net.ProxyOptions;
 import io.vertx.core.net.ProxyType;
+import io.vertx.core.net.TrustOptions;
 import io.vertx.ext.web.client.WebClientOptions;
 import io.vertx.ext.web.client.impl.WebClientInternal;
 import io.vertx.rxjava3.core.Vertx;
@@ -130,6 +131,8 @@ public class HttpClient implements Client {
             // Read configuration to authenticate calls to Elasticsearch (API key or basic authentication)
             this.authorizationHeader = resolveAuthorizationHeader();
 
+            final TrustOptions trustOptions = resolveTrustOptions();
+
             final List<Endpoint> endpoints = configuration.getEndpoints();
             if (!endpoints.isEmpty()) {
                 httpClients = new ArrayList<>(endpoints.size());
@@ -158,7 +161,10 @@ public class HttpClient implements Client {
                     WebClientOptions options = new WebClientOptions().setDefaultHost(host).setDefaultPort(defaultPort);
 
                     if (HTTPS_SCHEME.equalsIgnoreCase(elasticEdpt.getScheme())) {
-                        options.setSsl(true).setTrustAll(true);
+                        options.setSsl(true).setTrustAll(configuration.isTrustAll());
+                        if (trustOptions != null) {
+                            options.setTrustOptions(trustOptions);
+                        }
 
                         if (this.configuration.getSslConfig() != null) {
                             options.setKeyCertOptions(this.configuration.getSslConfig().getVertxWebClientSslKeystoreOptions());
@@ -746,6 +752,23 @@ public class HttpClient implements Client {
                     );
                 });
         });
+    }
+
+    /**
+     * Resolve the certificates trusted for {@code https} endpoints.
+     *
+     * @return the configured truststore, or {@code null} to rely on the JVM default one (or on trust-all)
+     * @throws IllegalArgumentException when the truststore is invalid
+     */
+    private TrustOptions resolveTrustOptions() {
+        final HttpClientTrustStoreConfiguration trustStoreConfig = configuration.getTrustStoreConfig();
+        if (trustStoreConfig == null) {
+            return null;
+        }
+        if (configuration.isTrustAll()) {
+            logger.warn("An Elasticsearch truststore is configured but ignored: trust-all is enabled, so no certificate is verified");
+        }
+        return trustStoreConfig.getVertxWebClientTrustOptions();
     }
 
     /**
