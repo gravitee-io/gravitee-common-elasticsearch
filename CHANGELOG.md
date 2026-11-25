@@ -1,3 +1,10 @@
+# [7.7.0](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/7.6.0...7.7.0) (2026-11-25)
+
+
+### Features
+
+* **client:** make the verification of server certificates configurable with a truststore ([bf866cd](https://github.com/gravitee-io/gravitee-common-elasticsearch/commit/bf866cdb0eedbb504ffc0c4708156bdfc77127f2))
+
 # [7.6.0](https://github.com/gravitee-io/gravitee-common-elasticsearch/compare/7.5.0...7.6.0) (2026-11-19)
 
 
